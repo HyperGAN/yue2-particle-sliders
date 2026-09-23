@@ -1,0 +1,16 @@
+{
+  "model_id": "m-a-p/YuE2-3B",
+  "vae_id": "m-a-p/YuE2-Vae",
+  "upstream_repo": "https://github.com/multimodal-art-projection/YuE",
+  "upstream_revision": "ef1936f2ee39fe8de486a0f47a481c95f8d4da87",
+  "hub_project": "ntc-ai/yue2-concept-sliders",
+  "hub_space": "ntc-ai/yue2-concept-sliders",
+  "weights_license": "CC BY-NC 4.0",
+  "core": {
+    "package": "particle-sliders-core",
+    "pin": "4340e28bed388d50800c469525b460a108091da0",
+    "requirement": "particle-sliders-core @ git+https://github.com/HyperGAN/particle-sliders.git@4340e28bed388d50800c469525b460a108091da0#subdirectory=packages/particle-sliders-core"
+  },
+  "hub_recipe_name": "anneal-routed-particle-error-yue2-v1",
+  "formulation_note": "Provisional overlay. Products call winning_formulation(). V2_SPEC stays in particle-sliders analysis/slider2d/yue2_gmix_v2_exam.py."
+}

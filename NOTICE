@@ -1,0 +1,16 @@
+YuE2 weights (`m-a-p/YuE2-3B`, `m-a-p/YuE2-Vae`) are separate downloads under
+their own license (CC BY-NC 4.0 on the Hub). This repository does not ship
+those weights.
+
+The official YuE2 runtime is Apache-2.0, pinned at
+`ef1936f2ee39fe8de486a0f47a481c95f8d4da87` in
+https://github.com/multimodal-art-projection/YuE. Install it only for a live
+train or render. `--dummy` does not import it.
+
+The shared slider game comes from `particle-sliders-core` at commit
+`4340e28bed388d50800c469525b460a108091da0` of HyperGAN/particle-sliders, which
+depends on ParticleGAN. This product does not relicense that code.
+
+Independently authored product source in this repository is MIT; see LICENSE.
+The MIT license does not relicense YuE2 weights, the upstream runtime, or the
+shared core.
