@@ -6,7 +6,7 @@ with the VAE at [m-a-p/YuE2-Vae](https://huggingface.co/m-a-p/YuE2-Vae).
 the Comfy gate, YuE2 train and infer, prompt cards, and sample cards.
 
 The shared game is `winning_formulation()` from `particle-sliders-core`, pinned at
-[`4340e28bed388d50800c469525b460a108091da0`](https://github.com/HyperGAN/particle-sliders/commit/4340e28bed388d50800c469525b460a108091da0).
+[`a119ca1ecd3d5d6c437065839d22739b04f2f4d8`](https://github.com/HyperGAN/particle-sliders/commit/a119ca1ecd3d5d6c437065839d22739b04f2f4d8).
 This repo does not vendor `RoutedMLP`, `GradRegularizer`, `locked_shared`, or ParticleGAN.
 The provisional Hub recipe name is `anneal-routed-particle-error-yue2-v1`.
 See [FORMULATION.md](FORMULATION.md).

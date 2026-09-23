@@ -8,8 +8,8 @@
   "weights_license": "CC BY-NC 4.0",
   "core": {
     "package": "particle-sliders-core",
-    "pin": "4340e28bed388d50800c469525b460a108091da0",
-    "requirement": "particle-sliders-core @ git+https://github.com/HyperGAN/particle-sliders.git@4340e28bed388d50800c469525b460a108091da0#subdirectory=packages/particle-sliders-core"
+    "pin": "a119ca1ecd3d5d6c437065839d22739b04f2f4d8",
+    "requirement": "particle-sliders-core @ git+https://github.com/HyperGAN/particle-sliders.git@a119ca1ecd3d5d6c437065839d22739b04f2f4d8#subdirectory=packages/particle-sliders-core"
   },
   "hub_recipe_name": "anneal-routed-particle-error-yue2-v1",
   "formulation_note": "Provisional overlay. Products call winning_formulation(). V2_SPEC stays in particle-sliders analysis/slider2d/yue2_gmix_v2_exam.py."
