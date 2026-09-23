@@ -10,7 +10,7 @@ HUB_PROJECT = "ntc-ai/yue2-concept-sliders"
 HUB_SPACE = "spaces/ntc-ai/yue2-concept-sliders"
 WEIGHTS_TREE = "weights/particle-1200-v1"
 
-CORE_PIN = "4340e28bed388d50800c469525b460a108091da0"
+CORE_PIN = "a119ca1ecd3d5d6c437065839d22739b04f2f4d8"
 CORE_REQUIREMENT = (
     "particle-sliders-core @ git+https://github.com/HyperGAN/particle-sliders.git@"
     f"{CORE_PIN}#subdirectory=packages/particle-sliders-core"

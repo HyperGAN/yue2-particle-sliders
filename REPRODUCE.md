@@ -18,7 +18,7 @@ pytest -q
 `requirements.txt` pins
 
 ```text
-particle-sliders-core @ git+https://github.com/HyperGAN/particle-sliders.git@4340e28bed388d50800c469525b460a108091da0#subdirectory=packages/particle-sliders-core
+particle-sliders-core @ git+https://github.com/HyperGAN/particle-sliders.git@a119ca1ecd3d5d6c437065839d22739b04f2f4d8#subdirectory=packages/particle-sliders-core
 ```
 
 `--dummy` trains the tiny AR stand-in and writes a checkpoint marked `dummy`. Inference reloads it and records hidden-state deltas. Those files are refused for song generation and by the Comfy node.

@@ -11,7 +11,7 @@
 The **game** is not owned here. Train and infer call `winning_formulation()` from `particle-sliders-core` and then `stamp.require(...)`.
 
 ```text
-particle-sliders-core @ git+https://github.com/HyperGAN/particle-sliders.git@4340e28bed388d50800c469525b460a108091da0#subdirectory=packages/particle-sliders-core
+particle-sliders-core @ git+https://github.com/HyperGAN/particle-sliders.git@a119ca1ecd3d5d6c437065839d22739b04f2f4d8#subdirectory=packages/particle-sliders-core
 ```
 
 That pin is the only shared core. Products do not vendor `RoutedMLP`, `GradRegularizer`, `locked_shared`, or ParticleGAN excerpts. Cap, relativistic loss, and particle VIC come through the stamp (`stamp.regularizer()`, `stamp.losses()`, `stamp.bridge()`, `stamp.critic()`, `stamp.noise_std_at()`).
