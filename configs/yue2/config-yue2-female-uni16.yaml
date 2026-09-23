@@ -1,0 +1,15 @@
+# Female voice. The filename keeps the historical UNI16 prompt card.
+# This trainer does not run the UNI16 game; it locks winning_formulation().
+name: female-yue2
+prompts_file: configs/yue2/prompts-yue2-female.yaml
+model_id: m-a-p/YuE2-3B
+vae_id: m-a-p/YuE2-Vae
+steps: 1200
+save_every: 100
+seed: 7
+device: cuda:0
+allow_hub: false
+adv_batch: 8
+sample_seeds: 128
+history_tokens: 32
+seedbank_sources: 512

@@ -1,0 +1,23 @@
+# Published listening cards for the particle-1200-v1 release.
+# Audio stays on the Hub. This file is the product sample index.
+hub: ntc-ai/yue2-concept-sliders
+release: particle-1200-v1
+seed: 1709
+strength: 1
+scales: [0, 0.5, 1]
+cards:
+  - id: female
+    title: Female voice
+    prompts_file: configs/yue2/catalog/female-train.yaml
+    "off": samples/particle-1200-v1/female/row0-seed1709-off.mp3
+    "on": samples/particle-1200-v1/female/row0-seed1709-on.mp3
+  - id: metal
+    title: Metal
+    prompts_file: configs/yue2/catalog/metal-train.yaml
+    "off": samples/particle-1200-v1/metal/row0-seed1709-off.mp3
+    "on": samples/particle-1200-v1/metal/row0-seed1709-on.mp3
+  - id: house
+    title: House
+    prompts_file: configs/yue2/catalog/house-train.yaml
+    "off": samples/particle-1200-v1/house/row0-seed1709-off.mp3
+    "on": samples/particle-1200-v1/house/row0-seed1709-on.mp3

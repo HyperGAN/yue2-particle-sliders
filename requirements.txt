@@ -1,0 +1,11 @@
+# CPU smoke. particle-sliders-core pulls torch and the pinned ParticleGAN.
+PyYAML>=6
+pytest>=8
+safetensors>=0.4
+numpy>=1.26
+
+particle-sliders-core @ git+https://github.com/HyperGAN/particle-sliders.git@4340e28bed388d50800c469525b460a108091da0#subdirectory=packages/particle-sliders-core
+
+# A live CUDA run also needs the official YuE2 runtime (separate env):
+# yue2-infer @ git+https://github.com/multimodal-art-projection/YuE.git@ef1936f2ee39fe8de486a0f47a481c95f8d4da87
+# --dummy and --help do not import it and do not download Hub weights.
