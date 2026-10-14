@@ -1,0 +1,298 @@
+# Retrain v3 (metal): rows 1-4 are the v2 catalog rows from configs/yue2/catalog/metal-train.yaml
+# (the sheet published as prompts/particle-gmix-1600-v2/metal-train.yaml). Rows 5-8 add
+# conflicting-genre neutrals (v1 electronic Space default, current neutral Space default)
+# paired with timbre-explicit positives. Text only; no audio.
+plus_label: Metal
+zero_label: 'Off'
+recommended_range:
+- 0
+- 1
+rows:
+- neutral: English. BPM 112. Meter 4/4. One adult female lead vocalist. Clearly articulated melodic singing,
+    no spoken or rapped delivery. Verse and chorus. A guitar-led band song. Electric guitars play chord
+    changes over electric bass and a steady drum kit. A clear lead vocal and a balanced studio mix.
+  positive: English. BPM 112. Meter 4/4. One adult female lead vocalist. Clearly articulated melodic singing,
+    no spoken or rapped delivery. Verse and chorus. Heavy metal. Saturated high-gain guitars play tight
+    palm-muted low-string riffs and broad power chords. Pick attack and sustained guitar harmonics. A
+    firm electric bass doubles the riff, with forceful kick patterns, a cracking snare and bright cymbal
+    accents. Close, dense studio production with the vocal clearly audible.
+  lyrics: '[verse]
+
+    The workshop door swings toward the courtyard
+
+    A strip of light runs down the floor
+
+    We stack the timber by the window
+
+    And turn the latch beside the door
+
+    [chorus]
+
+    We make a little room to carry
+
+    The things we gathered on the way'
+- neutral: English. BPM 132. Meter 4/4. One adult male lead vocalist. Clearly articulated melodic singing,
+    no spoken or rapped delivery. Verse and chorus. A guitar-led band song. Electric guitars play chord
+    changes over electric bass and a steady drum kit. A clear lead vocal and a balanced studio mix.
+  positive: English. BPM 132. Meter 4/4. One adult male lead vocalist. Clearly articulated melodic singing,
+    no spoken or rapped delivery. Verse and chorus. Heavy metal. Saturated high-gain guitars play tight
+    palm-muted low-string riffs and broad power chords. Pick attack and sustained guitar harmonics. A
+    firm electric bass doubles the riff, with forceful kick patterns, a cracking snare and bright cymbal
+    accents. Close, dense studio production with the vocal clearly audible.
+  lyrics: '[verse]
+
+    A paper marker holds the chapter
+
+    The kettle settles on the grate
+
+    I draw a square around the margin
+
+    And leave the final corner straight
+
+    [chorus]
+
+    We make a little room to carry
+
+    The things we gathered on the way'
+- neutral: English. BPM 100. Meter 4/4. One adult male lead vocalist. Clearly articulated melodic singing,
+    no spoken or rapped delivery. Verse and chorus. A guitar-led band song. Electric guitars play chord
+    changes over electric bass and a steady drum kit. A clear lead vocal and a balanced studio mix.
+  positive: English. BPM 100. Meter 4/4. One adult male lead vocalist. Clearly articulated melodic singing,
+    no spoken or rapped delivery. Verse and chorus. Heavy metal. Saturated high-gain guitars play tight
+    palm-muted low-string riffs and broad power chords. Pick attack and sustained guitar harmonics. A
+    firm electric bass doubles the riff, with forceful kick patterns, a cracking snare and bright cymbal
+    accents. Close, dense studio production with the vocal clearly audible.
+  lyrics: '[verse]
+
+    The shuttle rattles through the station
+
+    Our folded tickets fill a tray
+
+    A blue enamel sign is swaying
+
+    We count the stops along the way
+
+    [chorus]
+
+    We make a little room to carry
+
+    The things we gathered on the way'
+- neutral: English. BPM 148. Meter 4/4. One adult female lead vocalist. Clearly articulated melodic singing,
+    no spoken or rapped delivery. Verse and chorus. A guitar-led band song. Electric guitars play chord
+    changes over electric bass and a steady drum kit. A clear lead vocal and a balanced studio mix.
+  positive: English. BPM 148. Meter 4/4. One adult female lead vocalist. Clearly articulated melodic singing,
+    no spoken or rapped delivery. Verse and chorus. Heavy metal. Saturated high-gain guitars play tight
+    palm-muted low-string riffs and broad power chords. Pick attack and sustained guitar harmonics. A
+    firm electric bass doubles the riff, with forceful kick patterns, a cracking snare and bright cymbal
+    accents. Close, dense studio production with the vocal clearly audible.
+  lyrics: '[verse]
+
+    The stairwell echoes with our footsteps
+
+    We carry canvas through the rain
+
+    A row of empty hooks is waiting
+
+    To hold the coats we bring again
+
+    [chorus]
+
+    We make a little room to carry
+
+    The things we gathered on the way'
+- neutral: 'Global Metadata:
+
+    Genre: electronic song. BPM 106. Meter: 4/4. The verse is focused and the chorus opens into a fuller
+    sound. A balanced studio mix with a clear lead, defined bass and modest room depth.
+
+    Vocal Details:
+
+    One adult lead vocalist. Melodic singing with clear words and natural phrasing. A clear solo lead
+    stays in front throughout, with natural vocal detail and light room ambience.
+
+    Arrangement:
+
+    Verse: Short synth chords carry the harmony over soft synth bass and a sparse electronic beat.
+
+    Chorus: The short synth chords broaden and the rhythm adds a light accent at the section change, leaving
+    space for the lead.'
+  positive: 'Global Metadata:
+
+    Genre: heavy metal. BPM 106. Meter: 4/4. The verse is focused and the chorus opens into a fuller sound.
+    A dense, loud band mix with heavily distorted electric guitars, a firm low end and the lead clearly
+    audible.
+
+    Vocal Details:
+
+    One adult lead vocalist. Melodic singing with clear words and natural phrasing. A clear solo lead
+    stays in front throughout, with natural vocal detail and light room ambience.
+
+    Arrangement:
+
+    Verse: Distorted rhythm guitar plays tight palm-muted low-string riffs, doubled by a driving electric
+    bass, over double-kick drums with a cracking snare. No synthesizers.
+
+    Chorus: High-gain power chords ring open over relentless double-kick drums and crashing cymbals, with
+    the distorted guitars wide behind the lead.'
+  lyrics: '[verse]
+
+    The workshop door swings toward the courtyard
+
+    A strip of light runs down the floor
+
+    We stack the timber by the window
+
+    And turn the latch beside the door
+
+    [chorus]
+
+    We make a little room to carry
+
+    The things we gathered on the way'
+- neutral: 'Global Metadata:
+
+    Genre: electronic song. BPM 140. Meter: 4/4. The verse is focused and the chorus opens into a fuller
+    sound. A balanced studio mix with a clear lead, defined bass and modest room depth.
+
+    Vocal Details:
+
+    One adult lead vocalist. Melodic singing with clear words and natural phrasing. A clear solo lead
+    stays in front throughout, with natural vocal detail and light room ambience.
+
+    Arrangement:
+
+    Verse: Short synth chords carry the harmony over soft synth bass and a sparse electronic beat.
+
+    Chorus: The short synth chords broaden and the rhythm adds a light accent at the section change, leaving
+    space for the lead.'
+  positive: 'Global Metadata:
+
+    Genre: heavy metal. BPM 140. Meter: 4/4. The verse is focused and the chorus opens into a fuller sound.
+    A dense, loud band mix with heavily distorted electric guitars, a firm low end and the lead clearly
+    audible.
+
+    Vocal Details:
+
+    One adult lead vocalist. Melodic singing with clear words and natural phrasing. A clear solo lead
+    stays in front throughout, with natural vocal detail and light room ambience.
+
+    Arrangement:
+
+    Verse: Distorted rhythm guitar plays tight palm-muted low-string riffs, doubled by a driving electric
+    bass, over double-kick drums with a cracking snare. No synthesizers.
+
+    Chorus: High-gain power chords ring open over relentless double-kick drums and crashing cymbals, with
+    the distorted guitars wide behind the lead.'
+  lyrics: '[verse]
+
+    The painted number leaves the mailbox
+
+    A crooked nail holds on the frame
+
+    We take a brush out to the pavement
+
+    And give the little door a name
+
+    [chorus]
+
+    The street is changing by the hour
+
+    But there is room for us to stay'
+- neutral: 'Global Metadata:
+
+    BPM 106. Meter: 4/4. The verse is focused and the chorus opens into a fuller sound. A balanced studio
+    mix with a clear lead, defined bass and modest room depth.
+
+    Vocal Details:
+
+    One adult lead vocalist. Melodic singing with clear words and natural phrasing. A clear solo lead
+    stays in front throughout, with natural vocal detail and light room ambience.
+
+    Arrangement:
+
+    Verse: Short chords carry the harmony over a soft bass line and a sparse beat.
+
+    Chorus: The short chords broaden and the rhythm adds a light accent at the section change, leaving
+    space for the lead.'
+  positive: 'Global Metadata:
+
+    Genre: heavy metal. BPM 106. Meter: 4/4. The verse is focused and the chorus opens into a fuller sound.
+    A dense, loud band mix with heavily distorted electric guitars, a firm low end and the lead clearly
+    audible.
+
+    Vocal Details:
+
+    One adult lead vocalist. Melodic singing with clear words and natural phrasing. A clear solo lead
+    stays in front throughout, with natural vocal detail and light room ambience.
+
+    Arrangement:
+
+    Verse: Distorted rhythm guitar plays tight palm-muted low-string riffs, doubled by a driving electric
+    bass, over double-kick drums with a cracking snare. No synthesizers.
+
+    Chorus: High-gain power chords ring open over relentless double-kick drums and crashing cymbals, with
+    the distorted guitars wide behind the lead.'
+  lyrics: '[verse]
+
+    The workshop door swings toward the courtyard
+
+    A strip of light runs down the floor
+
+    We stack the timber by the window
+
+    And turn the latch beside the door
+
+    [chorus]
+
+    We make a little room to carry
+
+    The things we gathered on the way'
+- neutral: 'Global Metadata:
+
+    BPM 140. Meter: 4/4. The verse is focused and the chorus opens into a fuller sound. A balanced studio
+    mix with a clear lead, defined bass and modest room depth.
+
+    Vocal Details:
+
+    One adult lead vocalist. Melodic singing with clear words and natural phrasing. A clear solo lead
+    stays in front throughout, with natural vocal detail and light room ambience.
+
+    Arrangement:
+
+    Verse: Short chords carry the harmony over a soft bass line and a sparse beat.
+
+    Chorus: The short chords broaden and the rhythm adds a light accent at the section change, leaving
+    space for the lead.'
+  positive: 'Global Metadata:
+
+    Genre: heavy metal. BPM 140. Meter: 4/4. The verse is focused and the chorus opens into a fuller sound.
+    A dense, loud band mix with heavily distorted electric guitars, a firm low end and the lead clearly
+    audible.
+
+    Vocal Details:
+
+    One adult lead vocalist. Melodic singing with clear words and natural phrasing. A clear solo lead
+    stays in front throughout, with natural vocal detail and light room ambience.
+
+    Arrangement:
+
+    Verse: Distorted rhythm guitar plays tight palm-muted low-string riffs, doubled by a driving electric
+    bass, over double-kick drums with a cracking snare. No synthesizers.
+
+    Chorus: High-gain power chords ring open over relentless double-kick drums and crashing cymbals, with
+    the distorted guitars wide behind the lead.'
+  lyrics: '[verse]
+
+    The painted number leaves the mailbox
+
+    A crooked nail holds on the frame
+
+    We take a brush out to the pavement
+
+    And give the little door a name
+
+    [chorus]
+
+    The street is changing by the hour
+
+    But there is room for us to stay'

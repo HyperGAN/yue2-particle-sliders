@@ -16,11 +16,11 @@ from pathlib import Path
 import torch
 import yaml
 
-from yue2.backend import YuE2Backend
-from yue2.defaults import CORE_PIN, EXAM_MODULE, MODEL_ID, VAE_ID
-from yue2.prompts import load_prompts
-from yue2.slider import ParticleSlider
-from yue2.stamp import assert_product_game, locked_stamp
+from yue2_sliders.backend import YuE2Backend
+from yue2_sliders.defaults import CORE_PIN, EXAM_MODULE, MODEL_ID, VAE_ID
+from yue2_sliders.prompts import load_prompts
+from yue2_sliders.slider import ParticleSlider
+from yue2_sliders.stamp import assert_product_game, locked_stamp
 
 ROOT = Path(__file__).resolve().parents[1]
 RUN_KEYS = {
@@ -35,6 +35,7 @@ RUN_KEYS = {
     "allow_hub",
     "revision",
     "cache_dir",
+    "stamp",
 }
 
 
@@ -54,6 +55,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--vae_id", default=None)
     parser.add_argument("--revision", default=None)
     parser.add_argument("--cache_dir", default=None)
+    parser.add_argument("--stamp", default=None, help="opt-in core formulation stamp id (default: winning_formulation())")
     parser.add_argument("--save_dir", type=Path, default=None)
     parser.add_argument("--steps", type=int, default=None)
     parser.add_argument("--save_every", type=int, default=None)
@@ -169,7 +171,7 @@ def resolve_surface(args: argparse.Namespace, row_count: int) -> tuple[object, d
     surface["seedbank_sources"] = bank
     if int(surface["adv_batch"]) > bank:
         raise ValueError("adv_batch cannot exceed the seed bank")
-    return locked_stamp(surface)
+    return locked_stamp(surface, getattr(args, "stamp", None))
 
 
 def card_for(args: argparse.Namespace, stamp, locked: dict, *, rows: int) -> dict:
@@ -329,7 +331,7 @@ def train(args: argparse.Namespace) -> dict | Path:
     device = next(backend.model.parameters()).device
     targets = torch.cat([row["targets"] for row in prepared]).to(device)
     neutrals = torch.cat([row["neutral"] for row in prepared]).to(device)
-    critic = stamp.critic(targets, neutrals=neutrals)
+    critic = stamp.critic(targets, neutrals=neutrals).to(device)
     betas = tuple(locked["betas"])
     adapter_params = [param for name, param in network.named_parameters() if name != "particles"]
     g_opt = torch.optim.Adam(adapter_params, lr=float(locked["g_lr"]), betas=betas)

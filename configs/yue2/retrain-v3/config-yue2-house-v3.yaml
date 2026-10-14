@@ -1,0 +1,22 @@
+# Retrain v3 of the house slider (AR side). Clone of the v2 gmix run surface
+# (particle-gmix-1600-v2: 1600 updates, stamp LRs, adv_batch 8, history 32,
+# 512-source seed bank). Formulation knobs come from winning_formulation().
+# trained_scales stays (1.0,): it is a formulation key in core a119ca1 and the
+# trainer drives network.scaled(1.0); a product config cannot set [1.0, 1.5].
+# 8 rows x 64 sample_seeds = 512 sources, same bank size and step cost as v2 (4 x 128).
+name: house-yue2-particles-v3
+prompts_file: configs/yue2/retrain-v3/prompts-yue2-house-v3-train.yaml
+model_id: m-a-p/YuE2-3B
+vae_id: m-a-p/YuE2-Vae
+steps: 1600
+save_every: 100
+seed: 7
+device: cuda:0
+allow_hub: false
+adv_batch: 8
+sample_seeds: 64
+history_tokens: 32
+seedbank_sources: 512
+g_lr: 0.0006
+d_lr: 0.0009
+particle_lr: 0.006

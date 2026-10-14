@@ -5,13 +5,13 @@
 - Hub ids: `m-a-p/YuE2-3B`, `m-a-p/YuE2-Vae`, project `ntc-ai/yue2-concept-sliders`
 - the upstream runtime pin `ef1936f2ee39fe8de486a0f47a481c95f8d4da87`
 - Comfy gate `comfy_yue2.py` (category `NTC/YuE2`)
-- YuE2 AR train and infer (`yue2/train.py`, `yue2/infer.py`, `scripts/train_yue2.py`, `scripts/infer_yue2.py`)
+- YuE2 AR train and infer (`yue2_sliders/train.py`, `yue2_sliders/infer.py`, `scripts/train_yue2.py`, `scripts/infer_yue2.py`)
 - prompt cards, run configs, and sample cards under `configs/yue2/`
 
 The **game** is not owned here. Train and infer call `winning_formulation()` from `particle-sliders-core` and then `stamp.require(...)`.
 
 ```text
-particle-sliders-core @ git+https://github.com/HyperGAN/particle-sliders.git@a119ca1ecd3d5d6c437065839d22739b04f2f4d8#subdirectory=packages/particle-sliders-core
+particle-sliders-core @ git+https://github.com/HyperGAN/particle-sliders.git@84e0a0af3c7a2a1432e759fcd0a549497634a006#subdirectory=packages/particle-sliders-core
 ```
 
 That pin is the only shared core. Products do not vendor `RoutedMLP`, `GradRegularizer`, `locked_shared`, or ParticleGAN excerpts. Cap, relativistic loss, and particle VIC come through the stamp (`stamp.regularizer()`, `stamp.losses()`, `stamp.bridge()`, `stamp.critic()`, `stamp.noise_std_at()`).
