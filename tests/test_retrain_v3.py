@@ -1,8 +1,8 @@
 """Retrain v3 configs parse and match the v2 run budget."""
 from pathlib import Path
 import pytest
-from yue2.train import parse_args, resolve_surface, _resolve_path
-from yue2.prompts import load_prompts
+from yue2_sliders.train import parse_args, resolve_surface, _resolve_path
+from yue2_sliders.prompts import load_prompts
 
 ROOT = Path(__file__).resolve().parents[1]
 

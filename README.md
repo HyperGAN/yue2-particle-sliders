@@ -71,7 +71,7 @@ audio inside the graph. See [COMFYUI.md](COMFYUI.md).
 
 | Path | Role |
 |---|---|
-| `yue2/` | AR backend, routed slider hooks, train, infer |
+| `yue2_sliders/` | AR backend, routed slider hooks, train, infer |
 | `scripts/train_yue2.py`, `scripts/infer_yue2.py` | CLI entrypoints. Both call `winning_formulation()`. |
 | `configs/yue2/` | Run configs, prompts, `model.lock.json`, sample cards |
 | `comfy_yue2.py` | Comfy gate |

@@ -16,11 +16,11 @@ from pathlib import Path
 import torch
 import yaml
 
-from yue2.backend import YuE2Backend
-from yue2.defaults import CORE_PIN, EXAM_MODULE, MODEL_ID, VAE_ID
-from yue2.prompts import load_prompts
-from yue2.slider import ParticleSlider
-from yue2.stamp import assert_product_game, locked_stamp
+from yue2_sliders.backend import YuE2Backend
+from yue2_sliders.defaults import CORE_PIN, EXAM_MODULE, MODEL_ID, VAE_ID
+from yue2_sliders.prompts import load_prompts
+from yue2_sliders.slider import ParticleSlider
+from yue2_sliders.stamp import assert_product_game, locked_stamp
 
 ROOT = Path(__file__).resolve().parents[1]
 RUN_KEYS = {

@@ -11,9 +11,9 @@ from __future__ import annotations
 import math
 from pathlib import Path
 
-from yue2.defaults import FORMATS, HUB_RECIPE_NAME, MODEL_ID
-from yue2.slider import read_record
-from yue2.stamp import locked_stamp
+from yue2_sliders.defaults import FORMATS, HUB_RECIPE_NAME, MODEL_ID
+from yue2_sliders.slider import read_record
+from yue2_sliders.stamp import locked_stamp
 
 NODE_CLASS_MAPPINGS: dict = {}
 NODE_DISPLAY_NAME_MAPPINGS: dict = {}

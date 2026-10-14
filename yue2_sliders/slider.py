@@ -16,9 +16,9 @@ from torch import nn
 from safetensors import safe_open
 from safetensors.torch import load_file, save_file
 
-from yue2.backend import architecture_of, attention_targets
-from yue2.defaults import FORMATS, PRODUCT_FORMAT, UPSTREAM_REVISION
-from yue2.prompts import sound_only
+from yue2_sliders.backend import architecture_of, attention_targets
+from yue2_sliders.defaults import FORMATS, PRODUCT_FORMAT, UPSTREAM_REVISION
+from yue2_sliders.prompts import sound_only
 
 
 class RoutedProjection(nn.Module):

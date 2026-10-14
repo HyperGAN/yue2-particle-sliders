@@ -5,7 +5,7 @@
 - Hub ids: `m-a-p/YuE2-3B`, `m-a-p/YuE2-Vae`, project `ntc-ai/yue2-concept-sliders`
 - the upstream runtime pin `ef1936f2ee39fe8de486a0f47a481c95f8d4da87`
 - Comfy gate `comfy_yue2.py` (category `NTC/YuE2`)
-- YuE2 AR train and infer (`yue2/train.py`, `yue2/infer.py`, `scripts/train_yue2.py`, `scripts/infer_yue2.py`)
+- YuE2 AR train and infer (`yue2_sliders/train.py`, `yue2_sliders/infer.py`, `scripts/train_yue2.py`, `scripts/infer_yue2.py`)
 - prompt cards, run configs, and sample cards under `configs/yue2/`
 
 The **game** is not owned here. Train and infer call `winning_formulation()` from `particle-sliders-core` and then `stamp.require(...)`.
