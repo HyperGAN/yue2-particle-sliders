@@ -329,7 +329,7 @@ def train(args: argparse.Namespace) -> dict | Path:
     device = next(backend.model.parameters()).device
     targets = torch.cat([row["targets"] for row in prepared]).to(device)
     neutrals = torch.cat([row["neutral"] for row in prepared]).to(device)
-    critic = stamp.critic(targets, neutrals=neutrals)
+    critic = stamp.critic(targets, neutrals=neutrals).to(device)
     betas = tuple(locked["betas"])
     adapter_params = [param for name, param in network.named_parameters() if name != "particles"]
     g_opt = torch.optim.Adam(adapter_params, lr=float(locked["g_lr"]), betas=betas)
