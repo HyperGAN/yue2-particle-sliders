@@ -35,6 +35,7 @@ RUN_KEYS = {
     "allow_hub",
     "revision",
     "cache_dir",
+    "stamp",
 }
 
 
@@ -54,6 +55,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--vae_id", default=None)
     parser.add_argument("--revision", default=None)
     parser.add_argument("--cache_dir", default=None)
+    parser.add_argument("--stamp", default=None, help="opt-in core formulation stamp id (default: winning_formulation())")
     parser.add_argument("--save_dir", type=Path, default=None)
     parser.add_argument("--steps", type=int, default=None)
     parser.add_argument("--save_every", type=int, default=None)
@@ -169,7 +171,7 @@ def resolve_surface(args: argparse.Namespace, row_count: int) -> tuple[object, d
     surface["seedbank_sources"] = bank
     if int(surface["adv_batch"]) > bank:
         raise ValueError("adv_batch cannot exceed the seed bank")
-    return locked_stamp(surface)
+    return locked_stamp(surface, getattr(args, "stamp", None))
 
 
 def card_for(args: argparse.Namespace, stamp, locked: dict, *, rows: int) -> dict:

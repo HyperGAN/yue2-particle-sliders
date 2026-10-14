@@ -2,7 +2,7 @@
 
 This product trains and renders composition sliders on `m-a-p/YuE2-3B`.
 The shared game is `winning_formulation()` from `particle-sliders-core`
-at `a119ca1ecd3d5d6c437065839d22739b04f2f4d8`. Read [FORMULATION.md](../FORMULATION.md)
+at `84e0a0af3c7a2a1432e759fcd0a549497634a006`. Read [FORMULATION.md](../FORMULATION.md)
 before changing a knob.
 
 Only AR attention trains: `model.layers.*.self_attn.{q_proj,k_proj,v_proj,o_proj}`
@@ -67,7 +67,7 @@ The sixteen control prompt sheets are `configs/yue2/catalog/*-train.yaml`.
 ## Where the exams went
 
 2D gates and formulation crown notes stay in
-[HyperGAN/particle-sliders](https://github.com/HyperGAN/particle-sliders/tree/a119ca1ecd3d5d6c437065839d22739b04f2f4d8):
+[HyperGAN/particle-sliders](https://github.com/HyperGAN/particle-sliders/tree/84e0a0af3c7a2a1432e759fcd0a549497634a006):
 
 - `analysis/slider2d/yue2_gmix_v2_exam.py` (`V2_SPEC`)
 - `docs/yue2-gmix-v2-2d-scoreboard.md`

@@ -6,18 +6,19 @@ The stamp math lives in particle-sliders-core. This module only calls
 
 from __future__ import annotations
 
-from particle_sliders import winning_formulation
+from particle_sliders import formulation_stamp
 
 from yue2_sliders.defaults import CORE_PIN, HUB_RECIPE_NAME
 
 
-def locked_stamp(model_surface: dict | None = None):
+def locked_stamp(model_surface: dict | None = None, formulation_id: str | None = None):
     """Return the shared stamp after ``require()`` accepts the product card.
 
     ``model_surface`` may set learning rates, batch size and data-budget
     fields. Any formulation key, provenance fork, or unknown knob raises.
+    ``formulation_id`` selects an opt-in core stamp by id; None is the default.
     """
-    stamp = winning_formulation()
+    stamp = formulation_stamp(formulation_id)
     if stamp.spec.get("recipe_name") != HUB_RECIPE_NAME:
         raise RuntimeError(
             f"Core pin {CORE_PIN} recipe_name is {stamp.spec.get('recipe_name')!r}, "
