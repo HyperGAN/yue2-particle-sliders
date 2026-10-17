@@ -10,11 +10,9 @@ HUB_PROJECT = "ntc-ai/yue2-concept-sliders"
 HUB_SPACE = "spaces/ntc-ai/yue2-concept-sliders"
 WEIGHTS_TREE = "weights/particle-1200-v1"
 
-CORE_PIN = "a119ca1ecd3d5d6c437065839d22739b04f2f4d8"
-CORE_REQUIREMENT = (
-    "particle-sliders-core @ git+https://github.com/HyperGAN/particle-sliders.git@"
-    f"{CORE_PIN}#subdirectory=packages/particle-sliders-core"
-)
+CORE_PIN = "3e94b13eb5d6cd1ceee3f018f019a68603f35696"
+CORE_REQUIREMENT = "integration-only: exact local core checkout; see REPRODUCE.md"
+
 CORE_REPO = "https://github.com/HyperGAN/particle-sliders"
 # Parameter table for the provisional overlay. It stays in particle-sliders.
 EXAM_MODULE = "analysis/slider2d/yue2_gmix_v2_exam.py"

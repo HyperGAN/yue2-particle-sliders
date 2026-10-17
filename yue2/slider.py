@@ -17,7 +17,7 @@ from safetensors import safe_open
 from safetensors.torch import load_file, save_file
 
 from yue2.backend import architecture_of, attention_targets
-from yue2.defaults import FORMATS, PRODUCT_FORMAT, UPSTREAM_REVISION
+from yue2.defaults import CORE_PIN, FORMATS, MODEL_ID, PRODUCT_FORMAT, UPSTREAM_REVISION
 from yue2.prompts import sound_only
 
 
@@ -112,26 +112,11 @@ class ParticleSlider(nn.Module):
         path.with_suffix(".json").write_text(json.dumps(record, indent=2) + "\n", encoding="utf-8")
 
     @classmethod
-    def load(cls, model, path, stamp, *, allow_dummy: bool = False):
-        path = Path(path)
-        record = read_record(path)
-        if record.get("format") not in FORMATS:
-            raise ValueError("Not a YuE2 routed-particle slider checkpoint")
-        if record.get("dummy") and not allow_dummy:
-            raise ValueError("Dummy checkpoints cannot be used for song generation")
-        if record.get("architecture") != architecture_of(model):
-            raise ValueError("Slider architecture does not match this YuE2 model")
-        if record.get("targets") != list(attention_targets(model)):
-            raise ValueError("Slider target list does not match YuE2 AR attention")
-        state = load_file(str(path), device="cpu")
-        expected = _expected_shapes(model, stamp)
-        if set(state) != set(expected) or any(tuple(state[key].shape) != shape for key, shape in expected.items()):
-            raise ValueError("Incomplete or incompatible YuE2 slider tensors")
-        if any(not torch.isfinite(tensor).all() for tensor in state.values()):
-            raise ValueError("Non-finite YuE2 slider weights")
-        alpha = float(stamp.spec["adapter_alpha"])
-        if any(float(state[key]) != alpha for key in state if key.endswith(".alpha")):
-            raise ValueError("Slider alpha does not match the winning formulation")
+    def load(cls, model, path, stamp, *, allow_dummy: bool = False, model_identity=None):
+        # All validation precedes the constructor, which installs live hooks.
+        record, state = validate_checkpoint(
+            path, stamp, model=model, allow_dummy=allow_dummy, model_identity=model_identity
+        )
         network = cls(model, stamp)
         network.load_state_dict(state, strict=True)
         return network, record
@@ -167,6 +152,150 @@ def read_record(path) -> dict:
     if not isinstance(record, dict) or not record:
         raise ValueError("YuE2 slider checkpoint is missing its metadata")
     return record
+
+
+def validate_record(record, stamp, *, allow_dummy=False, model_identity=None):
+    """Validate current provenance and the explicitly supported published format."""
+    if record.get("format") not in FORMATS:
+        raise ValueError("Not a YuE2 routed-particle slider checkpoint")
+    if record.get("dummy") and not allow_dummy:
+        raise ValueError("Dummy checkpoints cannot be used for song generation")
+    current = record["format"] == PRODUCT_FORMAT
+    required = {
+        "rank": int(stamp.spec["adapter_rank"]),
+        "alpha": float(stamp.spec["adapter_alpha"]),
+        "particles": int(stamp.spec["parts"]),
+        "particle_dim": int(stamp.spec["particle_dim"]),
+        "upstream_revision": UPSTREAM_REVISION,
+        "model_id": MODEL_ID,
+    }
+    # Published conceptmod exports named the architecture recipe `recipe` and
+    # predate formulation/core identifiers. Keep their recorded provenance.
+    recipe = record.get("recipe_name", record.get("recipe"))
+    if recipe != stamp.spec["recipe_name"]:
+        raise ValueError("Slider recipe does not match the winning formulation")
+    if current:
+        required.update(
+            core_pin=CORE_PIN,
+            architecture_id=stamp.architecture_id,
+            formulation_id=stamp.formulation_id,
+            formulation=f"{stamp.architecture_id}/{stamp.formulation_id}",
+        )
+    else:
+        for key, value in {
+            "core_pin": CORE_PIN,
+            "architecture_id": stamp.architecture_id,
+            "formulation_id": stamp.formulation_id,
+            "formulation": f"{stamp.architecture_id}/{stamp.formulation_id}",
+        }.items():
+            if key in record:
+                required[key] = value
+        for key, spec_key in (("bridge_width", "adapter_width"), ("router_width", "router_width")):
+            required[key] = int(stamp.spec[spec_key])
+    for key, expected in required.items():
+        if record.get(key) != expected:
+            raise ValueError(f"Slider {key} does not match the winning formulation/model")
+    identity = record.get("model_identity")
+    if not isinstance(identity, dict) or not identity:
+        raise ValueError("Slider is missing its base model_identity")
+    if model_identity is not None and identity != model_identity:
+        raise ValueError("Slider was trained on different base model weights")
+    if bool(identity.get("dummy")) != bool(record.get("dummy")):
+        raise ValueError("Slider model_identity and dummy provenance disagree")
+    if record.get("training_game") == "conditional-pg09-v1":
+        _validate_game_signature(record)
+    elif "training_game" in record:
+        raise ValueError("Unknown slider training_game")
+    return record
+
+
+def _validate_game_signature(record):
+    from yue2.integration import AUDIO_PIN
+
+    signature = record.get("game_signature")
+    if not isinstance(signature, dict) or not signature:
+        raise ValueError("Conditional PG09 slider is missing its game_signature")
+    expected = {
+        "pg_version": "0.9.0", "objective": "g_adv+public_prior;d_adv+public_penalty",
+        "response_domain": "continuous_vector", "generator_arm": "routed_particle_gan",
+    }
+    if any(signature.get(key) != value for key, value in expected.items()):
+        raise ValueError("Conditional PG09 version, objective or response signature differs")
+    backend = signature.get("backend")
+    if not isinstance(backend, dict) or not isinstance(backend.get("model_identity"), dict):
+        raise ValueError("Conditional PG09 backend signature is missing")
+    binding = backend["model_identity"]
+    if binding.get("base") != record["model_identity"]:
+        raise ValueError("Conditional PG09 base identity differs from its signature")
+    dependencies = record.get("integration_dependencies")
+    if not isinstance(dependencies, dict) or binding.get("integration_dependencies") != dependencies:
+        raise ValueError("Conditional PG09 integration source signature differs")
+    for family, commit in (("audio", AUDIO_PIN), ("core", CORE_PIN)):
+        dependency = dependencies.get(family)
+        if not isinstance(dependency, dict) or dependency.get("commit") != commit or not dependency.get("sources"):
+            raise ValueError("Conditional PG09 integration source pin differs")
+    if (backend.get("family") != "yue2_native_ar" or backend.get("student_conditioning") != "neutral"
+            or backend.get("trained_scales") != [1.0]):
+        raise ValueError("Conditional PG09 conditioning or trained scales differ")
+    if record.get("training_weights") != "active" or record.get("ema") is not False:
+        raise ValueError("Conditional PG09 inference requires the active training weights")
+    recipe = signature.get("recipe")
+    if not isinstance(recipe, dict) or recipe.get("name") != record.get("training_recipe"):
+        raise ValueError("Conditional PG09 training recipe differs from its signature")
+
+
+def validate_checkpoint(path, stamp, *, model=None, allow_dummy=False, model_identity=None):
+    """Read and validate the same tensor payload for the CLI and Comfy gate."""
+    record = validate_record(
+        read_record(path), stamp, allow_dummy=allow_dummy, model_identity=model_identity
+    )
+    if model is not None:
+        if not record.get("dummy") and model_identity is None:
+            raise ValueError("Loading a live slider requires the actual base model_identity")
+        if record.get("architecture") != architecture_of(model):
+            raise ValueError("Slider architecture does not match this YuE2 model")
+        if record.get("targets") != list(attention_targets(model)):
+            raise ValueError("Slider target list does not match YuE2 AR attention")
+        expected = _expected_shapes(model, stamp)
+    else:
+        expected = _record_shapes(record, stamp)
+    state = load_file(str(path), device="cpu")
+    if set(state) != set(expected) or any(tuple(state[key].shape) != shape for key, shape in expected.items()):
+        raise ValueError("Incomplete or incompatible YuE2 slider tensors")
+    if any(not tensor.is_floating_point() or not torch.isfinite(tensor).all() for tensor in state.values()):
+        raise ValueError("Non-finite or non-floating YuE2 slider weights")
+    alpha = float(stamp.spec["adapter_alpha"])
+    if any(float(state[key]) != alpha for key in state if key.endswith(".alpha")):
+        raise ValueError("Slider alpha does not match the winning formulation")
+    return record, state
+
+
+def _record_shapes(record, stamp):
+    """Native AR shapes without constructing or loading a base model."""
+    architecture = record.get("architecture")
+    keys = ("hidden_size", "num_hidden_layers", "num_attention_heads", "num_key_value_heads", "head_dim")
+    if not isinstance(architecture, dict) or any(
+        type(architecture.get(key)) is not int or architecture[key] < 1 for key in keys
+    ):
+        raise ValueError("Slider is missing a valid YuE2 architecture")
+    hidden, layers, heads, kv_heads, head_dim = (architecture[key] for key in keys)
+    if hidden != heads * head_dim or heads % kv_heads:
+        raise ValueError("Slider YuE2 attention dimensions disagree")
+    targets = [f"model.layers.{index}.self_attn.{name}"
+               for index in range(layers) for name in ("q_proj", "k_proj", "v_proj", "o_proj")]
+    if record.get("targets") != targets:
+        raise ValueError("Slider target list does not match YuE2 AR attention")
+    rank = int(stamp.spec["adapter_rank"])
+    bridge = stamp.bridge().state_dict()
+    expected = {"particles": (int(stamp.spec["parts"]), int(stamp.spec["particle_dim"]))}
+    for path in targets:
+        prefix = "adapters." + path.replace(".", "-")
+        output = kv_heads * head_dim if path.endswith(("k_proj", "v_proj")) else hidden
+        expected[prefix + ".lora_down.weight"] = (rank, hidden)
+        expected[prefix + ".lora_up.weight"] = (output, rank)
+        expected[prefix + ".alpha"] = ()
+        expected.update({f"{prefix}.bridge.{key}": tuple(value.shape) for key, value in bridge.items()})
+    return expected
 
 
 def _expected_shapes(model, stamp) -> dict[str, tuple[int, ...]]:
