@@ -1,5 +1,5 @@
 # Female voice. The filename keeps the historical UNI16 prompt card.
-# This trainer does not run the UNI16 game; it locks winning_formulation().
+# Training uses ConditionalPG09; winning_formulation() supplies adapter geometry.
 name: female-yue2
 prompts_file: configs/yue2/prompts-yue2-female.yaml
 model_id: m-a-p/YuE2-3B

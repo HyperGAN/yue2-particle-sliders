@@ -1,0 +1,53 @@
+usage: train_yue2.py [-h] [--config_file CONFIG_FILE] [--resume RESUME]
+                     [--until UNTIL] [--preset {bispf,bispf_optimized}]
+                     [--sampling {balanced,replacement}]
+                     [--pg_source_profile {release,alz-continuous-v1}]
+                     [--penalty_input_domain {auto,continuous}] [--name NAME]
+                     [--prompts_file PROMPTS_FILE] [--model_id MODEL_ID]
+                     [--vae_id VAE_ID] [--revision REVISION]
+                     [--cache_dir CACHE_DIR] [--save_dir SAVE_DIR]
+                     [--steps STEPS] [--save_every SAVE_EVERY] [--seed SEED]
+                     [--device DEVICE] [--allow_hub] [--g_lr G_LR]
+                     [--d_lr D_LR] [--particle_lr PARTICLE_LR]
+                     [--adv_batch ADV_BATCH] [--sample_seeds SAMPLE_SEEDS]
+                     [--history_tokens HISTORY_TOKENS]
+                     [--seedbank_sources SEEDBANK_SOURCES] [--dummy]
+                     [--print_card]
+
+Train a routed-particle slider on m-a-p/YuE2-3B. ConditionalPG09 trains the
+public GAN-only recipe; winning_formulation() supplies adapter geometry.
+--dummy does not download Hub weights.
+
+options:
+  -h, --help            show this help message and exit
+  --config_file CONFIG_FILE
+  --resume RESUME       Full training checkpoint; inference weights cannot
+                        resume (default: None)
+  --until UNTIL         Pause after this update, retaining the --steps recipe
+                        horizon (default: None)
+  --preset {bispf,bispf_optimized}
+  --sampling {balanced,replacement}
+  --pg_source_profile {release,alz-continuous-v1}
+  --penalty_input_domain {auto,continuous}
+  --name NAME
+  --prompts_file PROMPTS_FILE
+  --model_id MODEL_ID
+  --vae_id VAE_ID
+  --revision REVISION
+  --cache_dir CACHE_DIR
+  --save_dir SAVE_DIR
+  --steps STEPS
+  --save_every SAVE_EVERY
+  --seed SEED
+  --device DEVICE
+  --allow_hub
+  --g_lr G_LR
+  --d_lr D_LR
+  --particle_lr PARTICLE_LR
+  --adv_batch ADV_BATCH
+  --sample_seeds SAMPLE_SEEDS
+  --history_tokens HISTORY_TOKENS
+  --seedbank_sources SEEDBANK_SOURCES
+  --dummy               CPU stand-in, no Hub weights (default: False)
+  --print_card          print the locked formulation card and exit (default:
+                        False)

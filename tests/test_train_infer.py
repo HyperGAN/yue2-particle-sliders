@@ -222,8 +222,8 @@ def test_penalty_step_stays_finite(tmp_path: Path):
         for line in (tmp_path / "run" / "cap-step_train.jsonl").read_text(encoding="utf-8").splitlines()
     ]
     assert len(rows) == 4
-    assert rows[-1]["penalty_applied"] is True
-    assert math_isfinite(rows[-1]["penalty"])
+    assert all(row["d_pen"] > 0 for row in rows)
+    assert all(math_isfinite(row["d_pen"]) for row in rows)
 
 
 def math_isfinite(value: float) -> bool:
