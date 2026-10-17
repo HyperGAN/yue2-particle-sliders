@@ -166,12 +166,40 @@ def test_old_pg090_full_checkpoint_is_rejected_without_mutation(tmp_path, monkey
     assert not torch.cuda.is_initialized()
 
 
-def assert_invalid_optimizer_resume_is_transactional(tmp_path, monkeypatch, *, preset, optimizer_name, mutation):
+def install_sparse_clock_critic(monkeypatch):
+    from particle_sliders import pg09_audio
+
+    original_critic = pg09_audio.AudioResponseCritic
+
+    class CriticWithSparseParameter(original_critic):
+        def __init__(self, width, condition_width):
+            super().__init__(width, condition_width)
+            self.optional = torch.nn.Parameter(torch.ones(2))
+            self.register_buffer("optional_active", torch.tensor(False))
+
+        def forward(self, response, condition):
+            value = super().forward(response, condition)
+            if self.optional_active:
+                value = value + (response[:, :2] * self.optional).sum(dim=1)
+            return value
+
+    monkeypatch.setattr(pg09_audio, "AudioResponseCritic", CriticWithSparseParameter)
+
+
+def optimizer_identifier(packet, optimizer, parameter):
+    return next(key for saved, actual in zip(packet["param_groups"], optimizer.param_groups)
+                for key, owned in zip(saved["params"], actual["params"]) if owned is parameter)
+
+
+def assert_invalid_optimizer_resume_is_transactional(
+        tmp_path, monkeypatch, *, preset, optimizer_name, mutation, initial_steps=1, sparse_critic=False):
     from particle_sliders import ConditionalPG09
     from yue2.integration import configure_integration
     from yue2.train import parse_args, train
 
     configure_integration()
+    if sparse_critic:
+        install_sparse_clock_critic(monkeypatch)
     first, rejected = tmp_path / "first", tmp_path / "rejected"
 
     def arguments(destination, *extra):
@@ -183,20 +211,35 @@ def assert_invalid_optimizer_resume_is_transactional(tmp_path, monkeypatch, *, p
 
     def observe_initial_game(game):
         metrics = original_step(game)
+        if sparse_critic and game.completed_steps == 1:
+            game.critic.optional_active.fill_(True)
         initial_games.append(game)
         return metrics
 
     with monkeypatch.context() as initial_observer:
         initial_observer.setattr(ConditionalPG09, "step", observe_initial_game)
-        train(parse_args(arguments(first, "--until", "1")))
-    assert len(initial_games) == 1
+        train(parse_args(arguments(first, "--until", str(initial_steps))))
+    assert len(initial_games) == initial_steps
     checkpoint = first / "optimizer-gate_checkpoint.pt"
     original_checkpoint = checkpoint.read_bytes()
     packet = torch.load(checkpoint, map_location="cpu", weights_only=True)
-    assert packet["game"]["completed_steps"] == 1
+    assert packet["game"]["completed_steps"] == initial_steps
     histories = packet["game"][optimizer_name]["state"]
     changed = 0
-    if mutation in ("deleted-history", "emptied-history", "extra-history-field"):
+    if mutation in ("clock-zero", "clock-low", "clock-high"):
+        if sparse_critic:
+            source = initial_games[-1]
+            identifier = optimizer_identifier(
+                packet["game"]["opt_d"], source.opt_d, source.critic.optional,
+            )
+            assert histories[identifier]["step"].item() == 1
+        else:
+            identifier = next(key for key, history in histories.items() if history)
+            assert histories[identifier]["step"].item() == initial_steps
+        count = {"clock-zero": 0, "clock-low": initial_steps - 1, "clock-high": initial_steps + 1}[mutation]
+        histories[identifier]["step"].fill_(count)
+        changed = 1
+    elif mutation in ("deleted-history", "emptied-history", "extra-history-field"):
         identifier = next(key for key, history in histories.items() if history)
         if mutation == "deleted-history":
             del histories[identifier]
@@ -385,4 +428,62 @@ def test_honest_unused_critic_history_remains_valid_product_resume(tmp_path, mon
     assert actual["game"]["optimizer_history_schema"]["d"][unused] is None
     assert checkpoint.read_bytes() == original_checkpoint
     assert actual["game"]["completed_steps"] == 3
+    assert not torch.cuda.is_initialized()
+
+
+@pytest.mark.parametrize("mutation", ("clock-zero", "clock-low", "clock-high"))
+def test_resume_adam_generator_clock_matches_completed_steps_atomically(tmp_path, monkeypatch, mutation):
+    assert_invalid_optimizer_resume_is_transactional(
+        tmp_path, monkeypatch, preset="bispf", optimizer_name="opt_g", mutation=mutation, initial_steps=2,
+    )
+
+
+@pytest.mark.parametrize("mutation", ("clock-zero", "clock-high"))
+def test_resume_sparse_adam_critic_clock_bounds_reject_atomically(tmp_path, monkeypatch, mutation):
+    assert_invalid_optimizer_resume_is_transactional(
+        tmp_path, monkeypatch, preset="bispf", optimizer_name="opt_d", mutation=mutation,
+        initial_steps=2, sparse_critic=True,
+    )
+
+
+def test_sparse_adam_critic_clock_one_at_two_completed_steps_resumes_exactly(tmp_path, monkeypatch):
+    from particle_sliders import ConditionalPG09
+    from yue2.integration import configure_integration
+    from yue2.train import parse_args, train
+
+    configure_integration()
+    install_sparse_clock_critic(monkeypatch)
+    first, resumed, uninterrupted = [tmp_path / name for name in ("first", "resumed", "uninterrupted")]
+
+    def arguments(destination, *extra):
+        return ["--dummy", "--name", "sparse-clock", "--save_dir", str(destination),
+                "--steps", "3", "--save_every", "1", "--seed", "7", "--preset", "bispf", *extra]
+
+    original_step = ConditionalPG09.step
+    observed = []
+
+    def activate_after_first_update(game):
+        metrics = original_step(game)
+        if game.completed_steps == 1:
+            game.critic.optional_active.fill_(True)
+        observed.append(game)
+        return metrics
+
+    monkeypatch.setattr(ConditionalPG09, "step", activate_after_first_update)
+    train(parse_args(arguments(first, "--until", "2")))
+    source = observed[-1]
+    checkpoint = first / "sparse-clock_checkpoint.pt"
+    original_checkpoint = checkpoint.read_bytes()
+    packet = torch.load(checkpoint, map_location="cpu", weights_only=True)
+    optional = optimizer_identifier(packet["game"]["opt_d"], source.opt_d, source.critic.optional)
+    assert packet["game"]["completed_steps"] == 2
+    assert packet["game"]["opt_d"]["state"][optional]["step"].item() == 1
+    train(parse_args(arguments(resumed, "--resume", str(checkpoint))))
+    train(parse_args(arguments(uninterrupted)))
+    actual = torch.load(resumed / "sparse-clock_checkpoint.pt", map_location="cpu", weights_only=True)
+    expected = torch.load(uninterrupted / "sparse-clock_checkpoint.pt", map_location="cpu", weights_only=True)
+    equal_tree(actual, expected)
+    assert checkpoint.read_bytes() == original_checkpoint
+    assert actual["game"]["completed_steps"] == 3
+    assert actual["game"]["opt_d"]["state"][optional]["step"].item() == 2
     assert not torch.cuda.is_initialized()

@@ -1,7 +1,7 @@
 # Reproduce
 
 This draft uses installed `particle-sliders-core` **0.6.0** candidate commit
-`4be0b5b29d2e2c741431f468d71ba8a7c884b724` and released PG **0.9.1**.
+`cdfb80a76b882b4b73861b12f555263bd64ffeb7` and released PG **0.9.1**.
 `configs/yue2/shared-runtime.lock.json` binds the exact wheel hashes and installed
 shared Python/JSON bytes. The candidate is local and is not claimed as a public
 release. No guessed Git URL, shared checkout or source path variable is used.
@@ -17,7 +17,7 @@ python -m venv /path/to/new-environment
 
 | Artifact | SHA256 |
 |---|---|
-| `particle_sliders_core-0.6.0-py3-none-any.whl` | `2e7621c370e790f65702acf76cfa2f428b393cd3f863245aa26d8a76ff096ada` |
+| `particle_sliders_core-0.6.0-py3-none-any.whl` | `4abc83988fdeb6d7478de830e7ee8ec5d9bd99c20d52f89e4ce594d50dfd39a3` |
 | `particlegan-0.9.1-py3-none-any.whl` | `b01b7957169cb3de45887e22b4d525fd54071577e1de58089707cf05fe6992ec` |
 
 The runtime probe rejects different wheel identity, edited shared bytes, or a
@@ -71,3 +71,7 @@ remain separate audio-owner gates. Historical published samples do not qualify
 this PG 0.9.1 trainer's acoustic quality. Ada reviews exact heads before merge;
 isolated development, installation, CPU testing and draft updates precede that
 review.
+
+Current CDF qualification is a [narrow follow-up](docs/pg091-cdf-adoption.md).
+The earlier full-suite receipts remain explicitly scoped to the preceding
+`4be` wheel and product head; they are not reused as CDF test runs.

@@ -13,11 +13,11 @@ The legacy architecture recipe is `anneal-routed-particle-error-yue2-v1`.
 See [FORMULATION.md](FORMULATION.md).
 
 This draft uses the installed **0.6.0 candidate wheel** from commit
-`4be0b5b29d2e2c741431f468d71ba8a7c884b724`. The wheel SHA256, all installed
+`cdfb80a76b882b4b73861b12f555263bd64ffeb7`. The wheel SHA256, all installed
 shared Python/JSON hashes, and exact PG 0.9.1 wheel identity are locked in
 `configs/yue2/shared-runtime.lock.json`. No shared checkout is needed at runtime.
 This local candidate is not claimed as a public release. See
-[REPRODUCE.md](REPRODUCE.md) and [the wheel audit](docs/pg091-wheel-adoption.md).
+[REPRODUCE.md](REPRODUCE.md) and [the CDF follow-up](docs/pg091-cdf-adoption.md).
 
 Published weights and the listening gallery:
 [ntc-ai/yue2-concept-sliders](https://huggingface.co/ntc-ai/yue2-concept-sliders)

@@ -1,5 +1,10 @@
 # PG 0.9.1 installed wheel adoption
 
+Historical broad qualification of core `4be` at product
+`8d36956bf7e742cc001eb1cc45588ddbdee3ccc1`. The current
+[narrow CDF follow-up](pg091-cdf-adoption.md) has separate receipts; the results
+below remain scoped to `4be`.
+
 Qualified replacement candidate: `4be0b5b29d2e2c741431f468d71ba8a7c884b724`,
 wheel SHA256 `2e7621c370e790f65702acf76cfa2f428b393cd3f863245aa26d8a76ff096ada`.
 This is a proposed package candidate, pending Ada review and parent merge.

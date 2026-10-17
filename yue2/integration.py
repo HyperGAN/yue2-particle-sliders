@@ -14,7 +14,7 @@ import sys
 
 LOCK_PATH = Path(__file__).resolve().parents[1] / "configs/yue2/shared-runtime.lock.json"
 PG_VERSION = "0.9.1"
-CORE_PIN = "4be0b5b29d2e2c741431f468d71ba8a7c884b724"
+CORE_PIN = "cdfb80a76b882b4b73861b12f555263bd64ffeb7"
 
 
 def _distribution(record):

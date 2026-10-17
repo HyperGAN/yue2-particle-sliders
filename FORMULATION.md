@@ -4,7 +4,7 @@
 CLI, checkpoint files and Comfy integration for `m-a-p/YuE2-3B`.
 
 All training updates call installed `particle-sliders-core` 0.6.0 candidate
-`4be0b5b29d2e2c741431f468d71ba8a7c884b724`. Its wheel and installed source bytes
+`cdfb80a76b882b4b73861b12f555263bd64ffeb7`. Its wheel and installed source bytes
 are verified against `configs/yue2/shared-runtime.lock.json`. Audio rows,
 response adapter, critic, conditions and ownership/checkpoint wrappers come from
 `particle_sliders.pg09_audio` and `particle_sliders.pg09_backends` in that wheel.

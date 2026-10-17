@@ -8,7 +8,7 @@
   "weights_license": "CC BY-NC 4.0",
   "core": {
     "package": "particle-sliders-core",
-    "pin": "4be0b5b29d2e2c741431f468d71ba8a7c884b724",
+    "pin": "cdfb80a76b882b4b73861b12f555263bd64ffeb7",
     "requirement": "Exact installed candidate wheel; shared-runtime.lock.json"
   },
   "hub_recipe_name": "anneal-routed-particle-error-yue2-v1",
