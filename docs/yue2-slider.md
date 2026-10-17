@@ -3,7 +3,7 @@
 The product uses the single shared `ConditionalPG09` engine with public PG0.9
 GAN-only recipes. See [FORMULATION.md](../FORMULATION.md) for conditions,
 objectives, actual routed-bank ownership, source/domain and checkpoint contracts,
-and [REPRODUCE.md](../REPRODUCE.md) for explicit integration-only dependencies.
+and [REPRODUCE.md](../REPRODUCE.md) for exact installed wheel dependencies.
 
 AR attention `model.layers.*.self_attn.{q_proj,k_proj,v_proj,o_proj}` trains.
 NAR, frozen AR base weights and VAE remain unchanged. The positive teacher and

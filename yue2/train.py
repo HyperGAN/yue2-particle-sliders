@@ -55,8 +55,6 @@ def build_parser() -> argparse.ArgumentParser:
         ),
     )
     parser.add_argument("--config_file", type=Path, default=ROOT / "configs" / "yue2" / "config-yue2-metal.yaml")
-    parser.add_argument("--audio_source", type=Path, help="Exact integration/audio-pg09 source checkout")
-    parser.add_argument("--core_source", type=Path, help="Exact shared PG09 core source checkout")
     parser.add_argument("--resume", type=Path, help="Full training checkpoint; inference weights cannot resume")
     parser.add_argument("--until", type=int, help="Pause after this update, retaining the --steps recipe horizon")
     parser.add_argument("--preset", choices=("bispf", "bispf_optimized"), default="bispf_optimized")
@@ -90,7 +88,7 @@ def build_parser() -> argparse.ArgumentParser:
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = build_parser()
     initial, _ = parser.parse_known_args(argv)
-    dependency = configure_integration(initial.audio_source, initial.core_source)
+    dependency = configure_integration()
     if initial.config_file and not Path(initial.config_file).is_file():
         parser.error("config_file must exist")
     if initial.config_file and Path(initial.config_file).exists() and not initial.print_card:
@@ -104,8 +102,6 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         parser.set_defaults(**loaded)
     args = parser.parse_args(argv)
     args.dependency = dependency
-    args.audio_source = Path(dependency["audio"]["path"])
-    args.core_source = Path(dependency["core"]["path"])
     args.explicit_steps = _flag_set(sys.argv[1:] if argv is None else argv, "--steps")
     args.name = args.name or "metal-yue2-particles"
     args.model_id = args.model_id or MODEL_ID
@@ -234,7 +230,7 @@ def card_for(args: argparse.Namespace, stamp, locked: dict, *, rows: int) -> dic
 
 
 def prepare_bank(backend, adapter, rows, *, sample_seeds, history_tokens, seed):
-    from conceptmod.textsliders.pg09_audio import AudioRow
+    from particle_sliders.pg09_audio import AudioRow
 
     limit = int(getattr(backend.model.config, "max_position_embeddings", 10**9))
     total = len(rows) * int(sample_seeds)
@@ -275,7 +271,7 @@ def _atomic_save(packet, path):
 
 def train(args: argparse.Namespace) -> dict | Path:
     from particle_sliders import ConditionalPG09
-    from conceptmod.textsliders.pg09_audio import (
+    from particle_sliders.pg09_audio import (
         YuE2ARResponseAdapter, AudioResponseCritic, audio_conditions, require_audio_width,
     )
 

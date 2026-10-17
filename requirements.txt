@@ -1,13 +1,15 @@
-# Integration draft: these dependencies do not provision the shared source APIs.
-# Explicit local core/audio checkouts are verified by yue2.integration.
+# Integration draft: install the exact candidate wheel first; its hash is locked.
+# Installed wheel bytes and origins are verified by yue2.integration.
 PyYAML>=6
 pytest>=8
 safetensors>=0.4
 numpy>=1.26
 torch>=2.6,<3
-particlegan==0.9.0
+particlegan==0.9.1
 
 # Live YuE2 uses its own native environment and the separately reviewed
 # ALZ continuous-profile source overlay. Do not install a whole foreign
 # site-packages tree or the historical core pyproject dependency into it.
 # yue2-infer @ git+https://github.com/multimodal-art-projection/YuE.git@ef1936f2ee39fe8de486a0f47a481c95f8d4da87
+
+particle-sliders-core==0.6.0

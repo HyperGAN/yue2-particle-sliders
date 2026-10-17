@@ -19,8 +19,8 @@ from comfy_yue2 import validate_slider_file
 from yue2.backend import TinyYuE2, attention_targets
 from yue2.defaults import CORE_PIN, MODEL_ID, PUBLISHED_FORMAT
 from yue2.infer import _dummy_compare, parse_args
-from yue2.integration import AUDIO_PIN
-from yue2.slider import ParticleSlider, RoutedProjection, read_record
+from yue2.integration import PG_VERSION, configure_integration
+from yue2.slider import ParticleSlider, RoutedProjection, read_record, validate_checkpoint
 from yue2.stamp import locked_stamp
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -58,6 +58,44 @@ def _rewrite(path, *, updates=None, remove=(), tensors=None):
         record.pop(key, None)
     save_file(load_file(str(path)) if tensors is None else tensors, str(path),
               metadata={"yue2_particle_sliders": json.dumps(record)})
+
+
+@pytest.mark.parametrize("with_model", [False, True], ids=["comfy", "live-model"])
+@pytest.mark.parametrize("payload", ["valid", "incomplete", "nonfinite", "wrong-alpha"])
+def test_checkpoint_validation_preserves_rng_and_unattached_base(tmp_path, with_model, payload):
+    stamp, path, _base = _checkpoint(tmp_path)
+    if payload != "valid":
+        state = load_file(str(path))
+        if payload == "incomplete":
+            state.pop("particles")
+        elif payload == "nonfinite":
+            state["particles"][0, 0] = float("nan")
+        else:
+            key = next(key for key in state if key.endswith(".alpha"))
+            state[key].zero_()
+        _rewrite(path, tensors=state)
+    model = TinyYuE2() if with_model else None
+    if model is not None:
+        model.config.num_key_value_heads = model.config.num_attention_heads
+        before = {name: value.clone() for name, value in model.state_dict().items()}
+    rng = torch.get_rng_state().clone()
+    if payload == "valid":
+        if with_model:
+            validate_checkpoint(path, stamp, model=model, model_identity=BASE_IDENTITY)
+        else:
+            validate_slider_file(path, stamp)
+    else:
+        with pytest.raises(ValueError):
+            if with_model:
+                ParticleSlider.load(model, path, stamp, model_identity=BASE_IDENTITY)
+            else:
+                validate_slider_file(path, stamp)
+    assert torch.equal(torch.get_rng_state(), rng)
+    if model is not None:
+        assert all(not isinstance(getattr(layer.forward, "__self__", None), RoutedProjection)
+                   for layer in attention_targets(model).values())
+        assert all(parameter.requires_grad for parameter in model.parameters())
+        assert all(torch.equal(before[name], value) for name, value in model.state_dict().items())
 
 
 @pytest.mark.parametrize("key,value", [
@@ -144,12 +182,11 @@ def test_valid_published_checkpoint_keeps_legacy_recipe_provenance(tmp_path):
 @pytest.mark.parametrize("fault", ["missing", "version", "objective", "weights", "base", "source"])
 def test_conditional_export_signature_cannot_claim_another_game(tmp_path, fault):
     stamp, path, _base = _checkpoint(tmp_path)
-    dependencies = {family: {"commit": commit, "sources": {"source.py": "recorded-sha256"}}
-                    for family, commit in (("audio", AUDIO_PIN), ("core", CORE_PIN))}
+    dependencies = configure_integration()
     signature = dict(
-        pg_version="0.9.0", objective="g_adv+public_prior;d_adv+public_penalty",
+        pg_version=PG_VERSION, objective="g_adv+public_prior;d_adv+public_penalty",
         response_domain="continuous_vector", generator_arm="routed_particle_gan",
-        recipe={"name": "bispf_optimized"},
+        recipe={"name": "bispf_optimized", "training_precision": "float32"},
         backend=dict(family="yue2_native_ar", student_conditioning="neutral", trained_scales=[1.0],
                      model_identity=dict(base=BASE_IDENTITY, integration_dependencies=deepcopy(dependencies))),
     )

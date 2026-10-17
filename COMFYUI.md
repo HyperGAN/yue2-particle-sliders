@@ -2,11 +2,10 @@
 
 `comfy_yue2.py` is the YuE2 slider gate for ComfyUI. Drop this repo in `ComfyUI/custom_nodes` and restart Comfy. The node is **YuE2 Particle Slider (ntc-ai)** in category `NTC/YuE2`.
 
-This integration draft needs the exact source dependencies from
-[REPRODUCE.md](REPRODUCE.md). Set `YUE2_CORE_SOURCE` and `YUE2_AUDIO_SOURCE` in
-the Comfy environment. The node verifies the same commits, source bytes and
-module origins as the CLI before resolving the architecture stamp; it refuses
-an already imported core from a different source.
+Comfy uses the exact installed candidate wheel from
+[REPRODUCE.md](REPRODUCE.md). The node verifies wheel identity, shared source
+bytes and imported package origins before resolving the architecture stamp.
+No shared source checkout or `YUE2_*_SOURCE` variables are needed.
 
 It does not vendor the particle game, and it does not download `m-a-p/YuE2-3B`. Point `weights_path` at a local `.safetensors` slider. Strength uses the stamped range `[0, 1]`. Strength 0 needs no file and means the frozen base model. Any other strength checks the checkpoint recipe against `winning_formulation()` (`anneal-routed-particle-error-yue2-v1` on this core pin) and refuses dummy exports and foreign tensors.
 

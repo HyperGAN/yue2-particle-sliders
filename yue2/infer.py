@@ -36,8 +36,6 @@ def build_parser() -> argparse.ArgumentParser:
         ),
     )
     parser.add_argument("--weights", type=Path)
-    parser.add_argument("--audio_source", type=Path, help="Exact shared audio integration source checkout")
-    parser.add_argument("--core_source", type=Path, help="Exact shared PG09 core source checkout")
     parser.add_argument("--style", default=None, help="Neutral sound description")
     parser.add_argument("--lyrics_file", type=Path)
     parser.add_argument("--output_dir", type=Path)
@@ -82,7 +80,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         parser.error("a live render needs --style and --lyrics_file")
     if args.abc_file is not None:
         parser.error("the qualified cot-off protocol does not accept an ABC score")
-    args.dependency = configure_integration(args.audio_source, args.core_source)
+    args.dependency = configure_integration()
     return args
 
 

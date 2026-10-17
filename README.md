@@ -6,17 +6,18 @@ with the VAE at [m-a-p/YuE2-Vae](https://huggingface.co/m-a-p/YuE2-Vae).
 the Comfy gate, YuE2 train and infer, prompt cards, and sample cards.
 
 Training now calls `particle_sliders.ConditionalPG09` for the public ParticleGAN
-**0.9.0** GAN-only recipe. `winning_formulation()` supplies the existing routed
+**0.9.1** GAN-only recipe. `winning_formulation()` supplies the existing routed
 adapter geometry, including `stamp.bridge()`; it does not select the training
 objective. This repo does not vendor `RoutedMLP`, `GradRegularizer`, or ParticleGAN.
 The legacy architecture recipe is `anneal-routed-particle-error-yue2-v1`.
 See [FORMULATION.md](FORMULATION.md).
 
-This is an **integration-only source dependency** draft: core
-`3e94b13eb5d6cd1ceee3f018f019a68603f35696` and internal audio adapters
-`9262a930cd351459e93ac33cc542fa379c12fe52` must be supplied explicitly.
-These local integration commits are not claimed as published package releases.
-[REPRODUCE.md](REPRODUCE.md) gives the exact dependency contract.
+This draft uses the installed **0.6.0 candidate wheel** from commit
+`4be0b5b29d2e2c741431f468d71ba8a7c884b724`. The wheel SHA256, all installed
+shared Python/JSON hashes, and exact PG 0.9.1 wheel identity are locked in
+`configs/yue2/shared-runtime.lock.json`. No shared checkout is needed at runtime.
+This local candidate is not claimed as a public release. See
+[REPRODUCE.md](REPRODUCE.md) and [the wheel audit](docs/pg091-wheel-adoption.md).
 
 Published weights and the listening gallery:
 [ntc-ai/yue2-concept-sliders](https://huggingface.co/ntc-ai/yue2-concept-sliders)
@@ -41,11 +42,9 @@ links above are the original particles. Distillation notes stay on the
 
 ## Train and render
 
-CPU checks need a PG 0.9 environment and the two exact local source checkouts:
+CPU checks need a fresh environment with the exact locked PG 0.9.1 and core wheels:
 
 ```bash
-export YUE2_CORE_SOURCE=/path/to/core-at-3e94b13
-export YUE2_AUDIO_SOURCE=/path/to/audio-at-9262a93
 python scripts/train_yue2.py --dummy --steps 3 --until 1 --save_dir /tmp/yue2-first
 python scripts/train_yue2.py --dummy --steps 3 \
   --resume /tmp/yue2-first/metal-yue2-particles_checkpoint.pt --save_dir /tmp/yue2-resumed
@@ -78,7 +77,7 @@ audio inside the graph. See [COMFYUI.md](COMFYUI.md).
 | `scripts/train_yue2.py`, `scripts/infer_yue2.py` | CLI entrypoints. Training calls `ConditionalPG09`; `winning_formulation()` supplies adapter geometry. |
 | `configs/yue2/` | Run configs, prompts, `model.lock.json`, sample cards |
 | `comfy_yue2.py` | Comfy gate |
-| `particle-sliders-core` @ `3e94b13` | Shared PG09 engine and routed bridge; explicit source dependency. |
+| `particle-sliders-core` 0.6.0 candidate | Installed shared PG09 engine, routed bridge and audio adapters. |
 
 Formulation exams stay in [HyperGAN/particle-sliders](https://github.com/HyperGAN/particle-sliders).
 `V2_SPEC` is `analysis/slider2d/yue2_gmix_v2_exam.py` there.

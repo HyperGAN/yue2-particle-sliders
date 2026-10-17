@@ -3,15 +3,18 @@
 `yue2-particle-sliders` owns YuE2 token packing, prompt cards, AR adapter wiring,
 CLI, checkpoint files and Comfy integration for `m-a-p/YuE2-3B`.
 
-All training updates call the shared `ConditionalPG09` from exact local `particle-sliders-core` source
-`3e94b13eb5d6cd1ceee3f018f019a68603f35696`. The existing audio response adapter,
-critic, conditions and ownership/checkpoint wrappers come from exact local audio
-integration `9262a930cd351459e93ac33cc542fa379c12fe52`. These are internal source
-APIs pending a separately reviewed packaged release. Do not fork them here.
+All training updates call installed `particle-sliders-core` 0.6.0 candidate
+`4be0b5b29d2e2c741431f468d71ba8a7c884b724`. Its wheel and installed source bytes
+are verified against `configs/yue2/shared-runtime.lock.json`. Audio rows,
+response adapter, critic, conditions and ownership/checkpoint wrappers come from
+`particle_sliders.pg09_audio` and `particle_sliders.pg09_backends` in that wheel.
+There is no `conceptmod` checkout dependency. Do not fork these implementations.
 
-The public ParticleGAN **0.9.0** `bispf` or `bispf_optimized` recipe owns D/G
+The public ParticleGAN **0.9.1** `bispf` or `bispf_optimized` recipe owns D/G
 losses, public prior regularization, penalties, optimizers, rate policy, balanced
 or explicitly selected replacement sampling, RNG streams and checkpoint restore.
+The caller-owned game explicitly uses `training_precision="float32"`; installing
+PG 0.9.1 does not qualify upstream BF16/channels-last policies for this host.
 Generator loss is `g_adv + public_prior`; discriminator loss is
 `d_adv + public_penalty`. No MSE, reconstruction, distillation, extra VIC term,
 EMA shadow, or legacy local update loop participates.

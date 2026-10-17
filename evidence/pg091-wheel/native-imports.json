@@ -1,0 +1,18 @@
+{
+  "scope": "Native class/bootstrap only; candidate core is not installed in this preserved native environment; no model/audio",
+  "python": "/ml2/sliders/.venv-yue2-retrain/bin/python",
+  "torch": "2.10.0+cu128",
+  "native": "/ml2/sliders/.venv-yue2-retrain/lib/python3.11/site-packages/yue2/__init__.py",
+  "product_backend": "/ml2/codex-storage/future-workspaces/2026-10-17/task-11/yue2-audit/yue2/backend.py",
+  "model": "/ml2/sliders/.venv-yue2-retrain/lib/python3.11/site-packages/yue2/modeling_yue2.py",
+  "config": "/ml2/sliders/.venv-yue2-retrain/lib/python3.11/site-packages/yue2/modeling_yue2.py",
+  "runtime_distribution": {
+    "url": "https://github.com/multimodal-art-projection/YuE.git",
+    "vcs_info": {
+      "commit_id": "ef1936f2ee39fe8de486a0f47a481c95f8d4da87",
+      "requested_revision": "ef1936f2ee39fe8de486a0f47a481c95f8d4da87",
+      "vcs": "git"
+    }
+  },
+  "cuda_initialized": false
+}

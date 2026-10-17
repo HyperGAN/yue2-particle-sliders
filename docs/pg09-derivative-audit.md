@@ -1,5 +1,8 @@
 # YuE2 derivative PG 0.9 audit
 
+Historical receipt for source-based head `9390a4b4000f4dd4cd3cd165aab93b4de4d2772a`.
+Current installed-wheel work is documented in [PG 0.9.1 wheel adoption](pg091-wheel-adoption.md).
+
 Repository identity: `https://github.com/HyperGAN/yue2-particle-sliders.git`.
 Audit base: clean `main` at `b33794d81b92c125891a011531f55554d65e2082`.
 Work is isolated on `audit/shared-pg09-20261017`. No active owner checkout,

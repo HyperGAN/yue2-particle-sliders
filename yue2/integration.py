@@ -1,74 +1,61 @@
-"""Explicit, immutable source dependencies for the integration-only PG 0.9 CLI.
+"""Verify the exact installed candidate wheel; never add shared source paths.
 
-These internal adapters are not a published wheel API. Never search for a
-checkout, install packages, or fall back to another branch here.
+The local candidate is not a published release. Its bytes are pinned in the
+product lock. Installing or selecting packages belongs to environment setup.
 """
 from __future__ import annotations
 
 import hashlib
 import importlib
-import os
+from importlib import metadata
+import json
 from pathlib import Path
-import subprocess
 import sys
 
-AUDIO_PIN = "9262a930cd351459e93ac33cc542fa379c12fe52"
-CORE_PIN = "3e94b13eb5d6cd1ceee3f018f019a68603f35696"
+LOCK_PATH = Path(__file__).resolve().parents[1] / "configs/yue2/shared-runtime.lock.json"
+PG_VERSION = "0.9.1"
+CORE_PIN = "4be0b5b29d2e2c741431f468d71ba8a7c884b724"
 
 
-def _source(root, pin, files):
-    if not root:
-        raise ValueError("PG09 integration requires explicit --audio_source and --core_source checkouts (or YUE2_AUDIO_SOURCE/YUE2_CORE_SOURCE)")
-    root = Path(root).resolve(strict=True)
-    head = subprocess.check_output(["git", "-C", str(root), "rev-parse", "HEAD"], text=True).strip()
-    if head != pin:
-        raise ValueError(f"integration source {root} is {head}; required {pin}")
-    digests = {}
-    for relative in files:
-        path = root / relative
-        committed = subprocess.check_output(["git", "-C", str(root), "show", f"{pin}:{relative}"])
-        if path.read_bytes() != committed:
-            raise ValueError(f"integration source differs from pinned commit: {path}")
-        digests[relative] = hashlib.sha256(committed).hexdigest()
-    return root, dict(path=str(root), commit=head, sources=digests)
+def _distribution(record):
+    distribution = metadata.distribution(record["name"])
+    if distribution.version != record["version"]:
+        raise ValueError(f"{record['name']} version differs from the pinned wheel")
+    direct = json.loads(distribution.read_text("direct_url.json") or "{}")
+    hashes = direct.get("archive_info", {}).get("hashes", {})
+    if hashes.get("sha256") != record["wheel_sha256"]:
+        raise ValueError(f"{record['name']} wheel identity differs; install the exact locked wheel")
+    return distribution
 
 
-def configure_integration(audio_source=None, core_source=None):
-    """Verify exact source bytes before importing the sole shared update engine."""
-    audio, audio_id = _source(audio_source or os.environ.get("YUE2_AUDIO_SOURCE"), AUDIO_PIN, (
-        "conceptmod/__init__.py", "conceptmod/textsliders/__init__.py",
-        "conceptmod/textsliders/pg09_audio.py", "conceptmod/textsliders/pg09_backends.py",
-    ))
-    core_root = core_source or os.environ.get("YUE2_CORE_SOURCE")
-    core_files = (
-        "packages/particle-sliders-core/src/particle_sliders/__init__.py",
-        "packages/particle-sliders-core/src/particle_sliders/pg09.py",
-        "packages/particle-sliders-core/src/particle_sliders/pg09_release_sources.json",
-        "packages/particle-sliders-core/src/particle_sliders/pg09_continuous_profile.json",
-        "packages/particle-sliders-core/src/particle_sliders/formulation.py",
-        "packages/particle-sliders-core/src/particle_sliders/reference.py",
-    )
-    if core_root:
-        package_root = Path(core_root).resolve() / "packages/particle-sliders-core/src/particle_sliders"
-        core_files = tuple(str(p.relative_to(Path(core_root).resolve())) for p in sorted(package_root.rglob("*"))
-                           if p.is_file() and p.suffix in (".py", ".json"))
-    core, core_id = _source(core_root, CORE_PIN, core_files)
-    core_src = core / "packages/particle-sliders-core/src"
-    expected = {"particle_sliders": core_src / "particle_sliders/__init__.py",
-                "particle_sliders.pg09": core_src / "particle_sliders/pg09.py",
-                "conceptmod": audio / "conceptmod/__init__.py",
-                "conceptmod.textsliders": audio / "conceptmod/textsliders/__init__.py",
-                "conceptmod.textsliders.pg09_audio": audio / "conceptmod/textsliders/pg09_audio.py",
-                "conceptmod.textsliders.pg09_backends": audio / "conceptmod/textsliders/pg09_backends.py"}
-    for name, path in expected.items():
-        module = sys.modules.get(name)
-        if module is not None and Path(module.__file__).resolve() != path:
-            raise ValueError(f"already imported {name} from an unqualified source: {module.__file__}")
-    for path in (str(audio), str(core_src)):
-        if path not in sys.path:
-            sys.path.insert(0, path)
-    for name, path in expected.items():
+def configure_integration():
+    """Verify installed bytes and origins before importing the shared API.
+
+    PG's separately declared domain profile remains validated by the shared
+    pre-forward gate. No checkout discovery, path mutation or package fallback.
+    """
+    lock = json.loads(LOCK_PATH.read_text())
+    core, pg = lock["core"], lock["particlegan"]
+    if core["commit"] != CORE_PIN or pg["version"] != PG_VERSION:
+        raise ValueError("Product runtime lock and code pins disagree")
+    distribution = _distribution(core)
+    _distribution(pg)
+    root = Path(distribution.locate_file("")).resolve()
+    package = root / "particle_sliders"
+    actual = {str(p.relative_to(root)): hashlib.sha256(p.read_bytes()).hexdigest()
+              for p in sorted(package.rglob("*")) if p.is_file() and p.suffix in (".py", ".json")}
+    if actual != core["sources"]:
+        raise ValueError("Installed shared package sources differ from the pinned wheel")
+    for name, module in tuple(sys.modules.items()):
+        if name == "particle_sliders" or name.startswith("particle_sliders."):
+            source = getattr(module, "__file__", None)
+            if source is None or not Path(source).resolve().is_relative_to(package):
+                raise ValueError(f"already imported {name} from an unqualified source: {source}")
+    for name in ("particle_sliders", "particle_sliders.pg09", "particle_sliders.pg09_audio",
+                 "particle_sliders.pg09_backends"):
         module = importlib.import_module(name)
-        if Path(module.__file__).resolve() != path:
-            raise ValueError(f"import origin differs from pinned integration source: {name}")
-    return dict(audio=audio_id, core=core_id)
+        source = Path(module.__file__).resolve()
+        relative = str(source.relative_to(root)) if source.is_relative_to(root) else None
+        if relative not in actual:
+            raise ValueError(f"import origin differs from the installed candidate wheel: {name}")
+    return dict(core=dict(core, path=str(package)), particlegan=pg, cohort=lock["cohort"])

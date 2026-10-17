@@ -210,13 +210,13 @@ def validate_record(record, stamp, *, allow_dummy=False, model_identity=None):
 
 
 def _validate_game_signature(record):
-    from yue2.integration import AUDIO_PIN
+    from yue2.integration import LOCK_PATH, PG_VERSION
 
     signature = record.get("game_signature")
     if not isinstance(signature, dict) or not signature:
         raise ValueError("Conditional PG09 slider is missing its game_signature")
     expected = {
-        "pg_version": "0.9.0", "objective": "g_adv+public_prior;d_adv+public_penalty",
+        "pg_version": PG_VERSION, "objective": "g_adv+public_prior;d_adv+public_penalty",
         "response_domain": "continuous_vector", "generator_arm": "routed_particle_gan",
     }
     if any(signature.get(key) != value for key, value in expected.items()):
@@ -230,17 +230,21 @@ def _validate_game_signature(record):
     dependencies = record.get("integration_dependencies")
     if not isinstance(dependencies, dict) or binding.get("integration_dependencies") != dependencies:
         raise ValueError("Conditional PG09 integration source signature differs")
-    for family, commit in (("audio", AUDIO_PIN), ("core", CORE_PIN)):
-        dependency = dependencies.get(family)
-        if not isinstance(dependency, dict) or dependency.get("commit") != commit or not dependency.get("sources"):
-            raise ValueError("Conditional PG09 integration source pin differs")
+    lock = json.loads(LOCK_PATH.read_text())
+    core = dependencies.get("core")
+    pg = dependencies.get("particlegan")
+    if (not isinstance(core, dict) or core.get("commit") != CORE_PIN or not core.get("sources")
+            or not isinstance(pg, dict) or pg != lock["particlegan"]
+            or any(core.get(key) != value for key, value in lock["core"].items())):
+        raise ValueError("Conditional PG09 installed package lineage differs")
     if (backend.get("family") != "yue2_native_ar" or backend.get("student_conditioning") != "neutral"
             or backend.get("trained_scales") != [1.0]):
         raise ValueError("Conditional PG09 conditioning or trained scales differ")
     if record.get("training_weights") != "active" or record.get("ema") is not False:
         raise ValueError("Conditional PG09 inference requires the active training weights")
     recipe = signature.get("recipe")
-    if not isinstance(recipe, dict) or recipe.get("name") != record.get("training_recipe"):
+    if (not isinstance(recipe, dict) or recipe.get("name") != record.get("training_recipe")
+            or recipe.get("training_precision") != "float32"):
         raise ValueError("Conditional PG09 training recipe differs from its signature")
 
 
@@ -286,7 +290,7 @@ def _record_shapes(record, stamp):
     if record.get("targets") != targets:
         raise ValueError("Slider target list does not match YuE2 AR attention")
     rank = int(stamp.spec["adapter_rank"])
-    bridge = stamp.bridge().state_dict()
+    bridge = _bridge_shapes(stamp)
     expected = {"particles": (int(stamp.spec["parts"]), int(stamp.spec["particle_dim"]))}
     for path in targets:
         prefix = "adapters." + path.replace(".", "-")
@@ -294,13 +298,20 @@ def _record_shapes(record, stamp):
         expected[prefix + ".lora_down.weight"] = (rank, hidden)
         expected[prefix + ".lora_up.weight"] = (output, rank)
         expected[prefix + ".alpha"] = ()
-        expected.update({f"{prefix}.bridge.{key}": tuple(value.shape) for key, value in bridge.items()})
+        expected.update({f"{prefix}.bridge.{key}": shape for key, shape in bridge.items()})
     return expected
+
+
+def _bridge_shapes(stamp) -> dict[str, tuple[int, ...]]:
+    # The shared bridge initializes random weights. A schema probe must leave
+    # the caller's CPU RNG untouched, including when checkpoint validation fails.
+    with torch.random.fork_rng(devices=[]):
+        return {key: tuple(tensor.shape) for key, tensor in stamp.bridge().state_dict().items()}
 
 
 def _expected_shapes(model, stamp) -> dict[str, tuple[int, ...]]:
     """Shapes from the live stamp bridge, not a copied MLP width table."""
-    probe = stamp.bridge().state_dict()
+    probe = _bridge_shapes(stamp)
     rank = int(stamp.spec["adapter_rank"])
     expected: dict[str, tuple[int, ...]] = {
         "particles": (int(stamp.spec["parts"]), int(stamp.spec["particle_dim"]))
@@ -310,6 +321,6 @@ def _expected_shapes(model, stamp) -> dict[str, tuple[int, ...]]:
         expected[prefix + ".lora_down.weight"] = (rank, module.in_features)
         expected[prefix + ".lora_up.weight"] = (module.out_features, rank)
         expected[prefix + ".alpha"] = ()
-        for key, tensor in probe.items():
-            expected[f"{prefix}.bridge.{key}"] = tuple(tensor.shape)
+        for key, shape in probe.items():
+            expected[f"{prefix}.bridge.{key}"] = shape
     return expected

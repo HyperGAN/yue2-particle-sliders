@@ -1,7 +1,7 @@
-"""CPU entry-point checks for the pinned shared ParticleGAN 0.9 integration.
+"""CPU entry-point checks using the installed shared package and PG 0.9.1.
 
-Set YUE2_AUDIO_SOURCE and YUE2_CORE_SOURCE to the exact reviewed checkouts.
-No pretrained model, native audio runtime, or CUDA device is used here.
+No source checkout paths, pretrained models, native audio runtime, or CUDA
+device are required.
 """
 
 from __future__ import annotations
@@ -42,28 +42,29 @@ def equal_tree(actual, expected):
 
 
 @pytest.fixture
-def sources(monkeypatch):
+def installed_package(monkeypatch):
     from yue2.integration import configure_integration
 
-    audio = os.environ.get("YUE2_AUDIO_SOURCE")
-    core = os.environ.get("YUE2_CORE_SOURCE")
-    if not audio or not core:
-        pytest.skip("Set YUE2_AUDIO_SOURCE and YUE2_CORE_SOURCE to run pinned integration checks")
-    audio, core = Path(audio).resolve(), Path(core).resolve()
+    for name in ("PYTHONPATH", "YUE2_AUDIO_SOURCE", "YUE2_CORE_SOURCE"):
+        monkeypatch.delenv(name, raising=False)
     monkeypatch.setenv("CUDA_VISIBLE_DEVICES", "")
     monkeypatch.setenv("PYTHONDONTWRITEBYTECODE", "1")
     monkeypatch.setenv("OMP_NUM_THREADS", "1")
     monkeypatch.setenv("MKL_NUM_THREADS", "1")
-    configure_integration(audio, core)
-    return audio, core
+    dependency = configure_integration()
+    assert dependency["core"]["version"] == "0.6.0"
+    assert dependency["core"]["wheel_sha256"]
+    assert dependency["core"]["sources"]
+    assert dependency["particlegan"]["version"] == "0.9.1"
+    assert dependency["particlegan"]["wheel_sha256"]
+    return dependency
 
 
-def arguments(tmp_path, sources, *, name="pg09-cpu", steps=3, extra=()):
-    audio, core = sources
+def arguments(tmp_path, *, name="pg09-cpu", steps=3, extra=()):
     return [
         "--dummy", "--name", name, "--save_dir", str(tmp_path),
         "--steps", str(steps), "--save_every", "1", "--seed", "7",
-        "--audio_source", str(audio), "--core_source", str(core), *extra,
+        *extra,
     ]
 
 
@@ -72,7 +73,7 @@ def checkpoint(directory, name="pg09-cpu"):
 
 
 @pytest.mark.parametrize("preset", ["bispf", "bispf_optimized"])
-def test_entry_point_executes_shared_game_with_live_bank_and_gan_only(tmp_path, sources, monkeypatch, preset):
+def test_entry_point_executes_shared_game_with_live_bank_and_gan_only(tmp_path, installed_package, monkeypatch, preset):
     from particle_sliders import ConditionalPG09
     from particlegan import get_recipe
     from yue2.train import parse_args, train
@@ -111,6 +112,7 @@ def test_entry_point_executes_shared_game_with_live_bank_and_gan_only(tmp_path, 
         assert metrics["d_loss"] == pytest.approx(metrics["d_adv"] + metrics["d_pen"])
         assert asdict(game.recipe) == asdict(get_recipe(
             preset, total_steps=3, batch_size=2, num_particles=128, z_dim=4,
+            training_precision="float32",
         ))
         assert all(torch.equal(observed["base"][name], p) for name, p in adapter.model.named_parameters()
                    if name in observed["base"])
@@ -120,7 +122,7 @@ def test_entry_point_executes_shared_game_with_live_bank_and_gan_only(tmp_path, 
         return metrics
 
     monkeypatch.setattr(ConditionalPG09, "step", traced)
-    sidecar = train(parse_args(arguments(tmp_path, sources, extra=("--preset", preset))))
+    sidecar = train(parse_args(arguments(tmp_path, extra=("--preset", preset))))
     assert Path(sidecar).is_file()
     assert observed["calls"] == 3
     assert all(not torch.equal(value, observed["after"][name])
@@ -138,13 +140,15 @@ def test_entry_point_executes_shared_game_with_live_bank_and_gan_only(tmp_path, 
 
 def run_cli(args):
     env = dict(os.environ, CUDA_VISIBLE_DEVICES="", PYTHONDONTWRITEBYTECODE="1",
-               OMP_NUM_THREADS="1", MKL_NUM_THREADS="1")
+               OMP_NUM_THREADS="1", MKL_NUM_THREADS="1", PYTHONNOUSERSITE="1")
+    for name in ("PYTHONPATH", "YUE2_AUDIO_SOURCE", "YUE2_CORE_SOURCE"):
+        env.pop(name, None)
     return subprocess.run([sys.executable, str(ROOT / "scripts/train_yue2.py"), *args],
                           cwd=ROOT, env=env, text=True, capture_output=True, timeout=90)
 
 
-def test_real_cli_preserves_explicit_dummy_steps(tmp_path, sources):
-    flags = arguments(tmp_path, sources, steps=4)
+def test_real_cli_preserves_explicit_dummy_steps(tmp_path, installed_package):
+    flags = arguments(tmp_path, steps=4)
     offset = flags.index("--steps")
     flags[offset:offset + 2] = ["--steps=4"]
     result = run_cli(flags)
@@ -154,14 +158,14 @@ def test_real_cli_preserves_explicit_dummy_steps(tmp_path, sources):
     assert [row["step"] for row in rows] == [1, 2, 3, 4]
 
 
-def test_cli_fresh_process_resume_matches_uninterrupted_game_and_active_export(tmp_path, sources):
+def test_cli_fresh_process_resume_matches_uninterrupted_game_and_active_export(tmp_path, installed_package):
     full, first, resumed = [tmp_path / name for name in ("full", "first", "resumed")]
     for destination, extra in (
         (full, ()),
         (first, ("--until", "1")),
         (resumed, ("--resume", str(first / "pg09-cpu_checkpoint.pt"))),
     ):
-        result = run_cli(arguments(destination, sources, steps=3, extra=extra))
+        result = run_cli(arguments(destination, steps=3, extra=extra))
         assert result.returncode == 0, result.stdout + result.stderr
     a, b = checkpoint(full), checkpoint(resumed)
     assert checkpoint(first)["game"]["completed_steps"] == 1
@@ -174,31 +178,29 @@ def test_cli_fresh_process_resume_matches_uninterrupted_game_and_active_export(t
                load_file(str(resumed / "pg09-cpu_last.safetensors")))
 
 
-def test_resume_identity_failure_does_not_create_output(tmp_path, sources):
+def test_resume_identity_failure_does_not_create_output(tmp_path, installed_package):
     from yue2.train import parse_args, train
 
     first, rejected = tmp_path / "first", tmp_path / "rejected"
-    train(parse_args(arguments(first, sources, extra=("--until", "1"))))
+    train(parse_args(arguments(first, extra=("--until", "1"))))
     packet = checkpoint(first)
     packet["game"]["config"]["conditions_sha256"] = "wrong-condition-bytes"
     incompatible = tmp_path / "incompatible.pt"
     torch.save(packet, incompatible)
     original = incompatible.read_bytes()
     with pytest.raises(ValueError, match="mismatch|incompatible|identity"):
-        train(parse_args(arguments(rejected, sources, extra=("--resume", str(incompatible)))))
+        train(parse_args(arguments(rejected, extra=("--resume", str(incompatible)))))
     assert not rejected.exists()
     assert incompatible.read_bytes() == original
 
 
-def test_source_options_use_explicit_arguments_and_environment_defaults(tmp_path, sources, monkeypatch):
+def test_training_uses_installed_package_without_checkout_configuration(tmp_path, installed_package):
     from yue2.train import parse_args
 
-    audio, core = sources
-    via_environment = parse_args(["--dummy", "--save_dir", str(tmp_path)])
-    assert Path(via_environment.audio_source).resolve() == audio
-    assert Path(via_environment.core_source).resolve() == core
-    monkeypatch.setenv("YUE2_AUDIO_SOURCE", str(tmp_path / "wrong-audio"))
-    monkeypatch.setenv("YUE2_CORE_SOURCE", str(tmp_path / "wrong-core"))
-    explicit = parse_args(arguments(tmp_path, sources))
-    assert Path(explicit.audio_source).resolve() == audio
-    assert Path(explicit.core_source).resolve() == core
+    args = parse_args(["--dummy", "--save_dir", str(tmp_path)])
+    equal_tree(args.dependency, installed_package)
+    assert not hasattr(args, "audio_source")
+    assert not hasattr(args, "core_source")
+    for flag in ("--audio_source", "--core_source"):
+        with pytest.raises(SystemExit):
+            parse_args(["--dummy", flag, str(tmp_path)])
