@@ -6,7 +6,7 @@ from pathlib import Path
 
 import yaml
 
-from yue2.defaults import HUB_PROJECT
+from yue2_sliders.defaults import HUB_PROJECT
 
 ROOT = Path(__file__).resolve().parents[1]
 CARDS = ROOT / "configs" / "yue2" / "sample-cards.yaml"

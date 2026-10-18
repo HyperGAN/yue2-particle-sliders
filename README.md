@@ -6,7 +6,7 @@ with the VAE at [m-a-p/YuE2-Vae](https://huggingface.co/m-a-p/YuE2-Vae).
 the Comfy gate, YuE2 train and infer, prompt cards, and sample cards.
 
 The shared game is `winning_formulation()` from `particle-sliders-core`, pinned at
-[`a119ca1ecd3d5d6c437065839d22739b04f2f4d8`](https://github.com/HyperGAN/particle-sliders/commit/a119ca1ecd3d5d6c437065839d22739b04f2f4d8).
+[`84e0a0af3c7a2a1432e759fcd0a549497634a006`](https://github.com/HyperGAN/particle-sliders/commit/84e0a0af3c7a2a1432e759fcd0a549497634a006).
 This repo does not vendor `RoutedMLP`, `GradRegularizer`, `locked_shared`, or ParticleGAN.
 The provisional Hub recipe name is `anneal-routed-particle-error-yue2-v1`.
 See [FORMULATION.md](FORMULATION.md).
@@ -71,7 +71,7 @@ audio inside the graph. See [COMFYUI.md](COMFYUI.md).
 
 | Path | Role |
 |---|---|
-| `yue2/` | AR backend, routed slider hooks, train, infer |
+| `yue2_sliders/` | AR backend, routed slider hooks, train, infer |
 | `scripts/train_yue2.py`, `scripts/infer_yue2.py` | CLI entrypoints. Both call `winning_formulation()`. |
 | `configs/yue2/` | Run configs, prompts, `model.lock.json`, sample cards |
 | `comfy_yue2.py` | Comfy gate |
