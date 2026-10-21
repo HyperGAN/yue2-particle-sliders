@@ -1,7 +1,7 @@
 # Parent-scheduled YuE2 CPU qualification plan
 
 Status: pending resource admission; **none of these commands/tests has run**.
-Exact shared line: core0.8.2 `21761ca8fd059439b58aa56a69bf8d1647f50e31`, PG0.9.1
+Exact shared line: core0.8.2 `f6807a91546e43e198645a3f8925d2dc7c9e03b4`, PG0.9.1
 release/auto. Use the canonical owner wheel/lock and companion source archive.
 Build only the proposed product head, then use a new isolated installed target
 outside both product/shared source trees. Existing environments remain untouched.
@@ -11,8 +11,13 @@ Parent controls memory/time/thread limits and the serial slot. Proposed flags:
 `CUDA_VISIBLE_DEVICES='' HF_HUB_OFFLINE=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1`,
 plus one Torch interop thread set in the isolated driver before imports execute.
 No full legacy suite belongs in this slot: legacy tests require their old CDF
-line. The product response conformance cases below need implementation/admission
-in that slot; this document is a plan, not a passing-test stamp.
+line. The first product cases are now authored in `test_response_ownership.py` and
+`test_response_sessions.py`; they remain unrun. Their 13 parametrized cases should
+be split into two serial, offline phases, each with a proposed 90-second wall bound
+and 2GiB process/group cap, one compute/BLAS/Torch interop thread, subject to parent
+admission. Fresh-process inference workers each have a 45-second inner timeout.
+Run only these two files initially against the newly built installed product wheel.
+This document is a plan, not a passing-test stamp.
 
 1. Verify product/core/PG installed origins, exact versions, canonical 38-file
    source map and complete released PG sources; CUDA stays uninitialized. Run
@@ -38,7 +43,10 @@ in that slot; this document is a plan, not a passing-test stamp.
 7. Force failures after partial projection installation, checkpoint wrapping,
    provider capture, critic/game creation and a failed update. Confirm all owned
    forwards/flags/modes/gradient ownership return to their original state and
-   provider closes. Repeated close is safe. Borrowed staged-device/shape mismatch
+   provider closes. Repeated successful close is safe. Add native ownership nesting/conflict/retry:
+   failed wrapper handles remain retained; successfully closed siblings are not
+   replayed; broader projection/native cleanup waits; resolve the external owner
+   and retry the binding callback after the common session has marked itself closed. Borrowed staged-device/shape mismatch
    must fail before RNG/device allocation.
 8. Export native-only raw and EMA v2. In a fresh process, remove access to training
    JSON/rows and forbid product lifecycle/provider/train imports plus critic/game/
@@ -72,3 +80,18 @@ $PY -I -m particle_sliders.session_cli infer --artifact resumed/adapter-v2.pt --
 `{"token_ids":[12,21,30]}`. Record exact product head, wheel/source hashes,
 commands, exit status, counts, resource peaks, installed origins and CUDA state.
 No native/tokenizer/acoustic qualification follows from these tiny CPU checks.
+
+
+Proposed first pytest selections (admitted installed target, copied tests outside
+source trees, importlib mode and plugin autoload disabled):
+
+```bash
+$PY -I -m pytest -c /dev/null --import-mode=importlib -o pythonpath= -q test_response_ownership.py
+$PY -I -m pytest -c /dev/null --import-mode=importlib -o pythonpath= -q test_response_sessions.py
+```
+
+A parent driver must set both Torch thread counts before pytest collection and
+supply exact metadata-owned installed targets to child processes. No collection,
+model construction or execution has occurred during the source-only MOSS pilot
+window. Rerun remaining planned contract cases only after these meaningful first
+checks and when additional failures/changes justify them.

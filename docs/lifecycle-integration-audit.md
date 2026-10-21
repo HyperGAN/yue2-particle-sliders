@@ -10,7 +10,8 @@ Current GitHub read-only inspection confirmed:
 | open draft [PR4](https://github.com/HyperGAN/yue2-particle-sliders/pull/4) | a9d09c7b74173360e459861eb5fe319c45d7c0c0 | selected integration base |
 | open [PR3](https://github.com/HyperGAN/yue2-particle-sliders/pull/3) | cf150bb4533a60d15e33dfcb24fb4b2322ad35ed | retained untouched in origin ref; not merged |
 | initial shared milestone | fd89e1c780ab5210cd1be98ec3b70977e6349379 | retained historical proposal evidence |
-| selected reviewed response line | 21761ca8fd059439b58aa56a69bf8d1647f50e31 | core0.8.2 / existing PG0.9.1; isolated clone now detached here |
+| prior reviewed response line | 21761ca8fd059439b58aa56a69bf8d1647f50e31 | retained earlier adoption evidence |
+| selected checkpoint ownership line | f6807a91546e43e198645a3f8925d2dc7c9e03b4 | core0.8.2 / existing PG0.9.1; isolated clone now detached here |
 
 The owner's task-2/shared checkout was not edited. The exact lifecycle,
 derivative handoff and HyperGAN/HNDL seam docs were read at this milestone.
@@ -18,8 +19,11 @@ The Iris reference factory and packaging were inspected. Shared core changes
 remain owner/parent work. The parent subsequently supplied independent installed
 review of the response contract. Its exact canonical 091 lock was copied unchanged;
 wheel, all 38 runtime-source hashes, and companion archive were verified read-only.
-Three guides in the verified companion match the checkout; the immutable sdist's
-missing-guide limitation is preserved rather than repaired under its old pin.
+The parent then independently cleared ownership head `f6807a9` and the corrected
+canonical fragment SHA256 `12e2310b2680173b5a6c3c220270d3d79cb9029d5660bf23f7d6e6f06fd986f3`.
+The new wheel/sdist/source archive, qualification receipt, 38-file map and all
+four guides were checked read-only. This descendant fixes the older guide omission;
+no old artifact was rewritten or relabelled.
 
 PR4 is the current actual GAN path, with original CDF/core0.6 and released
 PG0.9.1 source checks. Its retained receipts qualify six clock and ten consumer
@@ -84,15 +88,18 @@ Remaining concrete boundaries:
    `alz-continuous-v1` source is unrecovered, so this new product proposal explicitly
    rejects selecting it. This is an upstream/profile recovery/parity gate, not a
    remaining neutral-contract defect. Pretrained constructors stay behind it.
-2. **Checkpoint hook ownership:** common `checkpoint_cleanup()` restores two
-   gradient-checkpoint attributes but does not return an undo handle for
-   `checkpoint_with_adapter_scale`, which wraps forward and sets
-   `_pg09_scale_checkpoint`. The owned product factory still composes a forward/
-   flag snapshot with provider close. A common idempotent undo handle, including
-   partial setup, would remove this derivative-specific recovery code.
+2. **Checkpoint hook ownership adopted:** shared `close_checkpointing()` owns
+   reversible wrappers, attempts all siblings and retains failed handles for retry.
+   `NativeOwner` closes this ledger before restoring conflict-checked product
+   projection forwards and common native flags/modes. All cleanup errors retain `.owner`; composed setup/cleanup failures expose
+   `NativeCleanupError.owner`. Broader cleanup never overwrites a
+   conflicted wrapper. Product binding close marks completion only after success.
+   Common session close still marks the session closed before calling the callback;
+   explicit `session.binding.close()` is the documented retry seam, not another
+   `session.close()`. This is a remaining common policy limitation, not bypassed.
 3. **Observation ownership:** common scope now covers provider len/fetch and
    adapter state/RNG. Product observation additionally restores native buffers,
-   registrations, modes and forward/checkpoint/gradient flags. Native hidden
+   registrations and common native mode/checkpoint/gradient flags. It does not capture or overwrite shared-owned checkpoint forwards. Native hidden
    evaluation uses no KV cache; v2 evaluates supplied native integer prefixes,
    not a token sampler. No whole frozen-parameter snapshot or waveform claim.
 4. **HNDL/presentation:** HyperGAN remains the on_step/manifest/artifact consumer.
@@ -143,3 +150,17 @@ not be stamped as passing under core0.8.2. See [the explicit pending plan](respo
 - Read-only local fetch of the exact response commit printed a shallow-root-ref
   warning; checkout and exact source verification succeeded at `21761ca`. No
   owner checkout was edited, and no retry/escalation or public write occurred.
+
+
+## Authored ownership/product conformance (unrun)
+
+`tests/test_response_ownership.py` covers real tiny YuE2 projections and inherited
+shared checkpoint handles: forward/marker conflicts, successful sibling cleanup,
+retry, projection conflict, nesting with another owner/same handle, second-owner
+refusal, partial projection setup, and deferred fractional/positive scale backward.
+`tests/test_response_sessions.py` covers separate response/image packets, split
+resume/EMA, invalid restore, native-width/unrecovered-profile refusal, raw/EMA v2 in
+fresh processes with training construction/imports forbidden, and retry through
+binding.close after a session cleanup conflict. These tests are authored only.
+No Torch/model imports or execution occurred during this pass while the MOSS
+pilot was active. See the bounded installed-product plan for the scheduled slot.

@@ -1,13 +1,15 @@
 # YuE2 neutral numerical response proposal
 
 The isolated proposal uses **core0.8.2 / PG0.9.1**, exact shared source
-`21761ca8fd059439b58aa56a69bf8d1647f50e31`. PG0.9.1 is the existing PR4 cohort's
+`f6807a91546e43e198645a3f8925d2dc7c9e03b4`. PG0.9.1 is the existing PR4 cohort's
 version; this is a new product source cohort, without a PG downgrade or an old
 checkpoint migration. Historical CDF locks, CLI packet formats, receipts, PR3's
 unmerged retraining payload, and active environments remain untouched.
 
-Shared contract review is parent-supplied evidence: 71 installed-runtime checks
-per dependency line, independently reviewed, with exact canonical source maps.
+Shared contract review is parent-supplied evidence: the earlier 71 response
+checks per dependency line, followed by 30 checkpoint-ownership checks per line
+(60 total), independently cleared at their respective exact source/artifact pins.
+This proposal uses the new ownership artifact and corrected canonical lock.
 **This product proposal has not been built, installed, imported or tested.**
 Only source parsing, archive/source hashing and Git whitespace checks ran here.
 The [audit](docs/lifecycle-integration-audit.md) and
@@ -34,8 +36,13 @@ HNDL conversion remains separate matched-weight work.
 The provider owns its copied teacher rows and full neutral-response conditions,
 returns copies and releases them on close. Observation covers provider bounds/fetch
 and generated responses through the reviewed common scope, plus product-owned
-native buffer registrations/values, modes, gradient/checkpoint flags and forwards.
-Setup failures and close restore projection/checkpoint hooks. Frozen base weights
+native buffer registrations/values, modes and gradient/checkpoint flags via
+common native cleanup. Projection hooks have a separate conflict-aware owned
+ledger. Shared adapter `close_checkpointing()` releases its reversible handles
+before any projection/native restoration. Successful siblings stay closed;
+conflicted handles remain owned until the external change is resolved and the
+retained binding callback is retried. Cleanup errors carry `.owner` for explicit retry; setup failures expose `NativeCleanupError.owner`
+if cleanup itself cannot complete. No blanket checkpoint-forward snapshot remains. Frozen base weights
 are immutable; observation does not clone the whole pretrained backbone.
 
 After a parent-admitted build/install/CPU slot, the intended API is:
@@ -95,11 +102,14 @@ an inference artifact cannot train or resume.
 The packaged `lifecycle-runtime.lock.json` is an **unchanged copy** of the owner's
 canonical 091 lock fragment, including all 38 source hashes and audio closure.
 Core wheel SHA256 is
-`d28d082986accc486a4a9c2ce445f4981daaba6f51605b20ded4c0f424cb30ba`;
+`50a6a7d06240254357569fd3cacbb5cf5e9d3c1771f642dfb719733b5711f32a`;
 companion `reviewed-source.tar` SHA256 is
-`f90b93d4a402b0fbe499d9335b6243f20ab64229c2c0e0703da011743ccd30eb`.
-Both were hash-verified read-only. The three guides omitted from the sdist were
-read from that verified companion and checked against the exact source checkout.
+`6bad2ec9cd5ccac54c9b313004bf5b3937cefdd6b4207746b2586f75bb091127`.
+Wheel, sdist, source bundle and qualification receipt were hash-verified read-only.
+All four guides, including CHECKPOINT-OWNERSHIP.md, now match both the sdist and
+source bundle. Corrected canonical lock SHA256 is
+`12e2310b2680173b5a6c3c220270d3d79cb9029d5660bf23f7d6e6f06fd986f3`;
+metadata-correction.json was checked. Prior artifacts/receipts remain unchanged.
 The owner artifacts' older pending-status fields remain unchanged; the parent's
 latest delegation supplies independent-review completion. No product wheel hash
 or product installed-pass receipt is claimed.

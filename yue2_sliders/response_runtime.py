@@ -9,7 +9,7 @@ import sys
 
 from particle_sliders.response import ResponseCapabilities
 
-CORE_PIN = '21761ca8fd059439b58aa56a69bf8d1647f50e31'
+CORE_PIN = 'f6807a91546e43e198645a3f8925d2dc7c9e03b4'
 PG_VERSION = '0.9.1'
 PROFILE = 'release'
 DOMAIN = 'auto'
@@ -115,24 +115,6 @@ def frozen_digest(model):
     return digest.hexdigest()
 
 
-def restore_model(model):
-    """Capture owned forwards as well as native flags before partial attachment."""
-    keys = ('forward', 'gradient_checkpointing', '_gradient_checkpointing_func', '_pg09_scale_checkpoint')
-    missing = object()
-    saved = [(m, m.training, {key: m.__dict__.get(key, missing) for key in keys}) for m in model.modules()]
-    gradients = [(p, p.requires_grad) for p in model.parameters()]
-    def restore():
-        for module, training, values in saved:
-            module.training = training
-            for key, value in values.items():
-                if value is missing:
-                    module.__dict__.pop(key, None)
-                else:
-                    setattr(module, key, value)
-        for parameter, requires_grad in gradients:
-            parameter.requires_grad_(requires_grad)
-    return restore
-
 
 @contextmanager
 def observation(runtime):
@@ -142,7 +124,8 @@ def observation(runtime):
     no external KV/token sampler is invoked by the inference response callback.
     """
     import torch
-    restore = restore_model(runtime.model)
+    from particle_sliders.lifecycle import native_cleanup
+    restore = native_cleanup(runtime.model)
     buffers = [(m, dict(m._buffers), set(m._non_persistent_buffers_set)) for m in runtime.model.modules()]
     values = {id(b): (b, b.detach().clone()) for _, registered, _ in buffers for b in registered.values() if b is not None}
     try:

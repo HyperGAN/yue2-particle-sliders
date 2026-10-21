@@ -57,12 +57,12 @@ def prepare(options, *, runtime=None):
     def close():
         nonlocal closed
         if not closed:
-            closed = True
             try:
                 if provider is not None:
                     provider.close()
             finally:
                 restore()
+            closed = True
     try:
         from .response_provider import PreparedBank
         from particle_sliders import ConditionalPG09
