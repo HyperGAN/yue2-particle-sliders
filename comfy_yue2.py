@@ -11,10 +11,10 @@ from __future__ import annotations
 import math
 from pathlib import Path
 
-from yue2.defaults import MODEL_ID
-from yue2.integration import configure_integration
-from yue2.slider import validate_checkpoint, validate_record
-from yue2.stamp import locked_stamp
+from yue2_sliders.defaults import MODEL_ID
+from yue2_sliders.integration import configure_integration
+from yue2_sliders.slider import validate_checkpoint, validate_record
+from yue2_sliders.stamp import locked_stamp
 
 NODE_CLASS_MAPPINGS: dict = {}
 NODE_DISPLAY_NAME_MAPPINGS: dict = {}

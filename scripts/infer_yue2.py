@@ -13,7 +13,7 @@ from _bootstrap import bootstrap
 
 bootstrap()
 
-from yue2.infer import main  # noqa: E402
+from yue2_sliders.infer import main  # noqa: E402
 
 
 if __name__ == "__main__":

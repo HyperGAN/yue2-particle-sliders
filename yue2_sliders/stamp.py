@@ -6,7 +6,7 @@ The stamp math lives in particle-sliders-core. This module only calls
 
 from __future__ import annotations
 
-from yue2.defaults import CORE_PIN, HUB_RECIPE_NAME
+from yue2_sliders.defaults import CORE_PIN, HUB_RECIPE_NAME
 
 
 def locked_stamp(model_surface: dict | None = None):

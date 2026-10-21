@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "yue2-particle-sliders"
+version = "0.2.0"
+description = "YuE2 native AR hidden-response particle slider lifecycle (integration draft)"
+readme = "LIFECYCLE.md"
+requires-python = ">=3.10"
+license = {file = "LICENSE"}
+# Exact local candidate wheel/source identity is checked by the factory lock.
+# This does not repin requirements.txt or an existing environment.
+dependencies = ["particle-sliders-core==0.7.0", "torch>=2.6,<3", "PyYAML>=6", "safetensors>=0.4", "numpy>=1.26"]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["yue2_sliders*"]
+
+[tool.setuptools.package-data]
+yue2_sliders = ["lifecycle-runtime.lock.json"]
+
+# The milestone uses this legacy group name even for continuous-vector games.
+# Request a modality-neutral registry/schema upstream; never advertise image outputs.
+[project.entry-points."particle_sliders.image_backends"]
+yue2 = "yue2_sliders.lifecycle:BACKEND"

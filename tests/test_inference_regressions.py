@@ -16,12 +16,12 @@ import torch
 from safetensors.torch import load_file, save_file
 
 from comfy_yue2 import validate_slider_file
-from yue2.backend import TinyYuE2, attention_targets
-from yue2.defaults import CORE_PIN, MODEL_ID, PUBLISHED_FORMAT
-from yue2.infer import _dummy_compare, parse_args
-from yue2.integration import PG_VERSION, configure_integration
-from yue2.slider import ParticleSlider, RoutedProjection, read_record, validate_checkpoint
-from yue2.stamp import locked_stamp
+from yue2_sliders.backend import TinyYuE2, attention_targets
+from yue2_sliders.defaults import CORE_PIN, MODEL_ID, PUBLISHED_FORMAT
+from yue2_sliders.infer import _dummy_compare, parse_args
+from yue2_sliders.integration import PG_VERSION, configure_integration
+from yue2_sliders.slider import ParticleSlider, RoutedProjection, read_record, validate_checkpoint
+from yue2_sliders.stamp import locked_stamp
 
 ROOT = Path(__file__).resolve().parents[1]
 BASE_IDENTITY = {"config_sha256": "cpu-regression-base", "files": {"model.safetensors": "fixed"}}
@@ -224,21 +224,21 @@ def test_dummy_delta_uses_off_even_when_off_is_last_or_absent_and_replays(tmp_pa
     assert _dummy_compare(args, stamp)["scales"][0] == first["scales"][0]
 
 
-def test_bootstrap_imports_native_first_even_from_product_working_directory(tmp_path):
+def test_bootstrap_keeps_native_namespace_separate_from_product(tmp_path):
     native = tmp_path / "native" / "yue2"
     native.mkdir(parents=True)
     (native / "__init__.py").write_text("NATIVE_SENTINEL = True\n", encoding="utf-8")
     env = dict(os.environ, PYTHONDONTWRITEBYTECODE="1",
                PYTHONPATH=os.pathsep.join([str(native.parent), str(ROOT / "scripts")]))
     proc = subprocess.run([sys.executable, "-c",
-        "from _bootstrap import bootstrap; import json; m = bootstrap(); bootstrap(); "
+        "from _bootstrap import bootstrap; import json; bootstrap(); bootstrap(); import yue2 as m; "
         "print(json.dumps([m.__file__, m.NATIVE_SENTINEL, list(m.__path__)]))"],
         cwd=ROOT, env=env, text=True, capture_output=True)
     assert proc.returncode == 0, proc.stderr
     origin, sentinel, paths = json.loads(proc.stdout)
     assert Path(origin) == native / "__init__.py"
     assert sentinel is True
-    assert paths == [str(native), str(ROOT / "yue2")]
+    assert paths == [str(native)]
 
 
 def test_direct_product_import_discovers_native_submodules(tmp_path):
@@ -275,7 +275,7 @@ def test_comfy_custom_node_import_works_without_product_root_on_sys_path(tmp_pat
 
 
 def test_live_render_freezes_cfg_and_scales_only_ar(monkeypatch):
-    from yue2.infer import render_live
+    from yue2_sliders.infer import render_live
     protocol = SimpleNamespace(SongRequest=lambda **kwargs: SimpleNamespace(**kwargs, to_dict=lambda: kwargs))
     result_cls = lambda *args: SimpleNamespace(args=args)
     monkeypatch.setitem(sys.modules, "yue2.protocol", protocol)

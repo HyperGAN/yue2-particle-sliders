@@ -43,7 +43,7 @@ def equal_tree(actual, expected):
 
 @pytest.fixture
 def installed_package(monkeypatch):
-    from yue2.integration import configure_integration
+    from yue2_sliders.integration import configure_integration
 
     for name in ("PYTHONPATH", "YUE2_AUDIO_SOURCE", "YUE2_CORE_SOURCE"):
         monkeypatch.delenv(name, raising=False)
@@ -76,7 +76,7 @@ def checkpoint(directory, name="pg09-cpu"):
 def test_entry_point_executes_shared_game_with_live_bank_and_gan_only(tmp_path, installed_package, monkeypatch, preset):
     from particle_sliders import ConditionalPG09
     from particlegan import get_recipe
-    from yue2.train import parse_args, train
+    from yue2_sliders.train import parse_args, train
 
     original = ConditionalPG09.step
     observed = {}
@@ -179,7 +179,7 @@ def test_cli_fresh_process_resume_matches_uninterrupted_game_and_active_export(t
 
 
 def test_resume_identity_failure_does_not_create_output(tmp_path, installed_package):
-    from yue2.train import parse_args, train
+    from yue2_sliders.train import parse_args, train
 
     first, rejected = tmp_path / "first", tmp_path / "rejected"
     train(parse_args(arguments(first, extra=("--until", "1"))))
@@ -195,7 +195,7 @@ def test_resume_identity_failure_does_not_create_output(tmp_path, installed_pack
 
 
 def test_training_uses_installed_package_without_checkout_configuration(tmp_path, installed_package):
-    from yue2.train import parse_args
+    from yue2_sliders.train import parse_args
 
     args = parse_args(["--dummy", "--save_dir", str(tmp_path)])
     equal_tree(args.dependency, installed_package)

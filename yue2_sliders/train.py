@@ -18,12 +18,12 @@ from pathlib import Path
 import torch
 import yaml
 
-from yue2.backend import YuE2Backend
-from yue2.defaults import CORE_PIN, EXAM_MODULE, MODEL_ID, VAE_ID
-from yue2.prompts import load_prompts
-from yue2.slider import ParticleSlider
-from yue2.stamp import locked_stamp
-from yue2.integration import configure_integration
+from yue2_sliders.backend import YuE2Backend
+from yue2_sliders.defaults import CORE_PIN, EXAM_MODULE, MODEL_ID, VAE_ID
+from yue2_sliders.prompts import load_prompts
+from yue2_sliders.slider import ParticleSlider
+from yue2_sliders.stamp import locked_stamp
+from yue2_sliders.integration import configure_integration
 
 ROOT = Path(__file__).resolve().parents[1]
 RUN_KEYS = {
@@ -287,7 +287,7 @@ def train(args: argparse.Namespace) -> dict | Path:
     if args.dummy:
         width = 32
     else:
-        from yue2.backend import require_yue2
+        from yue2_sliders.backend import require_yue2
         require_yue2()
         from yue2.storage import resolve_model
         resolved = resolve_model(args.model_id, revision=args.revision,

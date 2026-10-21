@@ -1,0 +1,9 @@
+{
+  "scope": "stdlib parsing and metadata only; no imports/tests/builds",
+  "python_files_parsed": 26,
+  "core_commit": "fd89e1c780ab5210cd1be98ec3b70977e6349379",
+  "core_wheel_sha256": "9637aede473939e4284cf05c4c8d950e5a84ab5b0fe3c482080eb10028abc4d9",
+  "core_source_files": 39,
+  "product_wheel": null,
+  "tests_run": false
+}

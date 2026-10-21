@@ -15,12 +15,12 @@ from pathlib import Path
 
 import torch
 
-from yue2.backend import TinyYuE2, YuE2Backend, file_digest, require_yue2, tiny_from_architecture
-from yue2.defaults import CORE_PIN, MODEL_ID, VAE_ID
-from yue2.prompts import sound_only
-from yue2.integration import configure_integration
-from yue2.slider import ParticleSlider, read_record
-from yue2.stamp import locked_stamp
+from yue2_sliders.backend import TinyYuE2, YuE2Backend, file_digest, require_yue2, tiny_from_architecture
+from yue2_sliders.defaults import CORE_PIN, MODEL_ID, VAE_ID
+from yue2_sliders.prompts import sound_only
+from yue2_sliders.integration import configure_integration
+from yue2_sliders.slider import ParticleSlider, read_record
+from yue2_sliders.stamp import locked_stamp
 
 ROOT = Path(__file__).resolve().parents[1]
 

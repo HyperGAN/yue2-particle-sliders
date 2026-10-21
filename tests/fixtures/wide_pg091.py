@@ -6,11 +6,11 @@ import sys
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 import torch
-from yue2.integration import configure_integration
-from yue2.backend import TinyYuE2, YuE2Backend, _TinyConfig
-from yue2.slider import ParticleSlider
-from yue2.stamp import locked_stamp
-from yue2.train import _frozen_digest
+from yue2_sliders.integration import configure_integration
+from yue2_sliders.backend import TinyYuE2, YuE2Backend, _TinyConfig
+from yue2_sliders.slider import ParticleSlider
+from yue2_sliders.stamp import locked_stamp
+from yue2_sliders.train import _frozen_digest
 
 configure_integration()
 from particle_sliders import ConditionalPG09

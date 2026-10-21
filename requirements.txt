@@ -1,5 +1,5 @@
 # Integration draft: install the exact candidate wheel first; its hash is locked.
-# Installed wheel bytes and origins are verified by yue2.integration.
+# Installed wheel bytes and origins are verified by yue2_sliders.integration.
 PyYAML>=6
 pytest>=8
 safetensors>=0.4

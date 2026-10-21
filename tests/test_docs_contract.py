@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from yue2.defaults import CORE_PIN
+from yue2_sliders.defaults import CORE_PIN
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -69,6 +69,6 @@ def test_requirements_keep_pg091_release_and_exact_installed_candidate():
     text = _text("requirements.txt")
     assert "particlegan==0.9.1" in text
     assert "git+https://github.com/HyperGAN/particle-sliders.git@" not in text
-    assert "yue2.integration" in text
+    assert "yue2_sliders.integration" in text
     assert "shared-runtime.lock.json" in _text("REPRODUCE.md")
     assert "particle-sliders-core==0.6.0" in text

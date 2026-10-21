@@ -34,9 +34,13 @@ def configure_integration():
     PG's separately declared domain profile remains validated by the shared
     pre-forward gate. No checkout discovery, path mutation or package fallback.
     """
-    lock = json.loads(LOCK_PATH.read_text())
+    return verify_lock(json.loads(LOCK_PATH.read_text()), CORE_PIN)
+
+
+def verify_lock(lock, core_pin):
+    """Verify a caller-selected cohort lock without changing installed packages."""
     core, pg = lock["core"], lock["particlegan"]
-    if core["commit"] != CORE_PIN or pg["version"] != PG_VERSION:
+    if core["commit"] != core_pin or pg["version"] != PG_VERSION:
         raise ValueError("Product runtime lock and code pins disagree")
     distribution = _distribution(core)
     _distribution(pg)

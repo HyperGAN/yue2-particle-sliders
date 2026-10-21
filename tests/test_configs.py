@@ -7,9 +7,9 @@ from pathlib import Path
 
 import pytest
 
-from yue2.defaults import CORE_PIN, HUB_PROJECT, HUB_RECIPE_NAME, MODEL_ID, VAE_ID
-from yue2.prompts import load_prompts, sound_only
-from yue2.samples import catalog_controls, featured_links, load_sample_cards
+from yue2_sliders.defaults import CORE_PIN, HUB_PROJECT, HUB_RECIPE_NAME, MODEL_ID, VAE_ID
+from yue2_sliders.prompts import load_prompts, sound_only
+from yue2_sliders.samples import catalog_controls, featured_links, load_sample_cards
 
 ROOT = Path(__file__).resolve().parents[1]
 

@@ -16,9 +16,9 @@ from torch import nn
 from safetensors import safe_open
 from safetensors.torch import load_file, save_file
 
-from yue2.backend import architecture_of, attention_targets
-from yue2.defaults import CORE_PIN, FORMATS, MODEL_ID, PRODUCT_FORMAT, UPSTREAM_REVISION
-from yue2.prompts import sound_only
+from yue2_sliders.backend import architecture_of, attention_targets
+from yue2_sliders.defaults import CORE_PIN, FORMATS, MODEL_ID, PRODUCT_FORMAT, UPSTREAM_REVISION
+from yue2_sliders.prompts import sound_only
 
 
 class RoutedProjection(nn.Module):
@@ -210,7 +210,7 @@ def validate_record(record, stamp, *, allow_dummy=False, model_identity=None):
 
 
 def _validate_game_signature(record):
-    from yue2.integration import LOCK_PATH, PG_VERSION
+    from yue2_sliders.integration import LOCK_PATH, PG_VERSION
 
     signature = record.get("game_signature")
     if not isinstance(signature, dict) or not signature:

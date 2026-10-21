@@ -34,7 +34,7 @@ class DistributionView:
 
 
 def runtime_lock():
-    from yue2.integration import LOCK_PATH
+    from yue2_sliders.integration import LOCK_PATH
 
     return json.loads(LOCK_PATH.read_text())
 
@@ -47,7 +47,7 @@ def source_free_cpu(monkeypatch):
 
 
 def test_tampered_copied_install_fails_before_shared_import(tmp_path, monkeypatch):
-    from yue2 import integration
+    from yue2_sliders import integration
 
     integration.configure_integration()
     original_distribution = integration._distribution
@@ -75,7 +75,7 @@ def test_tampered_copied_install_fails_before_shared_import(tmp_path, monkeypatc
 
 @pytest.mark.parametrize("family", ("core", "particlegan"))
 def test_distribution_accepts_the_exact_locked_wheel_hash(family, monkeypatch):
-    from yue2 import integration
+    from yue2_sliders import integration
 
     record = runtime_lock()[family]
     installed = metadata.distribution(record["name"])
@@ -92,7 +92,7 @@ def test_distribution_accepts_the_exact_locked_wheel_hash(family, monkeypatch):
     {},
 ))
 def test_distribution_rejects_foreign_or_unbound_wheel_identity(family, direct_url, monkeypatch):
-    from yue2 import integration
+    from yue2_sliders import integration
 
     record = runtime_lock()[family]
     installed = metadata.distribution(record["name"])
@@ -124,8 +124,8 @@ def equal_tree(actual, expected):
 
 def test_old_pg090_full_checkpoint_is_rejected_without_mutation(tmp_path, monkeypatch):
     from particle_sliders import ConditionalPG09
-    from yue2.integration import configure_integration
-    from yue2.train import parse_args, train
+    from yue2_sliders.integration import configure_integration
+    from yue2_sliders.train import parse_args, train
 
     configure_integration()
     first, rejected = tmp_path / "first", tmp_path / "rejected"
@@ -194,8 +194,8 @@ def optimizer_identifier(packet, optimizer, parameter):
 def assert_invalid_optimizer_resume_is_transactional(
         tmp_path, monkeypatch, *, preset, optimizer_name, mutation, initial_steps=1, sparse_critic=False):
     from particle_sliders import ConditionalPG09
-    from yue2.integration import configure_integration
-    from yue2.train import parse_args, train
+    from yue2_sliders.integration import configure_integration
+    from yue2_sliders.train import parse_args, train
 
     configure_integration()
     if sparse_critic:
@@ -327,8 +327,8 @@ def test_resume_started_optimizer_history_rejects_before_mutation_and_output(
 @pytest.mark.parametrize("preset", ("bispf", "bispf_optimized"))
 def test_initial_empty_optimizer_history_remains_valid_product_resume(tmp_path, monkeypatch, preset):
     from particle_sliders import ConditionalPG09
-    from yue2.integration import configure_integration
-    from yue2.train import parse_args, train
+    from yue2_sliders.integration import configure_integration
+    from yue2_sliders.train import parse_args, train
 
     configure_integration()
     first, resumed, uninterrupted = [tmp_path / name for name in ("first", "resumed", "uninterrupted")]
@@ -381,8 +381,8 @@ def test_initial_empty_optimizer_history_remains_valid_product_resume(tmp_path, 
 def test_honest_unused_critic_history_remains_valid_product_resume(tmp_path, monkeypatch, preset):
     from particle_sliders import ConditionalPG09
     from particle_sliders import pg09_audio
-    from yue2.integration import configure_integration
-    from yue2.train import parse_args, train
+    from yue2_sliders.integration import configure_integration
+    from yue2_sliders.train import parse_args, train
 
     configure_integration()
     original_critic = pg09_audio.AudioResponseCritic
@@ -448,8 +448,8 @@ def test_resume_sparse_adam_critic_clock_bounds_reject_atomically(tmp_path, monk
 
 def test_sparse_adam_critic_clock_one_at_two_completed_steps_resumes_exactly(tmp_path, monkeypatch):
     from particle_sliders import ConditionalPG09
-    from yue2.integration import configure_integration
-    from yue2.train import parse_args, train
+    from yue2_sliders.integration import configure_integration
+    from yue2_sliders.train import parse_args, train
 
     configure_integration()
     install_sparse_clock_critic(monkeypatch)

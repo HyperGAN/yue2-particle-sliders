@@ -9,8 +9,8 @@ import torch
 from safetensors.torch import save_file
 
 from comfy_yue2 import YuE2ParticleSlider, validate_slider_file, validate_slider_record, validate_strength
-from yue2.defaults import CORE_PIN, HUB_RECIPE_NAME, MODEL_ID, PRODUCT_FORMAT, UPSTREAM_REVISION
-from yue2.stamp import locked_stamp
+from yue2_sliders.defaults import CORE_PIN, HUB_RECIPE_NAME, MODEL_ID, PRODUCT_FORMAT, UPSTREAM_REVISION
+from yue2_sliders.stamp import locked_stamp
 
 ROOT = Path(__file__).resolve().parents[1]
 

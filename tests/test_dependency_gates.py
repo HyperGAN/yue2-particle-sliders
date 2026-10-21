@@ -11,8 +11,8 @@ import torch
 
 
 def test_full_native_width_rejected_before_pretrained_forward(tmp_path, monkeypatch):
-    from yue2 import backend
-    from yue2 import train as training
+    from yue2_sliders import backend
+    from yue2_sliders import train as training
 
     model_dir = tmp_path / "native-configuration"
     model_dir.mkdir()
@@ -32,7 +32,7 @@ def test_full_native_width_rejected_before_pretrained_forward(tmp_path, monkeypa
 
 
 def test_installed_package_probe_rejects_an_already_imported_foreign_core(monkeypatch):
-    from yue2.integration import configure_integration
+    from yue2_sliders.integration import configure_integration
 
     existing = sys.modules.get("particle_sliders")
     fake = ModuleType("particle_sliders")
@@ -47,7 +47,7 @@ def test_installed_package_probe_rejects_an_already_imported_foreign_core(monkey
 
 @pytest.mark.parametrize("name", ["particle-sliders-core", "particlegan"])
 def test_installed_wheel_version_mismatch_is_rejected(monkeypatch, name):
-    from yue2 import integration
+    from yue2_sliders import integration
 
     original = integration.metadata.distribution
     monkeypatch.setattr(integration.metadata, "distribution", lambda package:
@@ -59,7 +59,7 @@ def test_installed_wheel_version_mismatch_is_rejected(monkeypatch, name):
 
 def test_modified_installed_package_bytes_are_rejected_without_editing_them(monkeypatch):
     from importlib.metadata import distribution
-    from yue2.integration import configure_integration
+    from yue2_sliders.integration import configure_integration
 
     target = Path(distribution("particle-sliders-core").locate_file("particle_sliders/pg09_audio.py")).resolve()
     original = Path.read_bytes
@@ -71,14 +71,14 @@ def test_modified_installed_package_bytes_are_rejected_without_editing_them(monk
 
 
 def test_missing_config_is_not_silently_ignored(tmp_path):
-    from yue2.train import parse_args
+    from yue2_sliders.train import parse_args
     with pytest.raises(SystemExit):
         parse_args(["--config_file", str(tmp_path / "missing.yaml"), "--dummy"])
 
 
 def test_installed_package_and_comfy_work_without_checkout_paths():
     from importlib.metadata import distribution
-    from yue2.integration import configure_integration
+    from yue2_sliders.integration import configure_integration
 
     dependency = configure_integration()
     environment = dict(os.environ)
@@ -87,7 +87,7 @@ def test_installed_package_and_comfy_work_without_checkout_paths():
     environment.update(CUDA_VISIBLE_DEVICES="", PYTHONDONTWRITEBYTECODE="1", PYTHONNOUSERSITE="1")
     code = """
 import json, sys, torch
-from yue2.integration import configure_integration
+from yue2_sliders.integration import configure_integration
 dependency = configure_integration()
 from comfy_yue2 import YuE2ParticleSlider
 handle = YuE2ParticleSlider().load('', 0)[0]
