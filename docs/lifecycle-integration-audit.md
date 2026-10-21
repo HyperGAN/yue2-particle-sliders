@@ -9,12 +9,17 @@ Current GitHub read-only inspection confirmed:
 | main | b33794d81b92c125891a011531f55554d65e2082 | inventory only |
 | open draft [PR4](https://github.com/HyperGAN/yue2-particle-sliders/pull/4) | a9d09c7b74173360e459861eb5fe319c45d7c0c0 | selected integration base |
 | open [PR3](https://github.com/HyperGAN/yue2-particle-sliders/pull/3) | cf150bb4533a60d15e33dfcb24fb4b2322ad35ed | retained untouched in origin ref; not merged |
-| shared milestone | fd89e1c780ab5210cd1be98ec3b70977e6349379 | isolated read-only local clone, detached |
+| initial shared milestone | fd89e1c780ab5210cd1be98ec3b70977e6349379 | retained historical proposal evidence |
+| selected reviewed response line | 21761ca8fd059439b58aa56a69bf8d1647f50e31 | core0.8.2 / existing PG0.9.1; isolated clone now detached here |
 
 The owner's task-2/shared checkout was not edited. The exact lifecycle,
 derivative handoff and HyperGAN/HNDL seam docs were read at this milestone.
 The Iris reference factory and packaging were inspected. Shared core changes
-remain owner/parent work.
+remain owner/parent work. The parent subsequently supplied independent installed
+review of the response contract. Its exact canonical 091 lock was copied unchanged;
+wheel, all 38 runtime-source hashes, and companion archive were verified read-only.
+Three guides in the verified companion match the checkout; the immutable sdist's
+missing-guide limitation is preserved rather than repaired under its old pin.
 
 PR4 is the current actual GAN path, with original CDF/core0.6 and released
 PG0.9.1 source checks. Its retained receipts qualify six clock and ten consumer
@@ -46,7 +51,7 @@ its existing branch and left out of this new cohort.
   output is promised. It retains the old CDF dependency gate.
 - New factory: full loader/slider/adapter/row bank/conditions/critic/game ownership,
   exact new milestone lock, shared session stepping/resume/export/evaluate/EMA,
-  no duplicate GAN math. Registered through the current core entry-point group.
+  no duplicate GAN math. Registered through the separate neutral response entry-point group. A second native-only inference registration owns base+adapter construction without training imports or teacher rows.
   Installed qualification remains pending.
 - Cleanup: snapshots native module forwards, checkpoint flags, modes and base
   requires_grad before hook installation. Setup failures, partial projection
@@ -63,40 +68,45 @@ neutral continuation history, full frozen neutral hidden conditioning plus promp
 lengths/history/sign. There is no diffusion sigma/scheduler, no categorical
 fallback, projection, truncation or spatial reshape.
 
-## Common interface rough spots for parent
+## Current common seams and remaining gaps
 
-1. **Modality contract:** lifecycle `API`, registry, backend errors, evaluate
-   docstring and reference-image flags are image-named. Current capability data
-   lacks explicit modality/response_kind fields. YuE2 sets audio/AR-hidden metadata,
-   disables render and advertises `render_outputs=()`. Please add common explicit
-   modality fields and a neutral registry/packet strategy, retaining existing
-   image cohort identity. Do not call this hidden-response API a waveform API.
-2. **Native PG profile gate:** `Backend.open()` unconditionally calls
-   `_released_sources()` with the release default, before the factory. Native
-   width2048 requires `alz-continuous-v1`/`continuous`, whose bytes necessarily
-   differ. The lower-level `require_audio_width` and game already validate the
-   exact explicit profile. Common preflight needs to honor the qualified pair
-   without silently selecting/applying it. This draft preserves the guard and
-   declares native lifecycle opening blocked pending that common fix.
-3. **Checkpoint cleanup:** common `checkpoint_cleanup()` only restores two
-   gradient-checkpoint attributes. Audio binding wraps `forward` and sets
-   `_pg09_scale_checkpoint`, so the product factory snapshots those too. A common
-   owned callback/handle from `checkpoint_with_adapter_scale` would remove this
-   derivative-specific recovery code, including partial setup failures.
-4. **Compact inference:** current session reconstructs prepared game/history and
-   critic even for inference. Existing product native safetensor loader has its
-   own strict geometry/provenance. Await owner compact-loading design before
-   adding a native waveform callback; never hide caller assembly or skip identity.
-5. **Run rendering/HNDL:** HyperGAN remains the run presentation owner via
-   on_step/manifest/artifact seams. Current `AudioResponseCritic` is
-   Linear(width+condition,16) → SiLU → Linear(16,1), raw logits. Product
-   `RoutedProjection` owns low-rank projections and calls the shared routed bridge.
-   These definitions need common HNDL matched-weight parity, parameter names,
-   gradients and update/resume checks before replacement. No critic flattening,
-   new network law or pretrained-backbone rewrite was introduced here.
-6. **Error text:** render=false currently says native solver parity is required;
-   that is not YuE2's waveform qualification reason. Allow backend-specific
-   unavailable-render diagnostics in the common capability contract.
+The initial source draft `045a7e72da52243160b59434984ce17d30a5b441` reported
+image-named descriptors/packets, release-only session preflight and missing compact
+inference. The parent-reviewed response line resolves those API issues. This
+proposal now uses `ResponseBackend`/`ResponseCapabilities`, separate response
+packets and registry, exact profile/shape admission, explicit refusal reasons and
+native-only v2 inference. No image geometry or waveform semantics are imposed.
+
+Remaining concrete boundaries:
+
+1. **Native width:** official PG0.9.1 release/auto refuses native flat width2048;
+   official PG0.9.3 has the same unsupported selector boundary. The old
+   `alz-continuous-v1` source is unrecovered, so this new product proposal explicitly
+   rejects selecting it. This is an upstream/profile recovery/parity gate, not a
+   remaining neutral-contract defect. Pretrained constructors stay behind it.
+2. **Checkpoint hook ownership:** common `checkpoint_cleanup()` restores two
+   gradient-checkpoint attributes but does not return an undo handle for
+   `checkpoint_with_adapter_scale`, which wraps forward and sets
+   `_pg09_scale_checkpoint`. The owned product factory still composes a forward/
+   flag snapshot with provider close. A common idempotent undo handle, including
+   partial setup, would remove this derivative-specific recovery code.
+3. **Observation ownership:** common scope now covers provider len/fetch and
+   adapter state/RNG. Product observation additionally restores native buffers,
+   registrations, modes and forward/checkpoint/gradient flags. Native hidden
+   evaluation uses no KV cache; v2 evaluates supplied native integer prefixes,
+   not a token sampler. No whole frozen-parameter snapshot or waveform claim.
+4. **HNDL/presentation:** HyperGAN remains the on_step/manifest/artifact consumer.
+   `AudioResponseCritic` retains Linear(width+condition,16) → SiLU → Linear(16,1),
+   raw logits; routed projections retain rank8/alpha8 and the actual bank. These
+   definitions still need separately coordinated matched-weight HNDL parity,
+   parameter naming, gradients, updates and resume review before replacement.
+
+The restored minimal shared audio closure is consumed through the canonical
+package. New product code imports `pg09_audio`/`pg09_backends` and the neutral
+lifecycle/inference seams; no campaign worker, legacy audio CLI or render stack
+is used as a fallback. The provider reuses the existing product's token/history
+preparation helper only during training construction. Native-only inference
+imports none of the product train/provider/lifecycle modules.
 
 ## Pending verification and limits
 
@@ -106,7 +116,7 @@ write, merge, deployment, permission/system change or active pin update ran.
 Only stdlib AST/JSON/TOML parsing, wheel archive hash inspection and Git whitespace
 checks were used. No product wheel/source-free execution receipt is fabricated.
 
-Parent must schedule one bounded CPU slot after common interface selection:
+Parent must schedule one bounded CPU slot on the selected response line:
 new installed wheel outside source trees; exact 4 vs 2+2 resume with metrics,
 EMA/RNG/coverage; invalid packet/optimizer/sampler/cohort/EMA restoration before
 mutation; raw/EMA export-load; 0/.5/1 responses and negative/reference/render gates;
@@ -114,7 +124,7 @@ observation RNG/modes/buffers; staged setup/update failure cleanup; installed
 origin/dependency guard and missing registration diagnostics. Run common
 source-direction guard too. No native acoustic behavior is qualified by a tiny
 fixture. Product legacy tests need their own original CDF environment; they must
-not be stamped as passing under core0.7.
+not be stamped as passing under core0.8.2. See [the explicit pending plan](response-session-test-plan.md).
 
 ## Action status
 
@@ -127,5 +137,9 @@ not be stamped as passing under core0.7.
   This is a failed delivery, not an uncertain write. No resend/bypass attempted;
   this handoff contains the report for automatic parent notification.
 - CPU build/install/test slots are **pending parent scheduling**, not denied.
-- Native profile acceptance and modality/compact-inference/HNDL contracts are
-  **pending common-owner changes**, not claimed implemented by this derivative.
+- Native-width/profile recovery and HNDL parity remain **pending parent/upstream
+  coordination**. Neutral response and compact-inference APIs are adopted in
+  source; product runtime qualification remains pending.
+- Read-only local fetch of the exact response commit printed a shallow-root-ref
+  warning; checkout and exact source verification succeeded at `21761ca`. No
+  owner checkout was edited, and no retry/escalation or public write occurred.

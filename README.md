@@ -1,4 +1,4 @@
-> Fresh core0.7 lifecycle work is an untested, isolated [integration draft](LIFECYCLE.md).
+> Fresh core0.8.2 / PG0.9.1 neutral response work is an untested, isolated [integration draft](LIFECYCLE.md).
 > The CDF documentation below remains historical/legacy; no active environment is repinned.
 
 # YuE2 Particle Sliders

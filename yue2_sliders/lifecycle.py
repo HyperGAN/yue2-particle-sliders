@@ -1,20 +1,13 @@
-"""Owned YuE2 AR response factory; never promises waveform or image output.
+"""Complete owned YuE2 numerical response factory; PG owns every GAN update."""
+from particle_sliders.lifecycle import Binding
+from particle_sliders.response import ResponseBackend
 
-PG owns the game. Native tokenization, shared-history preparation and projection
-hooks stay in this product. The legacy registry/schema name is a core seam to
-rename; response metadata is the authoritative modality contract.
-"""
-import hashlib
-import json
-from pathlib import Path
+from .response_runtime import PG_VERSION, PROFILE, DOMAIN, PROTOCOL, capabilities, validate_native_options, validate_staged
+from .response_native import build_native, INFERENCE
 
-from particle_sliders.lifecycle import Backend, Binding, Capabilities
-
-CORE_PIN = 'fd89e1c780ab5210cd1be98ec3b70977e6349379'
-LOCK = Path(__file__).with_name('lifecycle-runtime.lock.json')
 _ALLOWED = {'rows', 'dummy', 'device', 'base_precision', 'steps', 'seed', 'batch',
             'sample_seeds', 'history_tokens', 'preset', 'sampling', 'ema_decay',
-            'revision', 'cache_dir', 'pg_source_profile', 'penalty_input_domain'}
+            'revision', 'cache_dir', 'pg_version', 'pg_source_profile', 'penalty_input_domain'}
 
 
 def _rows(options):
@@ -22,138 +15,74 @@ def _rows(options):
     return parse_prompts(options.get('rows'))[0]
 
 
+def _native_options(options):
+    return {**{key: options[key] for key in ('dummy', 'device', 'base_precision', 'revision', 'cache_dir',
+        'pg_version', 'pg_source_profile', 'penalty_input_domain') if key in options}, 'base_seed': options.get('seed', 7)}
+
+
 def validate(options):
-    """Reject unsupported operations/options without model or device allocation."""
     if set(options) - _ALLOWED:
-        raise ValueError('unsupported YuE2 lifecycle options: ' + str(sorted(set(options) - _ALLOWED)))
+        raise ValueError('unsupported YuE2 response options: ' + str(sorted(set(options) - _ALLOWED)))
     rows = _rows(options)
+    validate_native_options(_native_options(options))
     for key, default, low in [('steps', 4, 1), ('seed', 7, 0), ('batch', 2, 2),
-                              ('sample_seeds', 1, 1), ('history_tokens', 4, 1)]:
+                             ('sample_seeds', 1, 1), ('history_tokens', 4, 1)]:
         if type(options.get(key, default)) is not int or options.get(key, default) < low:
-            raise ValueError(key + ' must be an integer within its lifecycle budget')
+            raise ValueError(key + ' must be an integer within its response budget')
+    if not 2 <= len(rows) * options.get('sample_seeds', 1) <= 512:
+        raise ValueError('prepared prompt/history bank must contain 2..512 rows')
     if options.get('batch', 2) > len(rows) * options.get('sample_seeds', 1):
         raise ValueError('batch exceeds prepared prompt/history bank')
-    if type(options.get('dummy', False)) is not bool:
-        raise ValueError('dummy must be a boolean')
     if options.get('preset', 'bispf_optimized') not in ('bispf', 'bispf_optimized'):
         raise ValueError('unsupported public PG preset')
     if options.get('sampling', 'balanced') not in ('balanced', 'replacement'):
         raise ValueError('unsupported shared sampler')
-    device = options.get('device', 'cpu')
-    if not isinstance(device, str) or not (device == 'cpu' or device.startswith('cuda:')):
-        raise ValueError('device must be cpu or an explicitly admitted cuda device')
-    precision = 'float32' if device == 'cpu' else 'bfloat16'
-    if options.get('dummy') and device != 'cpu':
-        raise ValueError('dummy is CPU only')
-    if options.get('base_precision', precision) != precision:
-        raise ValueError('YuE2 native loader precision differs from requested base_precision')
-    # No alternative source profile, projection or width truncation is selected.
-    from particle_sliders.pg09_audio import require_audio_width
-    if options.get('dummy'):
-        require_audio_width(32, **_domain(options))
 
 
-def _domain(options):
-    return dict(pg_source_profile=options.get('pg_source_profile', 'release'),
-                penalty_input_domain=options.get('penalty_input_domain', 'auto'))
-
-
-def _restore_model(model):
-    """Capture hooks before any partial projection/checkpoint construction."""
-    keys = ('forward', 'gradient_checkpointing', '_gradient_checkpointing_func', '_pg09_scale_checkpoint')
-    missing = object()
-    saved = [(m, m.training, {key: m.__dict__.get(key, missing) for key in keys}) for m in model.modules()]
-    gradients = [(p, p.requires_grad) for p in model.parameters()]
-    def restore():
-        for module, training, values in saved:
-            module.training = training
-            for key, value in values.items():
-                if value is missing:
-                    module.__dict__.pop(key, None)
-                else:
-                    setattr(module, key, value)
-        for parameter, requires_grad in gradients:
-            parameter.requires_grad_(requires_grad)
-    return restore
+def preflight(options, request, staged):
+    if request['native']:
+        raise ValueError('v1 evaluation selects a prepared row; new token_ids belong to native-only v2 response inference')
+    if set(staged) - {'runtime'}:
+        raise ValueError('unknown staged runtime object')
+    runtime = staged.get('runtime')
+    if runtime is not None:
+        validate_staged(runtime, _native_options(options))
 
 
 def prepare(options, *, runtime=None):
-    """Construct every owned game component; unwind all native hooks on failure.
-
-    A staged runtime is for separately admitted integration tests and must expose
-    the same frozen YuE2Backend interface. Callers never assemble PG components.
-    """
     validate(options)
-    from .integration import verify_lock
-    dependencies = verify_lock(json.loads(LOCK.read_text()), CORE_PIN)
-    import torch
-    from particle_sliders import ConditionalPG09
-    from particle_sliders.pg09_audio import YuE2ARResponseAdapter, AudioResponseCritic, audio_conditions, require_audio_width
-    from .backend import YuE2Backend, require_yue2
-    from .defaults import MODEL_ID
-    from .slider import ParticleSlider
-    from .stamp import locked_stamp
-    from .train import prepare_bank, _frozen_digest
-
-    # Read the actual local model configuration before allocating its tensors.
-    if runtime is None and not options.get('dummy'):
-        require_yue2()
-        from yue2.storage import resolve_model
-        resolved = resolve_model(MODEL_ID, revision=options.get('revision'),
-                                 cache_dir=options.get('cache_dir'), local_files_only=True)
-        require_audio_width(json.loads((Path(resolved) / 'config.json').read_text())['hidden_size'], **_domain(options))
-    elif runtime is not None:
-        require_audio_width(runtime.model.config.hidden_size, **_domain(options))
-
-    seed = options.get('seed', 7)
-    torch.manual_seed(seed)
-    if runtime is None:
-        runtime = YuE2Backend(device=options.get('device', 'cpu'), allow_hub=False,
-                              dummy=options.get('dummy', False), revision=options.get('revision'),
-                              cache_dir=options.get('cache_dir'))
-    if bool(runtime.dummy) != options.get('dummy', False):
-        raise ValueError('staged runtime dummy provenance differs')
-    if any(p.requires_grad for p in runtime.model.parameters()):
-        raise ValueError('staged YuE2 base must already be frozen')
-    expected_device = torch.device(options.get('device', 'cpu'))
-    expected_dtype = torch.float32 if expected_device.type == 'cpu' else torch.bfloat16
-    if any(p.device != expected_device or p.dtype != expected_dtype for p in runtime.model.parameters()):
-        raise ValueError('staged base device/precision differs')
-    restore = _restore_model(runtime.model)
+    native, restore, observe = build_native(_native_options(options), runtime=runtime, checkpoint_training=True)
+    provider = None
+    closed = False
+    def close():
+        nonlocal closed
+        if not closed:
+            closed = True
+            try:
+                if provider is not None:
+                    provider.close()
+            finally:
+                restore()
     try:
-        # Preserve the existing bridge law and real shared particle ownership.
-        rows = _rows(options)
-        stamp, _ = locked_stamp(dict(adv_batch=options.get('batch', 2),
-            sample_seeds=options.get('sample_seeds', 1), history_tokens=options.get('history_tokens', 4),
-            seedbank_sources=len(rows) * options.get('sample_seeds', 1)))
-        frozen = _frozen_digest(runtime.model)
-        network = ParticleSlider(runtime.model, stamp)
-        sources = {p.name: hashlib.sha256(p.read_bytes()).hexdigest()
-                   for p in sorted(Path(__file__).parent.glob('*.py'))}
-        adapter = YuE2ARResponseAdapter(runtime, network, model_identity=dict(
-            base=runtime.identity, frozen_base_sha256=frozen, product_sources=sources,
-            integration_dependencies=dependencies, rows=rows, seed=seed,
-            modality='audio', response_kind='ar_last_hidden', waveform_render=False),
-            checkpoint_modules=[] if runtime.dummy else list(runtime.model.model.layers), **_domain(options))
-        prepared = prepare_bank(runtime, adapter, rows, sample_seeds=options.get('sample_seeds', 1),
-                                history_tokens=options.get('history_tokens', 4), seed=seed)
-        conditions = audio_conditions(prepared)
-        critic = AudioResponseCritic(runtime.model.config.hidden_size, conditions.shape[1]).to(device=expected_device, dtype=torch.float32)
-        game = ConditionalPG09(adapter, prepared, critic, conditions=conditions,
-            particles=adapter.particles, response_domain='continuous_vector',
-            preset=options.get('preset', 'bispf_optimized'), batch_size=options.get('batch', 2),
-            seed=seed, total_steps=options.get('steps', 4), sampling=options.get('sampling', 'balanced'),
-            **_domain(options))
-        return Binding(game, restore, render=None)
+        from .response_provider import PreparedBank
+        from particle_sliders import ConditionalPG09
+        from particle_sliders.pg09_audio import AudioResponseCritic
+        import torch
+        provider = PreparedBank(native.backend, native, _rows(options),
+            sample_seeds=options.get('sample_seeds', 1), history_tokens=options.get('history_tokens', 4), seed=options.get('seed', 7))
+        critic = AudioResponseCritic(native.model.config.hidden_size, provider.condition_width).to(
+            device=next(native.network.parameters()).device, dtype=torch.float32)
+        game = ConditionalPG09(native, provider, critic, particles=native.particles,
+            response_domain='continuous_vector', preset=options.get('preset', 'bispf_optimized'),
+            batch_size=options.get('batch', 2), seed=options.get('seed', 7), total_steps=options.get('steps', 4),
+            sampling=options.get('sampling', 'balanced'), pg_source_profile=PROFILE, penalty_input_domain=DOMAIN)
+        spec = INFERENCE.specification(native, model_identity=native.model_identity,
+            protocol=PROTOCOL, configuration=native.inference_configuration)
+        return Binding(game, close, inference=spec, observation=observe)
     except BaseException:
-        restore()
+        close()
         raise
 
 
-def _capabilities(options):
-    return Capabilities('routed_particle_gan', render=False,
-        base_precisions=('float32',) if options.get('device', 'cpu') == 'cpu' else ('bfloat16',),
-        render_outputs=(), qualification='YuE2 audio AR last-hidden response only; waveform/image rendering disabled; this draft is untested')
-
-
-BACKEND = Backend('yue2', _capabilities({}), prepare, validate, _capabilities)
+BACKEND = ResponseBackend('yue2', capabilities({'dummy': True}), prepare, validate,
+                          configure_capabilities=capabilities, preflight=preflight)

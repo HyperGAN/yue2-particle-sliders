@@ -11,7 +11,7 @@ requires-python = ">=3.10"
 license = {file = "LICENSE"}
 # Exact local candidate wheel/source identity is checked by the factory lock.
 # This does not repin requirements.txt or an existing environment.
-dependencies = ["particle-sliders-core==0.7.0", "torch>=2.6,<3", "PyYAML>=6", "safetensors>=0.4", "numpy>=1.26"]
+dependencies = ["particle-sliders-core==0.8.2", "torch>=2.6,<3", "PyYAML>=6", "safetensors>=0.4", "numpy>=1.26"]
 
 [tool.setuptools.packages.find]
 where = ["."]
@@ -20,7 +20,8 @@ include = ["yue2_sliders*"]
 [tool.setuptools.package-data]
 yue2_sliders = ["lifecycle-runtime.lock.json"]
 
-# The milestone uses this legacy group name even for continuous-vector games.
-# Request a modality-neutral registry/schema upstream; never advertise image outputs.
-[project.entry-points."particle_sliders.image_backends"]
+[project.entry-points."particle_sliders.response_backends"]
 yue2 = "yue2_sliders.lifecycle:BACKEND"
+
+[project.entry-points."particle_sliders.inference_backends"]
+yue2 = "yue2_sliders.response_native:INFERENCE"

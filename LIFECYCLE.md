@@ -1,76 +1,122 @@
-# YuE2 lifecycle integration draft
+# YuE2 neutral numerical response proposal
 
-This isolated draft is based on open PR4 at
-`a9d09c7b74173360e459861eb5fe319c45d7c0c0`. It proposes an owned factory against
-shared milestone `fd89e1c780ab5210cd1be98ec3b70977e6349379` (core 0.7.0).
-It has **not been executed, built, installed or qualified**. Existing environment
-pins, `requirements.txt`'s CDF pin, checkpoints and receipts are unchanged.
-See [the audit and pending gates](docs/lifecycle-integration-audit.md).
+The isolated proposal uses **core0.8.2 / PG0.9.1**, exact shared source
+`21761ca8fd059439b58aa56a69bf8d1647f50e31`. PG0.9.1 is the existing PR4 cohort's
+version; this is a new product source cohort, without a PG downgrade or an old
+checkpoint migration. Historical CDF locks, CLI packet formats, receipts, PR3's
+unmerged retraining payload, and active environments remain untouched.
 
-The new installable `yue2_sliders.lifecycle:BACKEND` constructs the entire game.
-It preserves the existing native `YuE2Backend`, frozen neutral/positive teacher
-contexts with shared continuation history, real routed particle bank, projection
-hooks, `YuE2ARResponseAdapter`, `AudioResponseCritic` and `ConditionalPG09`.
-The caller provides JSON options, never manually assembles those components.
-Source, frozen-base, rows, seed and exact installed core bytes bind the new
-cohort. The separate `lifecycle-runtime.lock.json` describes the exact existing
-local milestone wheel; it does not update a running environment.
+Shared contract review is parent-supplied evidence: 71 installed-runtime checks
+per dependency line, independently reviewed, with exact canonical source maps.
+**This product proposal has not been built, installed, imported or tested.**
+Only source parsing, archive/source hashing and Git whitespace checks ran here.
+The [audit](docs/lifecycle-integration-audit.md) and
+[pending test plan](docs/response-session-test-plan.md) distinguish that boundary.
 
-The response contract is **audio / native final AR token hidden state**, shape
-`[1, hidden_size]`, continuous vector, neutral student conditioning, no diffusion
-time or scheduler, and no waveform/image decoding. Metadata explicitly records
-this modality and response kind. Scale zero retains the existing exact bypass;
-only strengths in `[0,1]` are supported, with teachers at `+1`. Negative strengths,
-reference images, Hub downloads, custom game knobs and native rendering are
-rejected. Dummy mode is CPU FP32, native CPU base is FP32 and native CUDA base is
-BF16; adapters, bank and critic remain FP32. CUDA work needs separate admission.
+`yue2_sliders.lifecycle:BACKEND` now registers exclusively in
+`particle_sliders.response_backends`. Its descriptor is explicit:
+`modality=audio_ar_hidden`, `response_kind=native_final_ar_hidden`,
+`response_domain=continuous_vector`, native shape `[1,32]` for the CPU fixture
+and `[1,2048]` for the pretrained product, actual `routed_particle_gan`, exact
+PG0.9.1 `release/auto`. Response-session packets are separate from image packets.
+Rendering, image references, negative strengths and waveform/token output are
+unavailable. The original AR hidden state is never projected, truncated,
+spatially reshaped or treated as a categorical token response.
 
-The current core still names its registry and packets `image_backends` and
-`image-session-v1`. This draft uses that existing protocol without converting any
-AR data into image geometry, advertises zero image output types, and records the
-modality gap for a common fix. The `evaluate()` result is a hidden response;
-it must never be presented as a waveform. `operation='render'` fails before
-factory allocation. The legacy native song renderer remains separate and keeps
-CFG1, cot off, AR-only slider placement and NAR/VAE scale zero. It is not wired
-into this factory until native protocol/listening qualification and the compact
-inference seam are available.
+The complete factory owns the existing frozen YuE2 loader, real 128x4 routed
+bank, rank8/alpha8 q/k/v/o projection hooks, native positive/neutral histories,
+shared AR response adapter, eager immutable teacher/condition provider, existing
+raw-logit audio critic and ConditionalPG09. Shared PG owns GAN math, optimizers,
+coverage and RNG. HyperGAN owns run presentation via `on_step`/manifest/artifacts.
+Native decoder/backbone, routing, conditioning and network laws are unchanged;
+HNDL conversion remains separate matched-weight work.
 
-After the parent schedules build/install/CPU resource slots, the intended new
-cohort API is:
+The provider owns its copied teacher rows and full neutral-response conditions,
+returns copies and releases them on close. Observation covers provider bounds/fetch
+and generated responses through the reviewed common scope, plus product-owned
+native buffer registrations/values, modes, gradient/checkpoint flags and forwards.
+Setup failures and close restore projection/checkpoint hooks. Frozen base weights
+are immutable; observation does not clone the whole pretrained backbone.
+
+After a parent-admitted build/install/CPU slot, the intended API is:
 
 ```python
-from particle_sliders.lifecycle import SessionConfig, open_session
+from particle_sliders.lifecycle import SessionConfig
+from particle_sliders.response import open_response
 
-config = SessionConfig('yue2', 'new-yue2-cpu-cohort', dummy=True,
+config = SessionConfig('yue2', 'new-yue2-response-cohort', dummy=True,
     rows=[dict(neutral='a quiet acoustic song', positive='a loud guitar song',
                lyrics='[verse]\nA train rolls through the night'),
           dict(neutral='a soft piano song', positive='a bright brass song',
                lyrics='[verse]\nWe meet beside the river')],
     steps=4, seed=7, batch=2, sample_seeds=1, history_tokens=4, ema_decay=.9)
-with open_session(config) as session:
-    session.train(stop_after=2)  # on_step accepts a HyperGAN-owned observer
-    session.checkpoint('new-run/training.pt')
-with open_session(config, resume='new-run/training.pt') as session:
-    session.train()
-    session.export('new-run/adapter.pt', selection='ema')
-with open_session(config, artifact='new-run/adapter.pt', operation='evaluate') as session:
-    hidden_response = session.evaluate(index=0, seed=11, strength=.5)
+with open_response(config) as run:
+    run.train(stop_after=2)
+    run.checkpoint('new-run/training.pt')
+with open_response(config, resume='new-run/training.pt') as run:
+    run.train()
+    run.export('new-run/adapter.pt', selection='ema')
+    run.export_inference('new-run/adapter-v2.pt', selection='ema')
+    hidden_response = run.evaluate(index=0, seed=11, strength=.5)
 ```
 
-These are proposed commands, not execution receipts. Install only owner-provided
-exact core/PG wheels in a new environment, with no source PYTHONPATH. The new
-product wheel has not been built; no product wheel hash is claimed. The factory
-checks core wheel SHA256
-`9637aede473939e4284cf05c4c8d950e5a84ab5b0fe3c482080eb10028abc4d9` and official
-PG0.9.1 wheel identity from the retained lock. Native width2048 on release/auto
-remains rejected before pretrained loading. The separately reviewed explicit
-continuous profile has an additional current common lifecycle preflight blocker,
-detailed in the audit; do not edit released PG bytes or bypass the guard.
+Native-only v2 inference is a distinct installed registration:
+`yue2_sliders.response_native:INFERENCE` in `particle_sliders.inference_backends`.
+It builds only the frozen base, actual slider and shared AR response adapter,
+without importing the product training factory, provider or train module. It
+constructs no teacher data, critic, game or optimizer. The export binds actual
+base identity/digest, adapter schema and implementation sources, protocol,
+architecture/context limit, fixture base seed, precision and exact PG profile.
+It contains neither paired prompt rows nor teacher/condition cache values.
 
-Legacy `scripts/train_yue2.py`, `scripts/infer_yue2.py` and Comfy schema paths
-still select the old CDF lock and active-weight semantics. Source package naming
-is now `yue2_sliders`, following PR3's independent namespace fix; native runtime
-imports remain `yue2`. Original product source bytes are checkpoint-bound, so use
-the original PR4 checkout for old resumes. The new package metadata deliberately
-does not expose legacy installed console scripts, whose original configuration
-files remain repository-relative. No old packet is rebound to this lifecycle.
+```python
+from particle_sliders.inference import open_inference
+
+with open_inference('new-run/adapter-v2.pt', options={'device': 'cpu'},
+                    operation='response') as native:
+    hidden_response = native.response(token_ids=[12, 21, 30], strength=.5, seed=11)
+```
+
+`token_ids` must be an existing native AR prefix/history, nonempty, in vocabulary
+and within the context limit. The callback evaluates its final hidden state; it
+never samples tokens or renders a song. Native runtime JSON accepts only `device`,
+`revision` and `cache_dir`; it does not accept training configuration/data. Dummy
+mode needs only the optional CPU device; its frozen base is reconstructed from
+the artifact's bound seed. Native BF16 would require an explicit CUDA device and
+separate admission, but native width2048 currently fails the PG source/shape gate
+before any pretrained allocation. A new native prompt's tokenizer/history and
+acoustic qualification remain separate work.
+
+CLI equivalents use `--interface response`, `--export-format both`, and
+`particle-slider infer --mode response` with native JSON `{"token_ids":[12,21,30]}`.
+See the explicit commands in the test plan. Raw/EMA receipt selection is retained;
+an inference artifact cannot train or resume.
+
+The packaged `lifecycle-runtime.lock.json` is an **unchanged copy** of the owner's
+canonical 091 lock fragment, including all 38 source hashes and audio closure.
+Core wheel SHA256 is
+`d28d082986accc486a4a9c2ce445f4981daaba6f51605b20ded4c0f424cb30ba`;
+companion `reviewed-source.tar` SHA256 is
+`f90b93d4a402b0fbe499d9335b6243f20ab64229c2c0e0703da011743ccd30eb`.
+Both were hash-verified read-only. The three guides omitted from the sdist were
+read from that verified companion and checked against the exact source checkout.
+The owner artifacts' older pending-status fields remain unchanged; the parent's
+latest delegation supplies independent-review completion. No product wheel hash
+or product installed-pass receipt is claimed.
+
+Runtime verification requires exact canonical source bytes, metadata version,
+exact PG dependency and every released PG source. A recorded direct archive hash
+must match. The owner's reviewed isolated wheel-extraction layout is also allowed
+when direct_url metadata is absent, with the same mandatory source checks. No
+checkout fallback, path injection, model download or environment mutation occurs.
+
+Only released `release/auto` is selected in this proposal. The old optional
+`alz-continuous-v1` source is unrecovered and is explicitly rejected. Both official
+PG0.9.1 and PG0.9.3 lack the admitted wide continuous selector; native width2048
+stays gated. This is not a preflight API defect or permission to reshape data.
+
+Legacy CLI/Comfy still select their original core0.6 CDF lock and active-weight
+schemas. Use the original PR4 source checkout for its original source-bound
+resumes. The earlier namespace fix follows PR3's `yue2_sliders` separation while
+native runtime imports remain `yue2`; no legacy packet is rebound to this new
+response or native-only contract.

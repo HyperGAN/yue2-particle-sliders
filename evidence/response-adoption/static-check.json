@@ -1,0 +1,34 @@
+{
+  "scope": "stdlib source/metadata/archive inspection only; no product/core imports or runtime execution",
+  "python_files_parsed": 29,
+  "core_commit": "21761ca8fd059439b58aa56a69bf8d1647f50e31",
+  "core_version": "0.8.2",
+  "pg_version": "0.9.1",
+  "canonical_lock_unchanged": true,
+  "canonical_source_files": 38,
+  "core_wheel_sha256": "d28d082986accc486a4a9c2ce445f4981daaba6f51605b20ded4c0f424cb30ba",
+  "companion_archive_sha256": "f90b93d4a402b0fbe499d9335b6243f20ab64229c2c0e0703da011743ccd30eb",
+  "guides": {
+    "RESPONSE-SESSIONS.md": "d9296774ee8d440cccf8ef0f030ce77ddf9387811a6d6fec0fa35623cc9ee47b",
+    "CLI-ARTIFACTS.md": "ced2028933410b5d608fb9fda83b60f103bfd3281707078c77571d98eac503c5",
+    "PROVIDER-OBSERVATION.md": "0c32d4a8588975c20eb1a77d1b45d1e98a39ae78a0f6a26804a0960165a1a07c"
+  },
+  "native_product_import_closure": [
+    "__init__",
+    "backend",
+    "defaults",
+    "integration",
+    "prompts",
+    "response_native",
+    "response_runtime",
+    "slider",
+    "stamp"
+  ],
+  "native_closure_has_no_training_constructor_calls": true,
+  "product_wheel": null,
+  "tests_run": false,
+  "builds": 0,
+  "installs": 0,
+  "model_loads": 0,
+  "canonical_fragment_sha256": "555351bfedf45d9e63541065c979bb2af869b051969ce0a6618a5948c8a48d26"
+}
