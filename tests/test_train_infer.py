@@ -10,11 +10,11 @@ from pathlib import Path
 import pytest
 import torch
 
-from yue2.defaults import CORE_PIN, HUB_RECIPE_NAME, MODEL_ID, PRODUCT_FORMAT
-from yue2.infer import infer, parse_args as infer_args
-from yue2.slider import ParticleSlider
-from yue2.stamp import locked_stamp
-from yue2.train import parse_args, train
+from yue2_sliders.defaults import CORE_PIN, HUB_RECIPE_NAME, MODEL_ID, PRODUCT_FORMAT
+from yue2_sliders.infer import infer, parse_args as infer_args
+from yue2_sliders.slider import ParticleSlider
+from yue2_sliders.stamp import locked_stamp
+from yue2_sliders.train import parse_args, train
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -52,7 +52,7 @@ def test_product_sources_do_not_vendor_the_core():
         "V2_SPEC",
         "PARTICLE_SLIDERS_ROOT",
     )
-    roots = [ROOT / "yue2", ROOT / "scripts", ROOT / "comfy_yue2.py"]
+    roots = [ROOT / "yue2_sliders", ROOT / "scripts", ROOT / "comfy_yue2.py"]
     files = []
     for path in roots:
         files.extend(path.rglob("*.py") if path.is_dir() else [path])
@@ -172,7 +172,7 @@ def test_scale_zero_is_exact_and_dummy_export_is_refused_for_songs(tmp_path: Pat
         )
     )
     del sidecar
-    from yue2.backend import TinyYuE2
+    from yue2_sliders.backend import TinyYuE2
 
     weights = tmp_path / "run" / "scale-zero_last.safetensors"
     stamp, _locked = locked_stamp()
@@ -222,8 +222,8 @@ def test_penalty_step_stays_finite(tmp_path: Path):
         for line in (tmp_path / "run" / "cap-step_train.jsonl").read_text(encoding="utf-8").splitlines()
     ]
     assert len(rows) == 4
-    assert rows[-1]["penalty_applied"] is True
-    assert math_isfinite(rows[-1]["penalty"])
+    assert all(row["d_pen"] > 0 for row in rows)
+    assert all(math_isfinite(row["d_pen"]) for row in rows)
 
 
 def math_isfinite(value: float) -> bool:

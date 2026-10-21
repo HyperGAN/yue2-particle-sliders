@@ -30,6 +30,11 @@ def load_prompts(path: str | Path) -> tuple[list[dict], dict]:
     the unipolar interval ``[0, 1]`` when present.
     """
     raw = yaml.safe_load(Path(path).read_text(encoding="utf-8"))
+    return parse_prompts(raw)
+
+
+def parse_prompts(raw):
+    """Validate in-memory JSON rows with the same rules as legacy YAML cards."""
     if isinstance(raw, list):
         raw = {"rows": raw}
     if not isinstance(raw, dict) or not isinstance(raw.get("rows"), list) or not raw["rows"]:

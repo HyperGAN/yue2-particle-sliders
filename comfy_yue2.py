@@ -11,9 +11,10 @@ from __future__ import annotations
 import math
 from pathlib import Path
 
-from yue2.defaults import FORMATS, HUB_RECIPE_NAME, MODEL_ID
-from yue2.slider import read_record
-from yue2.stamp import locked_stamp
+from yue2_sliders.defaults import MODEL_ID
+from yue2_sliders.integration import configure_integration
+from yue2_sliders.slider import validate_checkpoint, validate_record
+from yue2_sliders.stamp import locked_stamp
 
 NODE_CLASS_MAPPINGS: dict = {}
 NODE_DISPLAY_NAME_MAPPINGS: dict = {}
@@ -28,20 +29,8 @@ def validate_strength(strength: float, recommended: tuple[float, float] | list[f
 
 
 def validate_slider_record(record: dict, stamp) -> dict:
-    if record.get("format") not in FORMATS:
-        raise ValueError("Not a YuE2 routed-particle slider")
-    if record.get("dummy"):
-        raise ValueError("Comfy does not load dummy YuE2 exports")
-    recipe = record.get("recipe_name")
-    if recipe != stamp.spec["recipe_name"] or recipe != HUB_RECIPE_NAME:
-        raise ValueError(
-            f"Slider recipe {recipe!r} does not match winning_formulation() "
-            f"({stamp.spec['recipe_name']!r})"
-        )
-    if int(record.get("rank", -1)) != int(stamp.spec["adapter_rank"]):
-        raise ValueError("Slider rank does not match the winning formulation")
-    if int(record.get("particles", -1)) != int(stamp.spec["parts"]):
-        raise ValueError("Slider particle count does not match the winning formulation")
+    validate_record(record, stamp)
+    recipe = record.get("recipe_name", record.get("recipe"))
     return {
         "format": record["format"],
         "recipe_name": recipe,
@@ -53,8 +42,9 @@ def validate_slider_record(record: dict, stamp) -> dict:
 
 
 def validate_slider_file(path: str | Path, stamp=None) -> dict:
+    configure_integration()
     stamp = stamp or locked_stamp()[0]
-    record = read_record(path)
+    record, _state = validate_checkpoint(path, stamp)
     checked = validate_slider_record(record, stamp)
     checked["path"] = str(path)
     return checked
@@ -78,6 +68,7 @@ class YuE2ParticleSlider:
     CATEGORY = "NTC/YuE2"
 
     def load(self, weights_path, strength):
+        configure_integration()
         stamp, locked = locked_stamp()
         value = validate_strength(strength, locked["recommended_range"])
         if value == 0.0:

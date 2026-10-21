@@ -9,8 +9,8 @@ import torch
 from safetensors.torch import save_file
 
 from comfy_yue2 import YuE2ParticleSlider, validate_slider_file, validate_slider_record, validate_strength
-from yue2.defaults import HUB_RECIPE_NAME, PRODUCT_FORMAT
-from yue2.stamp import locked_stamp
+from yue2_sliders.defaults import CORE_PIN, HUB_RECIPE_NAME, MODEL_ID, PRODUCT_FORMAT, UPSTREAM_REVISION
+from yue2_sliders.stamp import locked_stamp
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -21,6 +21,15 @@ def _record(stamp, **overrides):
         "recipe_name": HUB_RECIPE_NAME,
         "rank": int(stamp.spec["adapter_rank"]),
         "particles": int(stamp.spec["parts"]),
+        "particle_dim": int(stamp.spec["particle_dim"]),
+        "alpha": float(stamp.spec["adapter_alpha"]),
+        "core_pin": CORE_PIN,
+        "architecture_id": stamp.architecture_id,
+        "formulation_id": stamp.formulation_id,
+        "formulation": f"{stamp.architecture_id}/{stamp.formulation_id}",
+        "model_id": MODEL_ID,
+        "model_identity": {"config_sha256": "test-base"},
+        "upstream_revision": UPSTREAM_REVISION,
         "dummy": False,
     }
     record.update(overrides)
@@ -42,7 +51,7 @@ def test_record_must_match_the_winning_recipe():
     assert checked["formulation_id"] == stamp.formulation_id
     with pytest.raises(ValueError, match="recipe"):
         validate_slider_record(_record(stamp, recipe_name="local-fork"), stamp)
-    with pytest.raises(ValueError, match="dummy"):
+    with pytest.raises(ValueError, match="[Dd]ummy"):
         validate_slider_record(_record(stamp, dummy=True), stamp)
 
 

@@ -1,4 +1,4 @@
-# Breath slider. Formulation knobs come from winning_formulation(); this file
+# Breath slider. Adapter geometry comes from winning_formulation(); this file
 # only sets the YuE2 model surface and the run budget.
 name: breath-yue2-ar
 prompts_file: configs/yue2/prompts-yue2.yaml

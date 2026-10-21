@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from yue2_sliders.defaults import CORE_PIN
+
 ROOT = Path(__file__).resolve().parents[1]
 
 
@@ -21,7 +23,7 @@ def test_readme_is_the_yue2_product():
         "scripts/train_yue2.py",
         "scripts/infer_yue2.py",
         "winning_formulation()",
-        "a119ca1ecd3d5d6c437065839d22739b04f2f4d8",
+        CORE_PIN,
         "anneal-routed-particle-error-yue2-v1",
         "--dummy",
         "comfy_yue2.py",
@@ -44,7 +46,7 @@ def test_formulation_boundaries():
         "RoutedMLP",
         "GradRegularizer",
         "ParticleGAN",
-        "a119ca1ecd3d5d6c437065839d22739b04f2f4d8",
+        CORE_PIN,
     ):
         assert needle in text, needle
     assert "do not fork" in text.lower() or "Do not fork" in text
@@ -59,12 +61,14 @@ def test_comfy_and_reproduce_stay_in_repo():
     assert "scripts/infer_yue2.py" in comfy
     assert "scripts/train_yue2.py" in reproduce
     assert "--dummy" in reproduce
-    assert "a119ca1ecd3d5d6c437065839d22739b04f2f4d8" in reproduce
+    assert CORE_PIN in reproduce
     assert "PARTICLE_SLIDERS_ROOT" not in reproduce
 
 
-def test_requirements_pin_the_core_once():
+def test_requirements_keep_pg091_release_and_exact_installed_candidate():
     text = _text("requirements.txt")
-    pin = "git+https://github.com/HyperGAN/particle-sliders.git@a119ca1ecd3d5d6c437065839d22739b04f2f4d8#subdirectory=packages/particle-sliders-core"
-    assert pin in text
-    assert "conceptmod" not in text
+    assert "particlegan==0.9.1" in text
+    assert "git+https://github.com/HyperGAN/particle-sliders.git@" not in text
+    assert "yue2_sliders.integration" in text
+    assert "shared-runtime.lock.json" in _text("REPRODUCE.md")
+    assert "particle-sliders-core==0.6.0" in text

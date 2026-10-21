@@ -12,13 +12,13 @@ from pathlib import Path
 import torch
 from torch import nn
 
-from yue2.defaults import (
+from yue2_sliders.defaults import (
     MODEL_ID,
     PROJECTIONS,
     UPSTREAM_REVISION,
     VAE_ID,
 )
-from yue2.prompts import sound_only
+from yue2_sliders.prompts import sound_only
 
 
 def require_yue2():

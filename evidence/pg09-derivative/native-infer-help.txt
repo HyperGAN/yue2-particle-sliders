@@ -1,0 +1,41 @@
+usage: infer_yue2.py [-h] [--weights WEIGHTS] [--audio_source AUDIO_SOURCE]
+                     [--core_source CORE_SOURCE] [--style STYLE]
+                     [--lyrics_file LYRICS_FILE] [--output_dir OUTPUT_DIR]
+                     [--model_id MODEL_ID] [--vae_id VAE_ID]
+                     [--revision REVISION] [--vae_revision VAE_REVISION]
+                     [--cache_dir CACHE_DIR] [--device DEVICE]
+                     [--memory_budget_gib MEMORY_BUDGET_GIB] [--scales SCALES]
+                     [--seed SEED] [--cot {off}] [--abc_file ABC_FILE]
+                     [--max_tokens MAX_TOKENS] [--allow_hub] [--dummy]
+                     [--print_card]
+
+Compare YuE2 slider strengths on m-a-p/YuE2-3B. One neutral caption, lyric
+sheet and seed. The comparison is stamped with winning_formulation(). --dummy
+does not download Hub weights.
+
+options:
+  -h, --help            show this help message and exit
+  --weights WEIGHTS
+  --audio_source AUDIO_SOURCE
+                        Exact shared audio integration source checkout
+                        (default: None)
+  --core_source CORE_SOURCE
+                        Exact shared PG09 core source checkout (default: None)
+  --style STYLE         Neutral sound description (default: None)
+  --lyrics_file LYRICS_FILE
+  --output_dir OUTPUT_DIR
+  --model_id MODEL_ID
+  --vae_id VAE_ID
+  --revision REVISION
+  --vae_revision VAE_REVISION
+  --cache_dir CACHE_DIR
+  --device DEVICE
+  --memory_budget_gib MEMORY_BUDGET_GIB
+  --scales SCALES
+  --seed SEED
+  --cot {off}           Qualified slider protocol (default: off)
+  --abc_file ABC_FILE
+  --max_tokens MAX_TOKENS
+  --allow_hub
+  --dummy
+  --print_card

@@ -15,11 +15,12 @@ from pathlib import Path
 
 import torch
 
-from yue2.backend import TinyYuE2, YuE2Backend, file_digest, require_yue2, tiny_from_architecture
-from yue2.defaults import CORE_PIN, MODEL_ID, VAE_ID
-from yue2.prompts import sound_only
-from yue2.slider import ParticleSlider, read_record
-from yue2.stamp import locked_stamp
+from yue2_sliders.backend import TinyYuE2, YuE2Backend, file_digest, require_yue2, tiny_from_architecture
+from yue2_sliders.defaults import CORE_PIN, MODEL_ID, VAE_ID
+from yue2_sliders.prompts import sound_only
+from yue2_sliders.integration import configure_integration
+from yue2_sliders.slider import ParticleSlider, read_record
+from yue2_sliders.stamp import locked_stamp
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -47,7 +48,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--memory_budget_gib", type=float, default=20)
     parser.add_argument("--scales", default="0,0.5,1")
     parser.add_argument("--seed", type=int, default=7)
-    parser.add_argument("--cot", choices=["off", "melody", "full"], default="off")
+    parser.add_argument("--cot", choices=["off"], default="off", help="Qualified slider protocol")
     parser.add_argument("--abc_file", type=Path)
     parser.add_argument("--max_tokens", type=int, default=9000)
     parser.add_argument("--allow_hub", action="store_true")
@@ -65,6 +66,8 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         parser.error("scales must be comma-separated numbers")
     if not args.scales or any(not math.isfinite(scale) for scale in args.scales):
         parser.error("scales must be finite")
+    if any(not 0 <= scale <= 1 for scale in args.scales):
+        parser.error("unipolar slider scales must be between 0 and 1")
     if len(set(args.scales)) != len(args.scales):
         parser.error("scales must be unique")
     if args.model_id != MODEL_ID or args.vae_id != VAE_ID:
@@ -75,6 +78,9 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         parser.error("--weights and --output_dir are required")
     if not args.dummy and not args.print_card and (args.style is None or args.lyrics_file is None):
         parser.error("a live render needs --style and --lyrics_file")
+    if args.abc_file is not None:
+        parser.error("the qualified cot-off protocol does not accept an ABC score")
+    args.dependency = configure_integration()
     return args
 
 
@@ -95,6 +101,7 @@ def comparison_card(args: argparse.Namespace) -> dict:
         "dummy": bool(args.dummy),
         "allow_hub": bool(args.allow_hub),
         "core_pin": CORE_PIN,
+        "integration_dependencies": args.dependency,
     }
 
 
@@ -102,9 +109,17 @@ def _dummy_compare(args: argparse.Namespace, stamp) -> dict:
     record = read_record(args.weights)
     if not record.get("dummy"):
         raise ValueError("--dummy inference only reloads a --dummy training export")
-    model = tiny_from_architecture(record["architecture"]) if record.get("architecture") else TinyYuE2()
-    network, loaded = ParticleSlider.load(model, args.weights, stamp, allow_dummy=True)
-    backend = YuE2Backend(dummy=True)
+    seed = record.get("seed")
+    if type(seed) is not int or not 0 <= seed < 2**63:
+        raise ValueError("Dummy checkpoint needs its training seed to reconstruct the frozen base")
+    with torch.random.fork_rng(devices=[]):
+        torch.manual_seed(seed)
+        model = tiny_from_architecture(record["architecture"]) if record.get("architecture") else TinyYuE2()
+        network, loaded = ParticleSlider.load(
+            model, args.weights, stamp, allow_dummy=True,
+            model_identity={"dummy": True, "model_id": args.model_id},
+        )
+        backend = YuE2Backend(dummy=True)
     backend.model = model
     style = args.style or "English, dry close vocal, soft room."
     lyrics = "[Verse]\nThe rain falls on the step\n"
@@ -112,16 +127,15 @@ def _dummy_compare(args: argparse.Namespace, stamp) -> dict:
         lyrics = Path(args.lyrics_file).read_text(encoding="utf-8")
     ids = backend.prefix(sound_only(style), sound_only(lyrics))
     rows = []
-    baseline = None
     with torch.no_grad():
+        with network.scaled(0.0):
+            baseline = backend.hidden(ids)[:, -1].float()
         for scale in args.scales:
             with network.scaled(scale):
                 hidden = backend.hidden(ids)[:, -1].float()
-            if scale == 0.0:
-                baseline = hidden
-            delta = 0.0 if baseline is None else float((hidden - baseline).pow(2).mean().sqrt())
+            delta = float((hidden - baseline).pow(2).mean().sqrt())
             rows.append({"scale": scale, "rms": float(hidden.pow(2).mean().sqrt()), "delta_from_off": delta})
-    if baseline is not None and any(abs(scale) < 1e-8 for scale in args.scales):
+    if 0.0 in args.scales:
         with torch.no_grad(), network.scaled(0.0):
             again = backend.hidden(ids)[:, -1].float()
         if not torch.equal(again, baseline):
@@ -143,11 +157,14 @@ def render_live(pipe, network, *, style, lyrics, scale, seed, cot, abc, semantic
 
     if pipe.backend != "torch-eager" or pipe.quantization != "none" or pipe.offload_ar:
         raise ValueError("Slider rendering requires torch-eager, no quantization and no AR offload")
+    if cot != "off" or abc is not None or not 0 <= scale <= 1:
+        raise ValueError("Qualified YuE2 slider rendering requires cot off, no ABC and scale in [0,1]")
     request = SongRequest(
         style=sound_only(style),
         lyrics=sound_only(lyrics),
         seed=seed,
         cot=cot,
+        cfg_scale=1.0,
         abc=sound_only(abc) if abc else None,
     )
     start = time.perf_counter()
@@ -195,7 +212,7 @@ def infer(args: argparse.Namespace) -> dict:
         print(json.dumps({"output": str(output), "dummy": True, "scales": body["scales"]}), flush=True)
         return payload
     require_yue2()
-    from yue2 import YuE2Pipeline
+    from yue2.pipeline import YuE2Pipeline
 
     lyrics = sound_only(Path(args.lyrics_file).read_text(encoding="utf-8"))
     style = sound_only(args.style)
@@ -218,11 +235,10 @@ def infer(args: argparse.Namespace) -> dict:
         offload_ar=False,
     ) as pipe:
         model = pipe._load_model()
-        network, record = ParticleSlider.load(model, args.weights, stamp)
-        identity = record.get("model_identity")
         mot = pipe.weights.get("mot")
-        if identity and mot and identity != mot:
-            raise ValueError("Slider was trained on different base model weights")
+        if not isinstance(mot, dict) or not mot:
+            raise ValueError("Native pipeline is missing its base model identity")
+        network, record = ParticleSlider.load(model, args.weights, stamp, model_identity=mot)
         output.mkdir(parents=True)
         for scale, destination in zip(args.scales, destinations):
             result = render_live(

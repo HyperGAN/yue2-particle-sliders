@@ -1,0 +1,67 @@
+{
+  "python": "/mnt/nvme/sliders/qualification/envs/pg090/bin/python",
+  "torch": "2.11.0+cu128",
+  "particlegan": "0.9.0",
+  "particlegan_origin": "/mnt/nvme/sliders/qualification/envs/pg090/lib/python3.11/site-packages/particlegan/__init__.py",
+  "cuda_initialized": false,
+  "source_dependencies": {
+    "audio": {
+      "path": "/mnt/nvme/sliders/audio-adapters-pg09-20261017",
+      "commit": "9262a930cd351459e93ac33cc542fa379c12fe52",
+      "sources": {
+        "conceptmod/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "conceptmod/textsliders/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "conceptmod/textsliders/pg09_audio.py": "b6b6dabe492f31794669075a0b44cabdcbed188c5ff33f3b1a8efa76ffe87535",
+        "conceptmod/textsliders/pg09_backends.py": "60efe36a8239cf2f47c0750a31cd0b33c7e22b22db965d1115c893605cb8baab"
+      }
+    },
+    "core": {
+      "path": "/mnt/nvme/sliders/audio-core-pin-86fc4e0-20261017",
+      "commit": "3e94b13eb5d6cd1ceee3f018f019a68603f35696",
+      "sources": {
+        "packages/particle-sliders-core/src/particle_sliders/__init__.py": "a4d8f05036fd09bd7133eb0bff1e4253a1933cd5b4ad70235fe664627f462dc1",
+        "packages/particle-sliders-core/src/particle_sliders/bispf_game.py": "043b639d17d3d69b0f19bdce1f10f8e93388eab4b07f29aa7f2d966c666f8adc",
+        "packages/particle-sliders-core/src/particle_sliders/bispf_provenance.json": "00b294a9e1a36539c2b6f6e58921b955b973c54c8b75c92fd69b88b31c73333c",
+        "packages/particle-sliders-core/src/particle_sliders/distillation.py": "b277e561517a9cb40d1a399ad07c6350aa22a287232aea816b7f6e434e18a232",
+        "packages/particle-sliders-core/src/particle_sliders/endpoint_game.py": "85ea55b67a4f9112e8d9dd1df1096d3488ca8f2c69c666174370b8f3a5c77655",
+        "packages/particle-sliders-core/src/particle_sliders/formulation.py": "a61b06e93efb24e92a72d826f696ede8694e97a3c27c5e6262a2912caac28e12",
+        "packages/particle-sliders-core/src/particle_sliders/formulation_game.py": "f7e78be912e309e01f305ca4ed09a5e25fe67fa720e736694fe343be89fc9f74",
+        "packages/particle-sliders-core/src/particle_sliders/grad_regularizers.py": "b1d27df47870814b8a3b05839c833792489e2fe5aff3b2875ab03c74f983a33a",
+        "packages/particle-sliders-core/src/particle_sliders/locked_provenance.json": "c38e864b789823476036800eea435586ba6d5208bba4008cbd54fdb8cc88826d",
+        "packages/particle-sliders-core/src/particle_sliders/pg09.py": "426abc25323aea96be91e92f1f4101063d5b3c4062f042e869c729027b4f9256",
+        "packages/particle-sliders-core/src/particle_sliders/pg09_continuous_profile.json": "7064de0a995cf0df598515bb5b7574bb69ef21b0d252b7590a78c3f7a9374499",
+        "packages/particle-sliders-core/src/particle_sliders/pg09_release_sources.json": "d7b9d5944207fe6421111d85d19311964aca22bfafa18563938c985ec0d03b5b",
+        "packages/particle-sliders-core/src/particle_sliders/provenance.json": "efd60e615dc247b531dfb01a0be5728edcd7e442a9b6b888b848e716273ab45a",
+        "packages/particle-sliders-core/src/particle_sliders/recipe.py": "63726226e681e517c49943f6150989a8277031762c6253a338892dac340b5600",
+        "packages/particle-sliders-core/src/particle_sliders/reference.py": "2c5809edd3818fab9efdd0c5234ea6b5027de5fc0130155e537950471018a371",
+        "packages/particle-sliders-core/src/particle_sliders/teachers.py": "9a35fcff05a15d00f6aa67b5cb9e53cf55526d7e06631ef8cfeb0169519818d2"
+      }
+    }
+  },
+  "imports": {
+    "ConditionalPG09": "/mnt/nvme/sliders/audio-core-pin-86fc4e0-20261017/packages/particle-sliders-core/src/particle_sliders/pg09.py",
+    "YuE2ARResponseAdapter": "/mnt/nvme/sliders/audio-adapters-pg09-20261017/conceptmod/textsliders/pg09_audio.py",
+    "AudioResponseCritic": "/mnt/nvme/sliders/audio-adapters-pg09-20261017/conceptmod/textsliders/pg09_audio.py",
+    "audio_conditions": "/mnt/nvme/sliders/audio-adapters-pg09-20261017/conceptmod/textsliders/pg09_audio.py",
+    "AdapterParameters": "/mnt/nvme/sliders/audio-adapters-pg09-20261017/conceptmod/textsliders/pg09_backends.py"
+  },
+  "product_source_sha256": {
+    "__init__.py": "f9e151c8a41aac5777f84e4d8dfaa5c8176028c3d9243d4322ed4173db838620",
+    "backend.py": "2f1d279d6c6075dc09d45b8d17ca76ad4b076fa668f02953648eb6766fbe2bf4",
+    "defaults.py": "dcac73d7ede0c527f5009a3ad493efc83319aaf860306f352384946a669a1c54",
+    "infer.py": "348047c34a83462ff0ecd29c7ec40f2de251cdbc3e40c261145309f1c8b9a6ea",
+    "integration.py": "693d83f4c155fa143a05432269325a2728acfa06820d606312325e0128595eb5",
+    "prompts.py": "103afc73bb1a8c2f9a6ab310b200bb5291afbbaa5dd70b45d7a488aec190c2b8",
+    "samples.py": "7a69f42e18f53cb3c38229924834161ef7e07399bdc6c26cca6fcb5650f2b7ea",
+    "slider.py": "4604540619a67e87fd18ecccc43cdf2a3046a51229b7f9e5e14c3b7caab428ce",
+    "stamp.py": "918702341f2b834d99993e702e98aee13477d01ffd7f2540ceb3408a82cd837e",
+    "train.py": "67281a1b710d1812b4bed4e34fd2075c38bd48a0d6f1ad8ba7a7d816bf57d742"
+  },
+  "entry_source_sha256": {
+    "__init__.py": "c5d575b1708e5a73632b683137d8e5b3454dcb2f577d1d4281da73f16d15b742",
+    "comfy_yue2.py": "2b9e90a1866abcf06e8e0dd520fa1dd7165810d7484de019df5dd3539f68e5e9",
+    "scripts/_bootstrap.py": "3ffa57bc5fc00ff5bd082e96dec9596ffe7d8525e45898db9606f0d2c500d28d",
+    "scripts/infer_yue2.py": "8861158b3654bf694fa0dba87c3a458a8b80e74bf457b70bc9f1e09b81c3014a",
+    "scripts/train_yue2.py": "5802234ca2764e74145e789415e1c2ebc8af765b8378859697d5262238739ad8"
+  }
+}

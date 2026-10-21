@@ -1,0 +1,59 @@
+{
+  "scope": "stdlib AST/metadata/archive/source inspection only; no product/core/Torch imports or test collection/execution",
+  "python_files_parsed": 31,
+  "core_commit": "f6807a91546e43e198645a3f8925d2dc7c9e03b4",
+  "core_version": "0.8.2",
+  "pg_version": "0.9.1",
+  "canonical_lock_unchanged": true,
+  "canonical_lock_sha256": "12e2310b2680173b5a6c3c220270d3d79cb9029d5660bf23f7d6e6f06fd986f3",
+  "canonical_source_files": 38,
+  "core_wheel_sha256": "50a6a7d06240254357569fd3cacbb5cf5e9d3c1771f642dfb719733b5711f32a",
+  "core_sdist_sha256": "ffda5aafa5e5f0bfe0ef95d8d1533935ebb17dd4457f2d8216fad08ce2774640",
+  "companion_archive_sha256": "6bad2ec9cd5ccac54c9b313004bf5b3937cefdd6b4207746b2586f75bb091127",
+  "qualification_sha256": "a67d65028e30f40501ead57bda7770af636780ca25de49d282e897304039402e",
+  "four_guides": {
+    "RESPONSE-SESSIONS.md": "e7079ef9d007a1a061f42655907901e2da3225fbe300af82e926a81781c1c3bf",
+    "CLI-ARTIFACTS.md": "ced2028933410b5d608fb9fda83b60f103bfd3281707078c77571d98eac503c5",
+    "PROVIDER-OBSERVATION.md": "0c32d4a8588975c20eb1a77d1b45d1e98a39ae78a0f6a26804a0960165a1a07c",
+    "CHECKPOINT-OWNERSHIP.md": "4a76b6ce939a017b9bb0c9990dfa62d1ae0a7a5dd4696f653ae72fea581f378f"
+  },
+  "native_product_import_closure": [
+    "__init__",
+    "backend",
+    "defaults",
+    "integration",
+    "prompts",
+    "response_native",
+    "response_runtime",
+    "slider",
+    "stamp"
+  ],
+  "native_closure_has_no_training_constructor_calls": true,
+  "authored_product_test_files": [
+    "test_response_ownership.py",
+    "test_response_sessions.py"
+  ],
+  "authored_parametrized_cases": 13,
+  "product_wheel": null,
+  "tests_run": false,
+  "builds": 0,
+  "installs": 0,
+  "model_loads": 0,
+  "embedded_python_snippets_parsed": 2,
+  "product_sources_sha256": {
+    "yue2_sliders/__init__.py": "9f9514e7053d4906d7fea30f72173992d11674008c2800f1724a880822edf34b",
+    "yue2_sliders/backend.py": "b98c15871da4ce185fae7880530e41ce5c11e69e96a5e86f23a13d2685f13da8",
+    "yue2_sliders/defaults.py": "7b3489186c63c3c8508bc6aa615544ac08151359f10ff565c676e7e80eacb6b9",
+    "yue2_sliders/infer.py": "fc25e682ba505a3e9eeb74e7ee4461a97d4d692468cfeacde65c23e2e6f7bb9b",
+    "yue2_sliders/integration.py": "5195ff1412857a54e874218ea907f201034cd75e9e22bcc313f804f518f639d3",
+    "yue2_sliders/lifecycle.py": "1b0d46ce509cfd79af948ea621bec3d2c5fb16c6829ee8a5f3aef13e7c072901",
+    "yue2_sliders/prompts.py": "04be10471b0fa687421d7fe801ebf39166f59d70c874a3a8c2397713dc7c2657",
+    "yue2_sliders/response_native.py": "b2144e9384217c896e2de8c8595e5a3abe66e9bcc28ad6933b8c9b79cc053127",
+    "yue2_sliders/response_provider.py": "74ccb7a39e8ebefedd9f715474e6a33919c7c13f8726f582552eec02d95d2e82",
+    "yue2_sliders/response_runtime.py": "f4beee2e2182a23abbced0b4994dc80f26bfa866882a810b33b19fa049df1c2e",
+    "yue2_sliders/samples.py": "69c4d780ae27ecb359c3d306501ed5b40ab40bb063d779d5e573bab282819199",
+    "yue2_sliders/slider.py": "f7cc5c554567d7cbe5705829257b3e0819794fc936ef46abce914b9d142bd399",
+    "yue2_sliders/stamp.py": "bee05d657dd7cef0b23e1100f560524f9d595c4eb47bafd9f0597395bce707b8",
+    "yue2_sliders/train.py": "e5f39e55e736039ca4965e80402183277812edc2d9566468babd63739342e8a3"
+  }
+}
