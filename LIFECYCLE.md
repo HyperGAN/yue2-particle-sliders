@@ -1,3 +1,7 @@
+Current status: **13 selected installed CPU checks passed** on the official
+PG0.9.1 runtime below. See [publication status](PUBLICATION-STATUS.md). Original
+source-proposal notes below are historical; native wide/waveform gates remain.
+
 # YuE2 neutral numerical response proposal
 
 The isolated proposal uses **core0.8.2 / PG0.9.1**, exact shared source

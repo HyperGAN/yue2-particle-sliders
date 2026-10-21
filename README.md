@@ -1,4 +1,5 @@
-> Fresh core0.8.2 / PG0.9.1 neutral response work is an untested, isolated [integration draft](LIFECYCLE.md).
+> Fresh core0.8.2 / PG0.9.1 response work passed **13 selected installed CPU checks**.
+> See the [integration draft](LIFECYCLE.md) and [qualification status](PUBLICATION-STATUS.md). Native wide responses and waveforms remain unqualified.
 > The CDF documentation below remains historical/legacy; no active environment is repinned.
 
 # YuE2 Particle Sliders
