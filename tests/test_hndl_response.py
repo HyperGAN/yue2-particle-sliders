@@ -244,3 +244,110 @@ print('native-only HNDL inference passed')
         cwd=tmp_path, env=dict(os.environ, CUDA_VISIBLE_DEVICES='', HF_HUB_OFFLINE='1'),
         capture_output=True, text=True, timeout=45)
     assert result.returncode == 0, result.stdout + result.stderr
+
+
+def native_fixture(seed=7):
+    """Actual pinned native YuE2 classes with random tiny weights; no Hub load."""
+    pytest.importorskip('yue2.modeling_yue2', reason='requires the separate pinned native API fixture slot')
+    from yue2.modeling_yue2 import YuE2Config, YuE2ForCausalLM
+    from yue2_sliders.defaults import UPSTREAM_REVISION
+    from pathlib import Path
+    import hashlib
+    import inspect
+    direct = __import__('json').loads(metadata.distribution('yue2-infer').read_text('direct_url.json'))
+    assert direct['vcs_info']['commit_id'] == UPSTREAM_REVISION
+    torch.manual_seed(seed)
+    config = YuE2Config(hidden_size=32, num_hidden_layers=2, num_attention_heads=2,
+        num_key_value_heads=1, head_dim=16, intermediate_size=64, vocab_size=256,
+        max_position_embeddings=256, latent_dim=8, max_latent_frames=32)
+    runtime = object.__new__(YuE2Backend)
+    runtime.model = YuE2ForCausalLM(config).eval().requires_grad_(False)
+    runtime.dummy = False
+    runtime.identity = dict(fixture='random tiny native YuE2ForCausalLM; not pretrained',
+        config=config.to_dict(), upstream_revision=UPSTREAM_REVISION,
+        native_modeling_sha256=hashlib.sha256(Path(inspect.getsourcefile(YuE2ForCausalLM)).read_bytes()).hexdigest())
+    assert runtime.identity['native_modeling_sha256'] == '62d2bd758c8fff1a0d64584a699343076fca9a7880db5d8e19263bc30ae79d7c'
+    return runtime
+
+
+def test_genuine_native_yue2_grouped_query_response_and_bank_vjp_parity():
+    from yue2_sliders.slider import ParticleSlider
+    from yue2_sliders.stamp import locked_stamp
+    from particle_sliders.fibo_hndl import HNDLParticleProjection
+    original, runtime = native_fixture(), native_fixture()
+    before = deepcopy(runtime.model.state_dict())
+    old = ParticleSlider(original.model, locked_stamp()[0])
+    owner = NativeOwner(runtime.model, slider_factory=product.HNDLSlider, projection_type=HNDLParticleProjection)
+    try:
+        new = owner.attach_slider(runtime.model)
+        with torch.no_grad():
+            new.particles.copy_(old.particles)
+        for prior, current in zip(old.adapters.values(), new.adapters.values()):
+            torch.nn.init.normal_(prior.lora_up.weight, std=.02)
+            affine(current.graph['down'], prior.lora_down)
+            affine(current.graph['up'], prior.lora_up)
+            for family, layers in [('router', prior.bridge.router), ('bridge', prior.bridge.net)]:
+                for index in (0, 2, 4, 6):
+                    affine(current.graph[family + str(index)], layers[index])
+        assert runtime.model.model.layers[0].self_attn.k_proj.out_features == 16
+        for strength in (0., .5, 1.):
+            with old.scaled(strength), new.scaled(strength):
+                expected, actual = original.hidden([12, 21, 30]), runtime.hidden([12, 21, 30])
+            torch.testing.assert_close(actual, expected, atol=2e-6, rtol=2e-5)
+            if strength == 0:
+                assert torch.equal(actual, expected)
+        with old.scaled(.5), new.scaled(.5):
+            original.hidden([12, 21, 30])[:, -1, :3].sum().backward()
+            runtime.hidden([12, 21, 30])[:, -1, :3].sum().backward()
+        torch.testing.assert_close(new.particles.grad, old.particles.grad, atol=3e-6, rtol=3e-5)
+        assert new.particles.grad.abs().sum() > 0
+        assert all(p.grad is None and not p.requires_grad for p in runtime.model.parameters())
+        assert all(torch.equal(value, before[key]) for key, value in runtime.model.state_dict().items())
+    finally:
+        owner.close()
+    assert all('forward' not in vars(m) for m in attention_targets(runtime.model).values())
+
+
+@pytest.mark.parametrize('preset', ['bispf', 'bispf_optimized'])
+def test_genuine_native_yue2_shared_game_updates_and_exact_restore(preset):
+    from particle_sliders.pg094 import ConditionalPG094
+    from particle_sliders.pg09_audio import AudioRow, audio_conditions
+    from particle_sliders.fibo_hndl import HNDLParticleProjection
+    def build():
+        runtime = native_fixture()
+        owner = NativeOwner(runtime.model, slider_factory=product.HNDLSlider, projection_type=HNDLParticleProjection)
+        try:
+            slider = owner.attach_slider(runtime.model)
+            native = product.NativeResponse(runtime, slider, model_identity=runtime.identity,
+                checkpoint_modules=list(runtime.model.model.layers), pg_source_profile=product.PROFILE)
+            owner.adapter = native
+            rows = [native.prepare(AudioRow((12,21,30), (13,22,30))),
+                    native.prepare(AudioRow((14,23,31), (15,24,31)))]
+            critic = product.HNDLAudioCritic(32, audio_conditions(rows).shape[1])
+            game = ConditionalPG094(native, rows, critic, particles=native.particles,
+                conditions=audio_conditions(rows), response_domain='continuous_vector',
+                preset=preset, batch_size=2, seed=7, total_steps=2, pg_source_profile=product.PROFILE)
+            return game, owner
+        except BaseException:
+            owner.close()
+            raise
+    game, owner = build()
+    before = game.backend.slider.particles.detach().clone()
+    critic_before = deepcopy(game.critic.state_dict())
+    try:
+        game.step()
+        packet = game.state_dict()
+        game.step()
+        expected = game.state_dict()
+        assert not torch.equal(before, game.backend.slider.particles)
+        assert any(not torch.equal(value, critic_before[key]) for key, value in game.critic.state_dict().items())
+        assert all(p.grad is None for p in game.backend.model.parameters())
+    finally:
+        owner.close()
+    resumed, owner = build()
+    try:
+        resumed.load_state_dict(packet)
+        resumed.step()
+        same(resumed.state_dict(), expected)
+    finally:
+        owner.close()

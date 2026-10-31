@@ -30,22 +30,31 @@ Tests are copied byte-for-byte outside the source checkout, then collected with
   reload, ownership conflicts/retry, captured gradients, frozen-base gradient
   ownership, exact zero-strength routing bypass, installed assets/entrypoints,
   Python3.10 digest API and refusal of the newer core in the old cohort.
-- Preview core0.12/official PG0.9.4/exact HyperGAN develop/HNDL0.10: 8 installed
+- Preview core0.12/official PG0.9.4/exact HyperGAN develop/HNDL0.10: 11 installed
   CPU cases, covering matched-weight YuE2 responses/bank VJPs, critic scores and
   first/second derivatives, real updates, exact split resume, EMA export/reload,
   builder tamper rejection before attachment, deferred checkpoint backward after
   cleanup, native-only reload without training imports/construction, preview
-  metadata and native2048/profile refusal before pretrained loading.
+  metadata and native2048/profile refusal before pretrained loading. Three of
+  these cases execute the actual pinned YuE2ForCausalLM architecture at random
+  tiny width32, including grouped-query K/V width16, matched-weight native
+  responses/bank VJPs, and exact shared-game restore under both public presets.
 - An actual core0.8.2 training packet is refused by the new HNDL cohort without
-  game/optimizer/EMA/RNG mutation. Both isolated dependency checks pass.
+  game/optimizer/EMA/RNG mutation. Default, modern and pinned-native isolated dependency checks pass.
 - Four existing documentation contracts are checked separately. The current
   wheel and sdist configuration bytes and historical requirements/lock identities
   are compared with the public-base Git objects: all 44 configuration/catalog
   files and the canonical lifecycle lock are unchanged. The default sdist builds
   a wheel with the same data; both package variants build.
 
-Runtime: Python3.12.15, Torch2.14.1+cpu. Isolated virtual environments reuse a
-read-only selection of existing CPU library files; they are not pristine native
+Default/modern fixture runtime: Python3.12.15, Torch2.14.1+cpu. The full
+11-case preview suite also passes in a separate Python3.11.15 slot with the native
+runtime's exact declared dependencies: Torch2.10.0+cu128, Transformers4.57.6,
+Hugging Face Hub0.36.2 and the other pinned native requirements. Execution is CPU
+only with CUDA devices hidden. The native modeling source SHA256 is
+`62d2bd758c8fff1a0d64584a699343076fca9a7880db5d8e19263bc30ae79d7c`,
+byte-equal to upstream revision `ef1936f2ee39fe8de486a0f47a481c95f8d4da87`. Isolated virtual environments reuse a
+read-only selection of existing runtime library files; they are not pristine native
 environments. Core, ParticleGAN, HNDL and product wheels are installed separately;
 HyperGAN uses the exact existing clean develop build with verified provenance.
 No source-checkout path is inserted for the product/shared modules. Python3.10
@@ -54,7 +63,7 @@ regression. Initial harness failures were corrected before the final run.
 
 ## Qualification and release boundary
 
-No pretrained/GPU/audio run, training campaign, model download or weight
+No pretrained/GPU/audio run or training campaign, model download or weight
 publication occurred. Native2048 hidden responses still require the separately
 owned explicit continuous-vector PG profile; published release0.9.4 does not
 supply that admission. No gate is relaxed and no native response is reshaped.

@@ -9,9 +9,13 @@ vector Linear/SiLU/Linear HNDL graph with the existing raw-logit behavior.
 optimizer, RNG, EMA, checkpoint, and inference contracts.
 
 This is a **new source/network cohort**, with a distinct backend, protocol,
-network state keys and runtime lock. Matched-weight CPU fixtures compare the
+network state keys and runtime lock. Matched-weight CPU fixtures, including the actual pinned YuE2ForCausalLM at
+random tiny width32 with native grouped-query attention, compare the
 original product routed network's responses/bank gradients and the original
-audio critic's scores/first and second derivatives. This does not migrate an old
+audio critic's scores/first and second derivatives. The actual native-class fixtures also run shared PG updates and exact restore
+under both public presets in a separate slot matching all declared native-runtime
+dependencies. The model is initialized randomly; no pretrained tensors are read.
+This does not migrate an old
 checkpoint, assert identical random initialization, or qualify native output.
 Native projection cleanup reuses the existing conflict-aware owner. Tests cover
 deferred backward after close with scale-capturing checkpoint handles.
