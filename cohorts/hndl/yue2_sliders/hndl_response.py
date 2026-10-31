@@ -21,7 +21,7 @@ from particle_sliders.response import ResponseBackend
 from . import response_runtime as legacy
 from .response_native import NativeOwner, NativeResponse, NativeCleanupError, check_tokens
 
-CORE_PIN = '4abc0eb03a4e3a84fc3e6d02734c13dc7e8ea231'
+CORE_PIN = 'a794e3b4a8813b012f2c4faa3da82b78d4a90214'
 PG_VERSION = '0.9.4'
 PROFILE = 'release-0.9.4'
 DOMAIN = 'auto'
@@ -31,7 +31,8 @@ ROOT = Path(__file__).parent
 
 def verify_runtime():
     lock = json.loads((ROOT / 'hndl-runtime.lock.json').read_text())
-    if (lock['core_commit'], lock['core_version'], lock['pg_version']) != (CORE_PIN, '0.12.0', PG_VERSION):
+    if (lock['schema'], lock['core_commit'], lock['core_version'], lock['pg_version']) != (
+            'yue2-hypergan-hndl-runtime-v2', CORE_PIN, '0.12.0', PG_VERSION):
         raise ValueError('YuE2 HNDL code and source lock disagree')
     distribution = metadata.distribution('particle-sliders-core')
     if distribution.version != lock['core_version']:
@@ -51,7 +52,7 @@ def verify_runtime():
     actual = {str(p.relative_to(root)): hashlib.sha256(p.read_bytes()).hexdigest()
               for package in ('particle_sliders', 'concept_slider_core')
               for p in sorted((root / package).rglob('*'))
-              if p.is_file() and (p.suffix in ('.py', '.json', '.hndl') or p.name == 'LICENSE')}
+              if p.is_file() and '__pycache__' not in p.parts and p.suffix != '.pyc'}
     if actual != lock['source_sha256']:
         raise ValueError('YuE2 HNDL shared source closure differs from the exact candidate')
     for name, module in tuple(sys.modules.items()):

@@ -114,8 +114,14 @@ def test_shipped_prepare_split_resume_ema_inference_and_wrong_cohort_rejection(t
         for selection in ('raw', 'ema'):
             artifact = tmp_path / (selection + '.pt')
             run.export_inference(artifact, selection=selection)
+            with run._observation(11):
+                if selection == 'ema':
+                    run.game.network.load_state_dict(run.ema.values)
+                expected_response = run.game.backend.response(token_ids=[12, 21, 30], strength=.5, seed=11)
+                expected_off = run.game.backend.response(token_ids=[12, 21, 30], strength=0., seed=11)
             with open_inference(artifact, operation='response', options={'device': 'cpu'}) as native:
-                assert torch.isfinite(native.response(token_ids=[12, 21, 30], strength=.5)).all()
+                assert torch.equal(native.response(token_ids=[12, 21, 30], strength=.5, seed=11), expected_response)
+                assert torch.equal(native.response(token_ids=[12, 21, 30], strength=0., seed=11), expected_off)
         before = run.checkpoint()
         bad = deepcopy(packet)
         bad['manifest']['cohort'] = 'old-cohort'
@@ -145,13 +151,17 @@ def test_actual_changed_hndl_graph_source_rejects_checkpoint_without_mutation(tm
         same(changed.checkpoint(), before)
 
 
-def test_actual_changed_shared_source_rejected_before_native_mutation(tmp_path, monkeypatch):
+@pytest.mark.parametrize('tamper', ['python', 'graph', 'nested-data'])
+def test_actual_changed_shared_source_rejected_before_native_mutation(tmp_path, monkeypatch, tamper):
     import shutil
     distribution = metadata.distribution('particle-sliders-core')
     for name in ('particle_sliders', 'concept_slider_core'):
         shutil.copytree(distribution.locate_file(name), tmp_path / name)
-    source = tmp_path / 'particle_sliders/pg09.py'
-    source.write_bytes(source.read_bytes() + b'\n# Actual copied source tamper.\n')
+    source = tmp_path / {'python': 'particle_sliders/pg09.py',
+                         'graph': 'particle_sliders/fibo_projection.hndl',
+                         'nested-data': 'particle_sliders/new-data/extra.bin'}[tamper]
+    source.parent.mkdir(exist_ok=True)
+    source.write_bytes((source.read_bytes() if source.exists() else b'') + b'\n# Actual copied source/data tamper.\n')
     original = product.metadata.distribution
     class RelocatedCore:
         def __getattr__(self, name):
@@ -308,7 +318,7 @@ def test_preview_metadata_and_native_only_reload_without_training_construction(t
     import subprocess
     import sys
     distribution = metadata.distribution('yue2-particle-sliders')
-    assert distribution.version == '0.3.0.dev0'
+    assert distribution.version == '0.3.0.dev1'
     from packaging.specifiers import SpecifierSet
     assert SpecifierSet(distribution.metadata['Requires-Python']) == SpecifierSet('>=3.11,<3.15')
     core = next(r for r in distribution.requires if r.startswith('particle-sliders-core'))
@@ -452,3 +462,50 @@ def test_genuine_native_yue2_shared_game_updates_and_exact_restore(preset):
         same(resumed.state_dict(), expected)
     finally:
         owner.close()
+
+
+def test_modern_close_conflict_preserves_foreign_forward_and_retries():
+    from particle_sliders.pg09_backends import checkpoint_with_adapter_scale
+    run = open_response(config())
+    native = run.game.backend
+    block = native.model.model.layers[0].self_attn.q_proj
+    native._checkpointing.append(checkpoint_with_adapter_scale(block, native.network))
+    owned = block.forward
+    foreign = lambda *args, **kwargs: None
+    block.forward = foreign
+    try:
+        with pytest.raises(RuntimeError, match='ownership changed'):
+            run.close()
+        assert not run.closed
+        assert block.forward is foreign
+    finally:
+        block.forward = owned
+        run.close()
+    assert run.closed
+    run.close()
+    assert all('forward' not in vars(module) for module in attention_targets(native.model).values())
+    assert not any(getattr(module, '_pg09_scale_checkpoint', False) for module in native.model.modules())
+
+
+def test_modern_partial_setup_failure_restores_staged_host_and_rng(monkeypatch):
+    from particle_sliders.fibo_hndl import HNDLParticleProjection
+    runtime = YuE2Backend(dummy=True)
+    runtime.model.train()
+    before = deepcopy(runtime.model.state_dict())
+    rng = torch.get_rng_state().clone()
+    original = HNDLParticleProjection.__init__
+    calls = 0
+    def interrupted(self, *args, **kwargs):
+        nonlocal calls
+        original(self, *args, **kwargs)
+        calls += 1
+        if calls == 2:
+            raise RuntimeError('partial modern setup fixture')
+    monkeypatch.setattr(HNDLParticleProjection, '__init__', interrupted)
+    with pytest.raises(RuntimeError, match='partial modern setup fixture'):
+        open_response(config(), runtime=runtime)
+    same(runtime.model.state_dict(), before)
+    assert runtime.model.training
+    assert torch.equal(torch.get_rng_state(), rng)
+    assert all(not p.requires_grad and p.grad is None for p in runtime.model.parameters())
+    assert all('forward' not in vars(module) for module in attention_targets(runtime.model).values())

@@ -21,9 +21,9 @@ def replace_once(text, old, new):
 
 def preview_metadata(text):
     old = 'particle-sliders-core @ git+https://github.com/HyperGAN/particle-sliders.git@f6807a91546e43e198645a3f8925d2dc7c9e03b4#subdirectory=packages/particle-sliders-core'
-    new = 'particle-sliders-core[hypergan-hndl] @ git+https://github.com/HyperGAN/particle-sliders.git@4abc0eb03a4e3a84fc3e6d02734c13dc7e8ea231#subdirectory=packages/particle-sliders-core'
+    new = 'particle-sliders-core[hypergan-hndl] @ git+https://github.com/HyperGAN/particle-sliders.git@a794e3b4a8813b012f2c4faa3da82b78d4a90214#subdirectory=packages/particle-sliders-core'
     text = replace_once(text, old, new)
-    text = replace_once(text, 'version = "0.2.0"', 'version = "0.3.0.dev0"')
+    text = replace_once(text, 'version = "0.2.0"', 'version = "0.3.0.dev1"')
     text = replace_once(text, 'requires-python = ">=3.10"', 'requires-python = ">=3.11,<3.15"')
     text = replace_once(text, 'yue2_sliders = ["lifecycle-runtime.lock.json"]',
         'yue2_sliders = ["lifecycle-runtime.lock.json", "hndl-runtime.lock.json", "hndl_audio_critic.hndl"]')
@@ -43,11 +43,14 @@ def main():
             shutil.copytree(ROOT / name, source / name, ignore=shutil.ignore_patterns('__pycache__', '*.pyc'))
         for name in ('hndl_response.py', 'hndl-runtime.lock.json', 'hndl_audio_critic.hndl'):
             shutil.copyfile(ROOT / 'cohorts' / 'hndl' / 'yue2_sliders' / name, source / 'yue2_sliders' / name)
-        for name in ('LICENSE', 'LIFECYCLE.md'):
-            shutil.copyfile(ROOT / name, source / name)
+        shutil.copyfile(ROOT / 'LICENSE', source / 'LICENSE')
+        shutil.copyfile(ROOT / 'docs/hypergan-hndl-cohort.md', source / 'LIFECYCLE.md')
         (source / 'pyproject.toml').write_text(text)
         subprocess.run([sys.executable, '-m', 'pip', 'wheel', '--no-deps', '--no-build-isolation',
                         '--no-index', str(source), '-w', str(output)], check=True)
+        subprocess.run([sys.executable, '-c',
+                        'import sys; from setuptools.build_meta import build_sdist; build_sdist(sys.argv[1])',
+                        str(output)], cwd=source, check=True)
 
 
 if __name__ == '__main__':
