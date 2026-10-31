@@ -12,7 +12,9 @@ import json
 from pathlib import Path
 import sys
 
-LOCK_PATH = Path(__file__).resolve().parents[1] / "configs/yue2/shared-runtime.lock.json"
+from yue2_sliders.resources import CONFIGS
+
+LOCK_PATH = CONFIGS / "shared-runtime.lock.json"
 PG_VERSION = "0.9.1"
 CORE_PIN = "cdfb80a76b882b4b73861b12f555263bd64ffeb7"
 

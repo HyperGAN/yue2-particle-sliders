@@ -1,3 +1,5 @@
+See also the separate [HyperGAN develop/HNDL candidate](docs/hypergan-hndl-cohort.md).
+
 Current status: **13 selected installed CPU checks passed** on the official
 PG0.9.1 runtime below. See [publication status](PUBLICATION-STATUS.md). Original
 source-proposal notes below are historical; native wide/waveform gates remain.
@@ -14,8 +16,8 @@ Shared contract review is parent-supplied evidence: the earlier 71 response
 checks per dependency line, followed by 30 checkpoint-ownership checks per line
 (60 total), independently cleared at their respective exact source/artifact pins.
 This proposal uses the new ownership artifact and corrected canonical lock.
-**This product proposal has not been built, installed, imported or tested.**
-Only source parsing, archive/source hashing and Git whitespace checks ran here.
+That source-only assessment predates the installed CPU receipts linked above.
+Current source/package verification is indexed in [the inventory update](docs/inventory-20261031.md).
 The [audit](docs/lifecycle-integration-audit.md) and
 [pending test plan](docs/response-session-test-plan.md) distinguish that boundary.
 
@@ -49,7 +51,7 @@ retained binding callback is retried. Cleanup errors carry `.owner` for explicit
 if cleanup itself cannot complete. No blanket checkpoint-forward snapshot remains. Frozen base weights
 are immutable; observation does not clone the whole pretrained backbone.
 
-After a parent-admitted build/install/CPU slot, the intended API is:
+The installed CPU fixture API is:
 
 ```python
 from particle_sliders.lifecycle import SessionConfig
@@ -115,8 +117,8 @@ source bundle. Corrected canonical lock SHA256 is
 `12e2310b2680173b5a6c3c220270d3d79cb9029d5660bf23f7d6e6f06fd986f3`;
 metadata-correction.json was checked. Prior artifacts/receipts remain unchanged.
 The owner artifacts' older pending-status fields remain unchanged; the parent's
-latest delegation supplies independent-review completion. No product wheel hash
-or product installed-pass receipt is claimed.
+latest delegation supplies independent-review completion. Those historical records do not describe the current product wheel; see the
+[inventory update](docs/inventory-20261031.md) for current tests and artifacts.
 
 Runtime verification requires exact canonical source bytes, metadata version,
 exact PG dependency and every released PG source. A recorded direct archive hash

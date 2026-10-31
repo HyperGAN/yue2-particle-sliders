@@ -7,10 +7,11 @@ from pathlib import Path
 import yaml
 
 from yue2_sliders.defaults import HUB_PROJECT
+from yue2_sliders.resources import CONFIGS
 
 ROOT = Path(__file__).resolve().parents[1]
-CARDS = ROOT / "configs" / "yue2" / "sample-cards.yaml"
-CATALOG = ROOT / "configs" / "yue2" / "catalog"
+CARDS = CONFIGS / "sample-cards.yaml"
+CATALOG = CONFIGS / "catalog"
 
 
 def load_sample_cards(path: Path | None = None) -> dict:

@@ -152,10 +152,13 @@ def test_partial_projection_setup_unwinds_before_adapter_transfer(monkeypatch):
 def test_deferred_backward_after_owner_close_retains_captured_scale(strength):
     def gradients(checkpointed):
         runtime, native, owner, _ = make_owned(checkpointed=checkpointed)
+        before = {key: value.clone() for key, value in runtime.model.state_dict().items()}
         with native.network.scaled(strength):
             loss = runtime.hidden([12, 21, 30])[:, -1, :3].sum()
         owner.close()  # The already-built graph still owns its captured forwards.
         loss.backward()
+        assert all(not p.requires_grad and p.grad is None for p in runtime.model.parameters())
+        assert all(torch.equal(value, before[key]) for key, value in runtime.model.state_dict().items())
         return [None if p.grad is None else p.grad.clone() for p in native.network.parameters()]
     actual, expected = gradients(True), gradients(False)
     assert len(actual) == len(expected)
@@ -164,3 +167,25 @@ def test_deferred_backward_after_owner_close_retains_captured_scale(strength):
         assert (left is None) == (right is None)
         if left is not None:
             assert torch.equal(left, right)
+
+
+def test_zero_strength_skips_routing_and_restores_owned_projection_forwards(monkeypatch):
+    runtime = YuE2Backend(dummy=True)
+    ids = torch.tensor([[12, 21, 30]])
+    with torch.no_grad():
+        bare = runtime.model.forward_hidden(ids).clone()
+    runtime, native, owner, _ = make_owned(checkpointed=False, runtime=runtime)
+
+    def forbidden(*args, **kwargs):
+        raise AssertionError('zero strength reached the routed bridge')
+
+    for adapter in native.slider.adapters.values():
+        monkeypatch.setattr(adapter.bridge, 'forward', forbidden)
+    try:
+        response = native.response(token_ids=[12, 21, 30], strength=0)
+        assert torch.equal(response, bare[:, -1])
+        assert not response.requires_grad
+        assert all(p.grad is None for p in runtime.model.parameters())
+    finally:
+        owner.close()
+    assert_detached(runtime)

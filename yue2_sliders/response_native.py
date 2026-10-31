@@ -36,10 +36,14 @@ class NativeCleanupError(RuntimeError):
 
 class NativeOwner:
     """Retain shared checkpoint ledgers; restore only owned projection forwards."""
-    def __init__(self, model):
+    def __init__(self, model, *, slider_factory=None, projection_type=None):
         from particle_sliders.lifecycle import native_cleanup
         from .backend import attention_targets
         self.model = model
+        # Alternate network cohorts reuse the same conflict-aware ownership
+        # ledger, while supplying their own explicitly selected construction.
+        self.slider_factory = slider_factory
+        self.projection_type = projection_type
         self.adapter = None
         self.closed = False
         self._attachment_attempted = False
@@ -56,14 +60,16 @@ class NativeOwner:
         self._attachment_attempted = True
         from .slider import ParticleSlider, RoutedProjection
         from .stamp import locked_stamp
+        factory = self.slider_factory or (lambda model: ParticleSlider(model, locked_stamp()[0]))
+        projection_type = self.projection_type or RoutedProjection
         try:
-            return ParticleSlider(model, locked_stamp()[0])
+            return factory(model)
         finally:
             # Also claim projections installed before a partial constructor failure.
             for module, had_forward, previous, bound in self._targets:
                 current = vars(module).get('forward')
                 projection = getattr(current, '__self__', None)
-                if isinstance(projection, RoutedProjection) and projection.org_forward == bound:
+                if isinstance(projection, projection_type) and projection.org_forward == bound:
                     self._projections.append((module, current, had_forward, previous))
 
     def close(self):

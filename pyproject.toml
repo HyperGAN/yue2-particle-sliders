@@ -13,15 +13,23 @@ license = {file = "LICENSE"}
 # The default requirements entry delegates to this exact immutable cohort.
 dependencies = ["particle-sliders-core @ git+https://github.com/HyperGAN/particle-sliders.git@f6807a91546e43e198645a3f8925d2dc7c9e03b4#subdirectory=packages/particle-sliders-core", "torch>=2.6,<3", "PyYAML>=6", "safetensors>=0.4", "numpy>=1.26"]
 
-[tool.setuptools.packages.find]
-where = ["."]
-include = ["yue2_sliders*"]
+[project.optional-dependencies]
+test = ["pytest>=8"]
+
+[tool.setuptools]
+packages = ["yue2_sliders", "yue2_sliders._assets"]
+
+[tool.setuptools.package-dir]
+"yue2_sliders._assets" = "configs/yue2"
 
 [tool.setuptools.package-data]
-yue2_sliders = ["lifecycle-runtime.lock.json"]
+yue2_sliders = ["lifecycle-runtime.lock.json", "hndl-runtime.lock.json", "*.hndl"]
+"yue2_sliders._assets" = ["*.json", "*.yaml", "catalog/*.yaml"]
 
 [project.entry-points."particle_sliders.response_backends"]
 yue2 = "yue2_sliders.lifecycle:BACKEND"
+yue2-hndl = "yue2_sliders.hndl_response:BACKEND"
 
 [project.entry-points."particle_sliders.inference_backends"]
 yue2 = "yue2_sliders.response_native:INFERENCE"
+yue2-hndl = "yue2_sliders.hndl_response:INFERENCE"

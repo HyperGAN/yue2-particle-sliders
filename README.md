@@ -1,3 +1,5 @@
+The real shared [HyperGAN develop/HNDL candidate](docs/hypergan-hndl-cohort.md) is available as a separate `yue2-hndl` CPU fixture cohort; native width2048 remains gated.
+
 [Current and historical installation cohorts](INSTALL-COHORTS.md).
 
 > Fresh core0.8.2 / PG0.9.1 response work passed **13 selected installed CPU checks**.
@@ -46,9 +48,12 @@ Original particle weights and ordinary distilled LoRAs are different files. The
 links above are the original particles. Distillation notes stay on the
 [Hub distillation guide](https://huggingface.co/ntc-ai/yue2-concept-sliders/blob/main/DISTILLATION.md).
 
-## Train and render
+## Historical CLI train and render
 
-CPU checks need a fresh environment with the exact locked PG 0.9.1 and core wheels:
+These source-bound CLI commands use the historical core0.6 lock and need their
+original source checkout and isolated environment. For current packaged response
+work use [LIFECYCLE.md](LIFECYCLE.md); for the new HNDL lane use the separate guide.
+Historical CPU checks need the exact locked PG 0.9.1 and core wheels:
 
 ```bash
 python scripts/train_yue2.py --dummy --steps 3 --until 1 --save_dir /tmp/yue2-first
