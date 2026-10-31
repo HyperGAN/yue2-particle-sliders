@@ -1,3 +1,5 @@
+Current review corrections: [issue-by-issue receipts](review-fixes-20261031.md).
+
 # YuE2 inventory update — 2026-10-31
 
 Public base: `0cdc1901a0636e12ee1898270156544101a53867`.
@@ -9,6 +11,8 @@ original requirements remain verbatim in `requirements-legacy.txt`. Wheel/sdist
 assets now include the original configuration/catalog bytes without maintaining
 a duplicate source copy. Installed catalog/sample-card helpers work without a
 checkout. Streaming model-file hashing supports the declared Python3.10 API.
+The default wheel excludes modern HNDL code, graph, lock and registrations;
+the preview builder alone injects those from `cohorts/hndl/yue2_sliders/`.
 Native ownership accepts an explicit projection/factory so the HNDL cohort can
 reuse the conflict-aware cleanup ledger.
 
@@ -25,12 +29,12 @@ The task-local evidence directory is
 Tests are copied byte-for-byte outside the source checkout, then collected with
 `python -I -m pytest --import-mode=importlib -c /dev/null` against installed wheels.
 
-- Default core0.8.2/official PG0.9.1: 17 installed CPU cases, covering lifecycle,
+- Default core0.8.2/official PG0.9.1: 18 installed CPU cases, covering lifecycle,
   split resume, corrupt-checkpoint rejection without mutation, native-only raw/EMA
   reload, ownership conflicts/retry, captured gradients, frozen-base gradient
   ownership, exact zero-strength routing bypass, installed assets/entrypoints,
   Python3.10 digest API and refusal of the newer core in the old cohort.
-- Preview core0.12/official PG0.9.4/exact HyperGAN develop/HNDL0.10: 11 installed
+- Preview core0.12/official PG0.9.4/exact HyperGAN develop/HNDL0.10: 20 installed
   CPU cases, covering matched-weight YuE2 responses/bank VJPs, critic scores and
   first/second derivatives, real updates, exact split resume, EMA export/reload,
   builder tamper rejection before attachment, deferred checkpoint backward after
@@ -41,14 +45,14 @@ Tests are copied byte-for-byte outside the source checkout, then collected with
   responses/bank VJPs, and exact shared-game restore under both public presets.
 - An actual core0.8.2 training packet is refused by the new HNDL cohort without
   game/optimizer/EMA/RNG mutation. Default, modern and pinned-native isolated dependency checks pass.
-- Four existing documentation contracts are checked separately. The current
+- Four existing documentation contracts and 13 preview-builder regressions pass separately. The current
   wheel and sdist configuration bytes and historical requirements/lock identities
   are compared with the public-base Git objects: all 44 configuration/catalog
   files and the canonical lifecycle lock are unchanged. The default sdist builds
   a wheel with the same data; both package variants build.
 
 Default/modern fixture runtime: Python3.12.15, Torch2.14.1+cpu. The full
-11-case preview suite also passes in a separate Python3.11.15 slot with the native
+20-case preview suite also passes in a separate Python3.11.15 slot with the native
 runtime's exact declared dependencies: Torch2.10.0+cu128, Transformers4.57.6,
 Hugging Face Hub0.36.2 and the other pinned native requirements. Execution is CPU
 only with CUDA devices hidden. The native modeling source SHA256 is

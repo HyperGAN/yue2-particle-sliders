@@ -32,10 +32,43 @@ def test_installed_data_and_entrypoints_keep_their_cohorts():
     assert '@' + CORE_PIN + '#subdirectory=packages/particle-sliders-core' in requirement
     assert verify_runtime()['core_commit'] == CORE_PIN
     registrations = {(ep.group, ep.name): ep for ep in distribution.entry_points}
+    assert set(registrations) == {
+        ('particle_sliders.response_backends', 'yue2'),
+        ('particle_sliders.inference_backends', 'yue2')}
+    import importlib.util
+    assert importlib.util.find_spec('yue2_sliders.hndl_response') is None
+    assert not (package / 'hndl-runtime.lock.json').exists()
+    assert not (package / 'hndl_audio_critic.hndl').exists()
     for group, module in [('response_backends', 'lifecycle'), ('inference_backends', 'response_native')]:
         ep = registrations[('particle_sliders.' + group, 'yue2')]
         assert ep.value.startswith('yue2_sliders.' + module + ':')
         assert ep.load().name == 'yue2'
+
+
+def test_default_fresh_process_discovers_only_its_installed_core082_backends(tmp_path):
+    import subprocess
+    import sys
+    code = '''
+import importlib.abc, sys
+from importlib import metadata
+assert metadata.version('particle-sliders-core') == '0.8.2'
+class Guard(importlib.abc.MetaPathFinder):
+    def find_spec(self, fullname, path=None, target=None):
+        if fullname in {'yue2_sliders.hndl_response', 'particle_sliders.fibo_hndl', 'hypergan', 'hndl'}:
+            raise AssertionError('default discovered modern dependency: ' + fullname)
+sys.meta_path.insert(0, Guard())
+distribution = metadata.distribution('yue2-particle-sliders')
+assert len(distribution.entry_points) == 2
+for entry in distribution.entry_points:
+    assert entry.name == 'yue2' and entry.load().name == 'yue2'
+for group in ('particle_sliders.response_backends', 'particle_sliders.inference_backends'):
+    assert not list(metadata.entry_points(group=group, name='yue2-hndl'))
+assert 'hndl' not in sys.modules and 'hypergan' not in sys.modules
+print('default installed discovery passed without modern imports')
+'''
+    result = subprocess.run([sys.executable, '-I', '-c', code], cwd=tmp_path,
+                            capture_output=True, text=True, timeout=30)
+    assert result.returncode == 0, result.stdout + result.stderr
 
 
 def test_digest_supports_the_declared_python310_api(tmp_path, monkeypatch):

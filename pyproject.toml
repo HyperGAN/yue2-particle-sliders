@@ -23,13 +23,11 @@ packages = ["yue2_sliders", "yue2_sliders._assets"]
 "yue2_sliders._assets" = "configs/yue2"
 
 [tool.setuptools.package-data]
-yue2_sliders = ["lifecycle-runtime.lock.json", "hndl-runtime.lock.json", "*.hndl"]
+yue2_sliders = ["lifecycle-runtime.lock.json"]
 "yue2_sliders._assets" = ["*.json", "*.yaml", "catalog/*.yaml"]
 
 [project.entry-points."particle_sliders.response_backends"]
 yue2 = "yue2_sliders.lifecycle:BACKEND"
-yue2-hndl = "yue2_sliders.hndl_response:BACKEND"
 
 [project.entry-points."particle_sliders.inference_backends"]
 yue2 = "yue2_sliders.response_native:INFERENCE"
-yue2-hndl = "yue2_sliders.hndl_response:INFERENCE"

@@ -31,11 +31,18 @@ deferred backward after close with scale-capturing checkpoint handles.
 | HNDL | exact 0.10.0 |
 | Product preview | 0.3.0.dev0; Python >=3.11,<3.15 |
 
+`cohorts/hndl/yue2_sliders/` holds the preview-only module, graph and lock.
+The default wheel omits all three and registers only its `yue2` factories;
+the preview builder explicitly injects them and registers only `yue2-hndl`.
+Each of its six metadata substitutions requires exactly one matching anchor.
+
 `hndl-runtime.lock.json` binds every shared Python/JSON/HNDL source file. The
 shared `verified_builder()` verifies the actual HNDL closure, HyperGAN builder
 closure and clean build provenance. The original `lifecycle-runtime.lock.json`
-and historical config locks remain unchanged. Wrong sources, versions, cohorts
-and profiles refuse; there is no dependency or source fallback.
+and historical config locks remain unchanged. The core archive SHA256 must match installed pip archive provenance; an exact
+Git origin/commit is the explicit source-build alternative. Missing or different
+origin provenance refuses. Full runtime source-closure checks remain mandatory
+for both paths. Wrong sources, versions, cohorts and profiles refuse; there is no dependency or source fallback.
 
 The joint core commit is local and **not published**. The default product
 metadata retains its supported core0.8.2/PG0.9.1 cohort. Do not install the preview

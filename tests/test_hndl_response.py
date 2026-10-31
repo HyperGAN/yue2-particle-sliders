@@ -91,11 +91,14 @@ def test_matched_product_network_outputs_bank_gradients_and_zero_strength():
     assert all('forward' not in vars(m) for m in attention_targets(runtime.model).values())
 
 
-def test_real_stack_split_resume_ema_inference_and_wrong_source_rejection(tmp_path):
+@pytest.mark.parametrize('preset', ['bispf', 'bispf_optimized'])
+def test_shipped_prepare_split_resume_ema_inference_and_wrong_cohort_rejection(tmp_path, preset):
     from particle_sliders.fibo_hndl import HNDLParticleProjection
-    cfg = config()
+    from particle_sliders import ConditionalPG09
+    cfg = SessionConfig('yue2-hndl', 'shipped-prepare-' + preset, **dict(config().options, preset=preset))
     rng = torch.get_rng_state().clone()
     with open_response(cfg) as run:
+        assert type(run.game) is ConditionalPG09  # Registry invokes the shipped prepare(), not the direct alias fixture.
         assert isinstance(run.game.critic, product.HNDLAudioCritic)
         assert all(isinstance(a, HNDLParticleProjection) for a in run.game.backend.slider.adapters.values())
         before = run.game.backend.slider.particles.detach().clone()
@@ -123,6 +126,104 @@ def test_real_stack_split_resume_ema_inference_and_wrong_source_rejection(tmp_pa
         same(run.checkpoint(), before)
     assert torch.equal(rng, torch.get_rng_state())
     assert not torch.cuda.is_initialized()
+
+
+def test_actual_changed_hndl_graph_source_rejects_checkpoint_without_mutation(tmp_path, monkeypatch):
+    import shutil
+    with open_response(config()) as original:
+        original.train(stop_after=2)
+        packet = original.checkpoint()
+    for name in ('hndl_response.py', 'hndl-runtime.lock.json', 'hndl_audio_critic.hndl'):
+        shutil.copyfile(product.ROOT / name, tmp_path / name)
+    graph = tmp_path / 'hndl_audio_critic.hndl'
+    graph.write_text(graph.read_text() + '\n# Different actual source; no cohort metadata edited.\n')
+    monkeypatch.setattr(product, 'ROOT', tmp_path)
+    with open_response(config()) as changed:
+        before = changed.checkpoint()
+        with pytest.raises(CheckpointError):
+            changed.restore(packet)
+        same(changed.checkpoint(), before)
+
+
+def test_actual_changed_shared_source_rejected_before_native_mutation(tmp_path, monkeypatch):
+    import shutil
+    distribution = metadata.distribution('particle-sliders-core')
+    for name in ('particle_sliders', 'concept_slider_core'):
+        shutil.copytree(distribution.locate_file(name), tmp_path / name)
+    source = tmp_path / 'particle_sliders/pg09.py'
+    source.write_bytes(source.read_bytes() + b'\n# Actual copied source tamper.\n')
+    original = product.metadata.distribution
+    class RelocatedCore:
+        def __getattr__(self, name):
+            return getattr(distribution, name)
+        def locate_file(self, path):
+            return tmp_path / path
+    monkeypatch.setattr(product.metadata, 'distribution', lambda name:
+                        RelocatedCore() if name == 'particle-sliders-core' else original(name))
+    runtime = YuE2Backend(dummy=True)
+    before = deepcopy(runtime.model.state_dict())
+    forwards = [module.forward for module in attention_targets(runtime.model).values()]
+    flags = [p.requires_grad for p in runtime.model.parameters()]
+    with pytest.raises(ValueError, match='shared source closure'):
+        product.HNDLSlider(runtime.model)
+    assert forwards == [module.forward for module in attention_targets(runtime.model).values()]
+    assert flags == [p.requires_grad for p in runtime.model.parameters()]
+    same(runtime.model.state_dict(), before)
+
+
+@pytest.mark.parametrize('provenance', ['wrong-wheel-hash', 'missing-wheel-hash', 'missing', 'wrong-vcs', 'exact-vcs'])
+def test_core_archive_or_vcs_provenance_is_enforced(monkeypatch, provenance):
+    import json
+    distribution = metadata.distribution('particle-sliders-core')
+    records = {
+        'wrong-wheel-hash': {'archive_info': {'hashes': {'sha256': '0' * 64}}},
+        'missing-wheel-hash': {'archive_info': {}},
+        'missing': {},
+        'wrong-vcs': {'url': 'https://github.com/HyperGAN/particle-sliders.git',
+                      'vcs_info': {'vcs': 'git', 'commit_id': '0' * 40}},
+        'exact-vcs': {'url': 'https://github.com/HyperGAN/particle-sliders.git',
+                      'vcs_info': {'vcs': 'git', 'commit_id': product.CORE_PIN}},
+    }
+    original = product.metadata.distribution
+    class CoreView:
+        def __getattr__(self, name):
+            return getattr(distribution, name)
+        def read_text(self, name):
+            return json.dumps(records[provenance]) if name == 'direct_url.json' else distribution.read_text(name)
+    monkeypatch.setattr(product.metadata, 'distribution', lambda name:
+                        CoreView() if name == 'particle-sliders-core' else original(name))
+    if provenance == 'exact-vcs':
+        assert product.verify_runtime()[1]['core_commit'] == product.CORE_PIN
+    else:
+        with pytest.raises(ValueError, match='wheel SHA256|archive or Git commit provenance'):
+            product.verify_runtime()
+
+
+def test_float32_adapter_conversion_preserves_registered_frozen_bf16_host():
+    from particle_sliders.fibo_hndl import HNDLParticleProjection
+    runtime = YuE2Backend(dummy=True)
+    runtime.model.to(dtype=torch.bfloat16)
+    before = deepcopy(runtime.model.state_dict())
+    ids_before = {id(p) for p in runtime.model.parameters()}
+    pointers_before = [p.data_ptr() for p in runtime.model.parameters()]
+    with torch.no_grad():
+        baseline = runtime.model.forward_hidden(torch.tensor([[12, 21, 30]])).clone()
+    owner = NativeOwner(runtime.model, slider_factory=product.HNDLSlider, projection_type=HNDLParticleProjection)
+    try:
+        slider = owner.attach_slider(runtime.model)
+        slider.to(dtype=torch.float32)
+        assert not ids_before.intersection(id(p) for p in slider.parameters())
+        assert all(p.dtype == torch.float32 for p in slider.parameters())
+        assert all(p.dtype == torch.bfloat16 and not p.requires_grad and p.grad is None
+                   for p in runtime.model.parameters())
+        assert pointers_before == [p.data_ptr() for p in runtime.model.parameters()]
+        same(runtime.model.state_dict(), before)
+        with torch.no_grad(), slider.scaled(0):
+            actual = runtime.model.forward_hidden(torch.tensor([[12, 21, 30]]))
+        assert actual.dtype == torch.bfloat16 and torch.equal(actual, baseline)
+    finally:
+        owner.close()
+    same(runtime.model.state_dict(), before)
 
 
 def test_native_width_refuses_before_loader_and_no_profile_override(monkeypatch):

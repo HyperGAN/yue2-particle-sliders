@@ -36,6 +36,15 @@ def verify_runtime():
     distribution = metadata.distribution('particle-sliders-core')
     if distribution.version != lock['core_version']:
         raise ValueError('YuE2 HNDL requires its separate core0.12 cohort; retain the original environment for old packets')
+    direct = json.loads(distribution.read_text('direct_url.json') or '{}')
+    archive_hash = direct.get('archive_info', {}).get('hashes', {}).get('sha256')
+    vcs = direct.get('vcs_info', {})
+    if 'archive_info' in direct:
+        if archive_hash != lock['core_wheel_sha256']:
+            raise ValueError('YuE2 HNDL core wheel SHA256 differs from the exact candidate')
+    elif (vcs.get('vcs'), vcs.get('commit_id'), direct.get('url', '').removesuffix('.git')) != (
+            'git', CORE_PIN, 'https://github.com/HyperGAN/particle-sliders'):
+        raise ValueError('YuE2 HNDL requires exact wheel archive or Git commit provenance')
     if 'particlegan==0.9.4' not in {r.replace(' ', '') for r in distribution.requires or ()}:
         raise ValueError('YuE2 HNDL core must pin exact ParticleGAN0.9.4')
     root = Path(distribution.locate_file('')).resolve()
