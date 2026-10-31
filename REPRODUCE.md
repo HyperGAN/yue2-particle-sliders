@@ -12,7 +12,7 @@ these exact wheels (provided by the package owner), then remaining dependencies:
 ```bash
 python -m venv /path/to/new-environment
 /path/to/new-environment/bin/python -m pip install --no-deps "$PG_WHEEL" "$CORE_WHEEL"
-/path/to/new-environment/bin/python -m pip install -r requirements.txt
+/path/to/new-environment/bin/python -m pip install -r requirements-legacy.txt
 ```
 
 | Artifact | SHA256 |

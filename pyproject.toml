@@ -10,8 +10,8 @@ readme = "LIFECYCLE.md"
 requires-python = ">=3.10"
 license = {file = "LICENSE"}
 # Exact local candidate wheel/source identity is checked by the factory lock.
-# This does not repin requirements.txt or an existing environment.
-dependencies = ["particle-sliders-core==0.8.2", "torch>=2.6,<3", "PyYAML>=6", "safetensors>=0.4", "numpy>=1.26"]
+# The default requirements entry delegates to this exact immutable cohort.
+dependencies = ["particle-sliders-core @ git+https://github.com/HyperGAN/particle-sliders.git@f6807a91546e43e198645a3f8925d2dc7c9e03b4#subdirectory=packages/particle-sliders-core", "torch>=2.6,<3", "PyYAML>=6", "safetensors>=0.4", "numpy>=1.26"]
 
 [tool.setuptools.packages.find]
 where = ["."]
