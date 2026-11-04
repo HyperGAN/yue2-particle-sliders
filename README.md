@@ -93,3 +93,5 @@ audio inside the graph. See [COMFYUI.md](COMFYUI.md).
 
 Formulation exams stay in [HyperGAN/particle-sliders](https://github.com/HyperGAN/particle-sliders).
 `V2_SPEC` is `analysis/slider2d/yue2_gmix_v2_exam.py` there.
+
+Learning-rate controls and preserved defaults: [LEARNING-RATES.md](LEARNING-RATES.md).
