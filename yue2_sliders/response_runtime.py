@@ -9,9 +9,9 @@ import sys
 
 from particle_sliders.response import ResponseCapabilities
 
-CORE_PIN = 'f6807a91546e43e198645a3f8925d2dc7c9e03b4'
-PG_VERSION = '0.9.1'
-PROFILE = 'release'
+CORE_PIN = 'ddb41423bcefc1fe76cd94d0f9b367353b3ea137'
+PG_VERSION = '0.9.4'
+PROFILE = 'release-0.9.4'
 DOMAIN = 'auto'
 LOCK = Path(__file__).with_name('lifecycle-runtime.lock.json')
 PROTOCOL = 'yue2-native-final-ar-hidden-response-v1'
@@ -43,7 +43,7 @@ def validate_native_options(options):
         raise ValueError('base_seed must be a bounded nonnegative integer')
     if (options.get('pg_version', PG_VERSION), options.get('pg_source_profile', PROFILE),
             options.get('penalty_input_domain', DOMAIN)) != (PG_VERSION, PROFILE, DOMAIN):
-        raise ValueError('this proposal admits only reviewed PG0.9.1 release/auto; the old continuous profile is unrecovered')
+        raise ValueError('this cohort admits only official PG0.9.4 release-0.9.4/auto; the old continuous profile is unrecovered')
     for key in ('revision', 'cache_dir'):
         if key in options and options[key] is not None and not isinstance(options[key], str):
             raise ValueError(key + ' must be a local loader string or null')
@@ -62,28 +62,36 @@ def validate_staged(runtime, options):
 
 
 def verify_runtime():
-    """Use the canonical full source map verbatim; never invent a closure map."""
+    """Verify the exact current core source/data closure and official PG release."""
     lock = json.loads(LOCK.read_text())
     core, pg = lock['core'], lock['particlegan']
-    if (core['commit'], core['version'], pg['version'], pg['qualified_source_profile']) != (CORE_PIN, '0.8.2', PG_VERSION, PROFILE):
+    if (lock['schema'], core['commit'], core['version'], pg['version'], pg['qualified_source_profile']) != (
+            'yue2-response-runtime-v2', CORE_PIN, '0.12.0', PG_VERSION, PROFILE):
         raise ValueError('response code and canonical source lock disagree')
-    for name, version, sha in [(core['distribution'], core['version'], core['wheel_sha256']),
-                               ('particlegan', pg['version'], pg['release_wheel_sha256'])]:
-        distribution = metadata.distribution(name)
-        direct = json.loads(distribution.read_text('direct_url.json') or '{}')
-        archive_sha = direct.get('archive_info', {}).get('hashes', {}).get('sha256')
-        if distribution.version != version or archive_sha is not None and archive_sha != sha:
-            raise ValueError('version/archive identity differs from the locked wheel for ' + name)
     distribution = metadata.distribution(core['distribution'])
+    direct = json.loads(distribution.read_text('direct_url.json') or '{}')
+    archive_sha = direct.get('archive_info', {}).get('hashes', {}).get('sha256')
+    vcs = direct.get('vcs_info', {})
+    if distribution.version != core['version']:
+        raise ValueError('core version differs from the current runtime lock')
+    if 'archive_info' in direct:
+        if archive_sha != core['wheel_sha256']:
+            raise ValueError('core wheel SHA256 differs from the exact current artifact')
+    elif (vcs.get('vcs'), vcs.get('commit_id'), direct.get('url', '').removesuffix('.git')) != (
+            'git', CORE_PIN, 'https://github.com/HyperGAN/particle-sliders'):
+        raise ValueError('core requires exact wheel archive or Git commit provenance')
     if 'particlegan==' + PG_VERSION not in {requirement.replace(' ', '') for requirement in distribution.requires or ()}:
-        raise ValueError('core metadata must retain the exact PG0.9.1 dependency')
+        raise ValueError('core metadata must retain the exact PG0.9.4 dependency')
+    pg_distribution = metadata.distribution('particlegan')
+    pg_direct = json.loads(pg_distribution.read_text('direct_url.json') or '{}')
+    if pg_distribution.version != PG_VERSION or ('archive_info' in pg_direct and
+            pg_direct['archive_info'].get('hashes', {}).get('sha256') != pg['release_wheel_sha256']):
+        raise ValueError('ParticleGAN version/archive differs from the official release')
     root = Path(distribution.locate_file('')).resolve()
-    # The reviewed owner also qualifies isolated wheel extraction (no direct_url).
-    # Exact canonical runtime bytes and all released PG sources are still mandatory.
     actual = {str(p.relative_to(root)): hashlib.sha256(p.read_bytes()).hexdigest()
               for package in ('particle_sliders', 'concept_slider_core')
               for p in sorted((root / package).rglob('*'))
-              if p.is_file() and (p.suffix in ('.py', '.json') or p.name == 'LICENSE')}
+              if p.is_file() and '__pycache__' not in p.parts and p.suffix != '.pyc'}
     if actual != lock['source_sha256']:
         raise ValueError('installed shared source closure differs from the canonical map')
     for name, module in tuple(sys.modules.items()):

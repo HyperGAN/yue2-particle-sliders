@@ -62,6 +62,7 @@ def test_product_sources_do_not_vendor_the_core():
     assert blob.count("winning_formulation") >= 2
 
 
+@pytest.mark.legacy_pg091
 def test_print_card_locks_the_provisional_recipe():
     card = train(parse_args(["--print_card"]))
     assert card["model_id"] == MODEL_ID
@@ -80,6 +81,7 @@ def test_print_card_locks_the_provisional_recipe():
         stamp.require(forked)
 
 
+@pytest.mark.legacy_pg091
 def test_config_cannot_restate_formulation_keys(tmp_path: Path):
     path = tmp_path / "fork.yaml"
     path.write_text("parts: 4\nname: nope\n", encoding="utf-8")
@@ -87,6 +89,7 @@ def test_config_cannot_restate_formulation_keys(tmp_path: Path):
         parse_args(["--config_file", str(path)])
 
 
+@pytest.mark.legacy_pg091
 def test_dummy_train_and_infer_round_trip(tmp_path: Path):
     sidecar = train(
         parse_args(
@@ -153,6 +156,7 @@ def test_dummy_train_and_infer_round_trip(tmp_path: Path):
         )
 
 
+@pytest.mark.legacy_pg091
 def test_scale_zero_is_exact_and_dummy_export_is_refused_for_songs(tmp_path: Path):
     sidecar = train(
         parse_args(
@@ -199,6 +203,7 @@ def test_scale_zero_is_exact_and_dummy_export_is_refused_for_songs(tmp_path: Pat
     assert moved.shape == hooked.shape
 
 
+@pytest.mark.legacy_pg091
 def test_penalty_step_stays_finite(tmp_path: Path):
     train(
         parse_args(

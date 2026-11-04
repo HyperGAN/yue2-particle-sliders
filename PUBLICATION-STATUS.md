@@ -1,8 +1,30 @@
+Current upgrade validation: [PG0.9.4 source and installed checks](docs/pg094-upgrade.md).
+
+# Current PG0.9.4 package cohort
+
+The default package moves to 0.3.0 / core0.12.0 at
+`ddb41423bcefc1fe76cd94d0f9b367353b3ea137` / official PG0.9.4.
+This is a source/package update for new numerical-response cohorts. The 16
+published controls, audio samples, historical CDF and PG091 receipts are unchanged.
+Native width2048 remains refused; no pretrained/GPU/acoustic result is claimed.
+See [LIFECYCLE.md](LIFECYCLE.md) and [installation cohorts](INSTALL-COHORTS.md).
+
+The following receipt is historical and retains its original identities.
+
+# Current inventory update
+
+See [the inventory evidence index](docs/inventory-20261031.md) and the separate
+[HyperGAN/HNDL candidate](docs/hypergan-hndl-cohort.md). PR4 is now merged; the
+original qualification receipt below remains bound to its original tested head.
+No automatic package/model release is configured by this update.
+
+## Historical qualification receipt
+
 # Publication and qualification status
 
-This source is proposed through [the existing draft PR](https://github.com/HyperGAN/yue2-particle-sliders/pull/4).
-Its qualified candidate is `25977f1f55be02d64a125f4b3d88ad1a126edac9`; tested runtime is
-`25977f1f55be02d64a125f4b3d88ad1a126edac9`. The publication follow-up changes Markdown
+Historical lifecycle integration was proposed through [PR4](https://github.com/HyperGAN/yue2-particle-sliders/pull/4).
+That earlier qualified candidate was `25977f1f55be02d64a125f4b3d88ad1a126edac9`; its tested runtime was
+`25977f1f55be02d64a125f4b3d88ad1a126edac9`. That historical publication follow-up changed Markdown
 only: runtime, tests, dependency declarations, locks and capability gates are
 unchanged. No new wheel or test execution is claimed for this docs-only commit.
 

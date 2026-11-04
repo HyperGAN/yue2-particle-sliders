@@ -10,6 +10,8 @@ import shutil
 import sys
 
 import pytest
+
+pytestmark = pytest.mark.legacy_pg091
 import torch
 
 

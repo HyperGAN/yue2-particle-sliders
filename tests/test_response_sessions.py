@@ -165,12 +165,12 @@ def test_binding_cleanup_retry_remains_available_after_session_close_conflict():
     try:
         with pytest.raises(RuntimeError, match='ownership changed'):
             run.close()
-        assert run.closed  # Current common policy; binding callback is the retry seam.
+        assert not run.closed  # Current core retains the failed close for safe retry.
         assert block.forward is foreign
     finally:
         block.forward = owned
-        run.binding.close()
-    run.binding.close()
+        run.close()
+    run.close()
     assert 'forward' not in vars(block)
     assert not getattr(block, '_pg09_scale_checkpoint', False)
     assert all('forward' not in vars(module) for module in native.backend.model.modules()

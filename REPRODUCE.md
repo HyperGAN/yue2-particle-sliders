@@ -1,3 +1,7 @@
+Current package and new PG0.9.4 cohorts: see [INSTALL-COHORTS.md](INSTALL-COHORTS.md)
+and [LIFECYCLE.md](LIFECYCLE.md). The historical CLI instructions below require
+their original source checkout, core0.6/PG0.9.1 environment and unmodified locks.
+
 # Reproduce
 
 This draft uses installed `particle-sliders-core` **0.6.0** candidate commit
@@ -12,7 +16,7 @@ these exact wheels (provided by the package owner), then remaining dependencies:
 ```bash
 python -m venv /path/to/new-environment
 /path/to/new-environment/bin/python -m pip install --no-deps "$PG_WHEEL" "$CORE_WHEEL"
-/path/to/new-environment/bin/python -m pip install -r requirements.txt
+/path/to/new-environment/bin/python -m pip install -r requirements-legacy.txt
 ```
 
 | Artifact | SHA256 |

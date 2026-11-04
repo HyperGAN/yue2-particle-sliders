@@ -55,6 +55,7 @@ def test_record_must_match_the_winning_recipe():
         validate_slider_record(_record(stamp, dummy=True), stamp)
 
 
+@pytest.mark.legacy_pg091
 def test_node_refuses_a_foreign_file_and_passes_strength_zero(tmp_path: Path):
     foreign = tmp_path / "other.safetensors"
     save_file({"weight": torch.ones(1)}, str(foreign), metadata={"yue2_particle_sliders": "{}"})

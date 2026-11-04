@@ -1,6 +1,11 @@
-> Fresh core0.8.2 / PG0.9.1 response work passed **13 selected installed CPU checks**.
-> See the [integration draft](LIFECYCLE.md) and [qualification status](PUBLICATION-STATUS.md). Native wide responses and waveforms remain unqualified.
-> The CDF documentation below remains historical/legacy; no active environment is repinned.
+Current upgrade validation: [PG0.9.4 source and installed checks](docs/pg094-upgrade.md).
+
+The default package is **0.3.0 / shared core0.12.0 / official ParticleGAN0.9.4**,
+with exact core source `ddb41423bcefc1fe76cd94d0f9b367353b3ea137` and Python>=3.11.
+See [current installation cohorts](INSTALL-COHORTS.md) and the
+[current numerical-response lifecycle](LIFECYCLE.md). The separate
+[HNDL preview](docs/hypergan-hndl-cohort.md) uses the same current core.
+Native width2048 remains gated; no pretrained/acoustic qualification is claimed.
 
 # YuE2 Particle Sliders
 
@@ -9,14 +14,14 @@ with the VAE at [m-a-p/YuE2-Vae](https://huggingface.co/m-a-p/YuE2-Vae).
 `yue2-particle-sliders` is the YuE2 product repo in the Anima / Krea2 layout. It owns Hub ids,
 the Comfy gate, YuE2 train and infer, prompt cards, and sample cards.
 
-Training now calls `particle_sliders.ConditionalPG09` for the public ParticleGAN
+The historical CDF trainer calls `particle_sliders.ConditionalPG09` for the public ParticleGAN
 **0.9.1** GAN-only recipe. `winning_formulation()` supplies the existing routed
 adapter geometry, including `stamp.bridge()`; it does not select the training
 objective. This repo does not vendor `RoutedMLP`, `GradRegularizer`, or ParticleGAN.
 The legacy architecture recipe is `anneal-routed-particle-error-yue2-v1`.
 See [FORMULATION.md](FORMULATION.md).
 
-This draft uses the installed **0.6.0 candidate wheel** from commit
+That historical CDF trainer uses the installed **0.6.0 candidate wheel** from commit
 `cdfb80a76b882b4b73861b12f555263bd64ffeb7`. The wheel SHA256, all installed
 shared Python/JSON hashes, and exact PG 0.9.1 wheel identity are locked in
 `configs/yue2/shared-runtime.lock.json`. No shared checkout is needed at runtime.
@@ -44,9 +49,12 @@ Original particle weights and ordinary distilled LoRAs are different files. The
 links above are the original particles. Distillation notes stay on the
 [Hub distillation guide](https://huggingface.co/ntc-ai/yue2-concept-sliders/blob/main/DISTILLATION.md).
 
-## Train and render
+## Historical CLI train and render
 
-CPU checks need a fresh environment with the exact locked PG 0.9.1 and core wheels:
+These source-bound CLI commands use the historical core0.6 lock and need their
+original source checkout and isolated environment. For current packaged response
+work use [LIFECYCLE.md](LIFECYCLE.md); for the new HNDL lane use the separate guide.
+Historical CPU checks need the exact locked PG 0.9.1 and core wheels:
 
 ```bash
 python scripts/train_yue2.py --dummy --steps 3 --until 1 --save_dir /tmp/yue2-first

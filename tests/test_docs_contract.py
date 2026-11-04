@@ -66,7 +66,7 @@ def test_comfy_and_reproduce_stay_in_repo():
 
 
 def test_requirements_keep_pg091_release_and_exact_installed_candidate():
-    text = _text("requirements.txt")
+    text = _text("requirements-legacy.txt")
     assert "particlegan==0.9.1" in text
     assert "git+https://github.com/HyperGAN/particle-sliders.git@" not in text
     assert "yue2_sliders.integration" in text

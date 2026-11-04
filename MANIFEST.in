@@ -1,0 +1,6 @@
+include *.md requirements*.txt comfy_yue2.py __init__.py
+recursive-include docs *.md
+recursive-include release_tools *.py
+recursive-include scripts *.py
+recursive-include configs *.json *.yaml
+recursive-include cohorts *.py *.json *.hndl
