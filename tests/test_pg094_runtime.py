@@ -102,7 +102,7 @@ def test_archived_pg091_lifecycle_lock_is_distinct_from_current():
     current = json.loads(runtime.LOCK.read_text())
     assert archived['core']['commit'] == 'f6807a91546e43e198645a3f8925d2dc7c9e03b4'
     assert archived['particlegan']['version'] == '0.9.1'
-    assert current['core']['commit'] == 'ddb41423bcefc1fe76cd94d0f9b367353b3ea137'
+    assert current['core']['commit'] == '5d68473a098801ee1ab3ebbb12463daef51c6346'
     assert current['particlegan']['version'] == '0.9.4'
     assert current['particlegan']['release_commit'] == '330eb94ee748cdcad131b0275d8de75fd5a7f96f'
 

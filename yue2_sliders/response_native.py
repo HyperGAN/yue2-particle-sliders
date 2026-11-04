@@ -5,7 +5,7 @@ from particle_sliders.inference import InferenceBackend, InferenceBinding, nativ
 from particle_sliders.pg09_audio import YuE2ARResponseAdapter, require_audio_width
 
 from .response_runtime import (PG_VERSION, PROFILE, DOMAIN, PROTOCOL, capabilities,
-    validate_native_options, validate_staged, verify_runtime, native_sources, frozen_digest, observation)
+    validate_native_options, validate_staged, verify_runtime, native_sources, frozen_digest, observation, engine_options)
 
 _RUNTIME = {'device', 'revision', 'cache_dir'}
 _CONFIGURATION = {'dummy', 'base_seed', 'base_precision', 'architecture',
@@ -109,9 +109,13 @@ class NativeOwner:
 def build_native(options, *, runtime=None, checkpoint_training=False):
     """Own the existing loader/slider/AR adapter and unwind partial setup."""
     validate_native_options(options)
-    dependencies = verify_runtime()
+    dependencies = verify_runtime(options)
     width = capabilities(options).response_shape[1]
-    require_audio_width(width, pg_source_profile=PROFILE, penalty_input_domain=DOMAIN)
+    require_audio_width(width, **engine_options(options))
+    assets = None
+    if not options.get('dummy', False):
+        from .native_assets import verify_native
+        assets = verify_native(options)
     if runtime is not None:
         validate_staged(runtime, options)
     import torch
@@ -121,19 +125,31 @@ def build_native(options, *, runtime=None, checkpoint_training=False):
         runtime = YuE2Backend(device=options.get('device', 'cpu'), allow_hub=False,
             dummy=options.get('dummy', False), revision=options.get('revision'), cache_dir=options.get('cache_dir'))
     validate_staged(runtime, options)
+    loaded = None
+    if not runtime.dummy:
+        from .backend import require_yue2
+        _, model_class = require_yue2()
+        if type(runtime) is not YuE2Backend or type(runtime.model) is not model_class or 'hidden' in vars(runtime):
+            raise ValueError('native YuE2 requires the exact source-owned runtime/model implementation')
+        if any('forward' in vars(module) or module._forward_hooks or module._forward_pre_hooks
+               for module in runtime.model.modules()):
+            raise ValueError('native YuE2 requires pristine unwrapped model forwards before attachment')
+        from .native_assets import verify_loaded_model
+        loaded = verify_loaded_model(runtime.model, options)
     device = torch.device(options.get('device', 'cpu'))
     owner = NativeOwner(runtime.model)
     try:
-        identity = dict(base=runtime.identity, frozen_base_sha256=frozen_digest(runtime.model),
-                        dependencies=dependencies, product_sources=native_sources(), base_seed=options.get('base_seed', 7))
+        identity = dict(base=runtime.identity, frozen_base_sha256=loaded['frozen_base_sha256'] if loaded else frozen_digest(runtime.model),
+                        loaded_checkpoint=loaded,
+                        dependencies=dependencies, native_assets=assets, product_sources=native_sources(), base_seed=options.get('base_seed', 7))
         slider = owner.attach_slider(runtime.model)
         native = NativeResponse(runtime, slider, model_identity=identity,
             checkpoint_modules=list(runtime.model.model.layers) if checkpoint_training and not runtime.dummy else (),
-            pg_source_profile=PROFILE, penalty_input_domain=DOMAIN)
+            **engine_options(options))
         owner.adapter = native
         native.inference_configuration = dict(dummy=runtime.dummy, base_seed=options.get('base_seed', 7),
             base_precision='float32' if device.type == 'cpu' else 'bfloat16', architecture=architecture_of(runtime.model),
-            pg_version=PG_VERSION, pg_source_profile=PROFILE, penalty_input_domain=DOMAIN,
+            pg_version=PG_VERSION, **engine_options(options),
             context_limit=int(runtime.model.config.max_position_embeddings))
         return native, owner.close, partial(observation, runtime)
     except BaseException as setup_error:
@@ -167,7 +183,7 @@ def validate_inference(options, spec):
 def preflight_inference(options, request, spec):
     validate_inference(options, spec)
     config = spec.configuration
-    require_audio_width(capabilities(config).response_shape[1], pg_source_profile=PROFILE, penalty_input_domain=DOMAIN)
+    require_audio_width(capabilities(config).response_shape[1], **engine_options(config))
     native = request['native']
     if native:
         if set(native) != {'token_ids'}:

@@ -21,17 +21,32 @@ ANCHORS = [
 @pytest.mark.parametrize('anchor', ANCHORS)
 @pytest.mark.parametrize('mutation', ['missing', 'duplicate'])
 def test_preview_builder_rejects_every_ambiguous_substitution(anchor, mutation):
-    text = (ROOT / 'pyproject.toml').read_text()
+    text = BUILDER.frozen_metadata_template()
     changed = text.replace(anchor, '', 1) if mutation == 'missing' else text + '\n' + anchor
     with pytest.raises(RuntimeError, match='exactly once'):
         BUILDER.preview_metadata(changed)
 
 
 def test_preview_builder_retains_source_metadata_and_is_deterministic():
-    text = (ROOT / 'pyproject.toml').read_text()
+    text = BUILDER.frozen_metadata_template()
     result = BUILDER.preview_metadata(text)
     assert result == BUILDER.preview_metadata(text)
     assert 'yue2-hndl = "yue2_sliders.hndl_response:BACKEND"' in result
     assert 'yue2-hndl = "yue2_sliders.hndl_response:INFERENCE"' in result
     assert '"hndl-runtime.lock.json", "hndl_audio_critic.hndl"' in result
-    assert (ROOT / 'pyproject.toml').read_text() == text
+    assert BUILDER.frozen_metadata_template() == text
+    import hashlib
+    assert hashlib.sha256(result.encode()).hexdigest() == '6b8bce5c2675a7fc35db4412920eeb11d9842c4c3a468622767900ea6dfbcea1'
+
+
+def test_preview_stages_original_runtime_bytes_without_continuous_helpers(tmp_path):
+    import hashlib, json
+    (tmp_path / 'yue2_sliders').mkdir()
+    for name in ('native_assets.py', 'native-assets.lock.json'):
+        (tmp_path / 'yue2_sliders' / name).write_text('must not enter historical preview')
+    BUILDER.restore_pre_continuous_runtime(ROOT, tmp_path)
+    manifest=json.loads((ROOT / 'release_tools/archives/yue2-before-continuous/manifest.json').read_text())
+    for relative, expected in manifest['files'].items():
+        assert hashlib.sha256((tmp_path/relative).read_bytes()).hexdigest() == expected
+    assert not (tmp_path/'yue2_sliders/native_assets.py').exists()
+    assert not (tmp_path/'yue2_sliders/native-assets.lock.json').exists()

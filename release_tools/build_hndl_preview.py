@@ -4,12 +4,16 @@ Usage: python release_tools/build_hndl_preview.py /absolute/output/directory
 Requires the declared patched setuptools build backend in the build environment.
 """
 from pathlib import Path
+import hashlib
+import json
 import shutil
 import subprocess
 import sys
 import tempfile
 
 ROOT = Path(__file__).resolve().parents[1]
+METADATA_TEMPLATE = ROOT / 'release_tools/hndl-preview-base.toml'
+METADATA_TEMPLATE_SHA256 = 'a5625be72f99aec1aaa46d1bf1f529c1d4a932c8750061cb1f4d531644dcd5b9'
 
 
 def replace_once(text, old, new):
@@ -17,6 +21,13 @@ def replace_once(text, old, new):
     if text.count(old) != 1:
         raise RuntimeError('preview packaging anchor must occur exactly once: ' + old)
     return text.replace(old, new, 1)
+
+
+def frozen_metadata_template():
+    data = METADATA_TEMPLATE.read_bytes()
+    if hashlib.sha256(data).hexdigest() != METADATA_TEMPLATE_SHA256:
+        raise ValueError('archived HNDL metadata template differs')
+    return data.decode()
 
 
 def preview_metadata(text):
@@ -47,10 +58,22 @@ def restore_pre_lr_runtime(root, destination):
     shutil.copytree(archive, destination / 'cohorts/pre-lr-hndl')
 
 
+def restore_pre_continuous_runtime(root, destination):
+    archive = root / 'release_tools/archives/yue2-before-continuous'
+    manifest = json.loads((archive / 'manifest.json').read_text())
+    for relative, expected in manifest['files'].items():
+        data = (archive / relative).read_bytes()
+        if hashlib.sha256(data).hexdigest() != expected:
+            raise ValueError('archived pre-continuous runtime differs: ' + relative)
+        (destination / relative).write_bytes(data)
+    for name in ('native_assets.py', 'native-assets.lock.json'):
+        (destination / 'yue2_sliders' / name).unlink(missing_ok=True)
+
+
 def main():
     output = Path(sys.argv[1]).resolve()
     output.mkdir(parents=True, exist_ok=True)
-    text = preview_metadata((ROOT / 'pyproject.toml').read_text())
+    text = preview_metadata(frozen_metadata_template())
     with tempfile.TemporaryDirectory(prefix='yue2-hndl-build-') as staging:
         source = Path(staging)
         for name in ('yue2_sliders', 'configs'):
@@ -60,6 +83,7 @@ def main():
         shutil.copyfile(ROOT / 'LICENSE', source / 'LICENSE')
         shutil.copyfile(ROOT / 'docs/hypergan-hndl-cohort.md', source / 'LIFECYCLE.md')
         restore_pre_lr_runtime(ROOT, source)
+        restore_pre_continuous_runtime(ROOT, source)
         (source / 'MANIFEST.in').write_text('recursive-include cohorts/pre-lr-hndl *.py *.json\n')
         (source / 'pyproject.toml').write_text(text)
         subprocess.run([sys.executable, '-m', 'pip', 'wheel', '--no-deps', '--no-build-isolation',

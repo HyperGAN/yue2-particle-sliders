@@ -2,7 +2,7 @@
 from particle_sliders.lifecycle import Binding
 from particle_sliders.response import ResponseBackend
 
-from .response_runtime import PG_VERSION, PROFILE, DOMAIN, PROTOCOL, capabilities, validate_native_options, validate_staged
+from .response_runtime import PG_VERSION, PROFILE, DOMAIN, PROTOCOL, capabilities, validate_native_options, validate_staged, engine_options
 from .response_native import build_native, INFERENCE
 
 _ALLOWED = {'rows', 'dummy', 'device', 'base_precision', 'steps', 'seed', 'batch',
@@ -80,7 +80,7 @@ def prepare(options, *, runtime=None):
         game = ConditionalPG09(native, provider, critic, particles=native.particles,
             response_domain='continuous_vector', preset=options.get('preset', 'bispf_optimized'),
             batch_size=options.get('batch', 2), seed=options.get('seed', 7), total_steps=options.get('steps', 4),
-            sampling=options.get('sampling', 'balanced'), pg_source_profile=PROFILE, penalty_input_domain=DOMAIN, recipe_overrides=rates)
+            sampling=options.get('sampling', 'balanced'), recipe_overrides=rates, **engine_options(options))
         spec = INFERENCE.specification(native, model_identity=native.model_identity,
             protocol=PROTOCOL, configuration=native.inference_configuration)
         return Binding(game, close, inference=spec, observation=observe)
