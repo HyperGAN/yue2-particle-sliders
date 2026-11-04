@@ -115,11 +115,12 @@ def verify_runtime(options=None):
 
 
 def native_sources():
-    """Bind native-only product helpers without training modules or data."""
+    """Bind product source bytes without importing training modules or data."""
     root = Path(__file__).parent
     names = ('__init__.py', 'response_runtime.py', 'response_native.py', 'backend.py', 'slider.py',
              'stamp.py', 'defaults.py', 'prompts.py', 'lifecycle-runtime.lock.json',
-             'native_assets.py', 'native-assets.lock.json')
+             'native_assets.py', 'native-assets.lock.json', 'lifecycle.py',
+             'response_provider.py', 'train.py')
     return {name: hashlib.sha256((root / name).read_bytes()).hexdigest() for name in names}
 
 
