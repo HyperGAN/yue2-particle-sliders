@@ -1,5 +1,6 @@
 """Base+adapter-only AR response inference; never constructs training components."""
 from functools import partial
+from contextlib import contextmanager
 
 from particle_sliders.inference import InferenceBackend, InferenceBinding, native_identity
 from particle_sliders.pg09_audio import YuE2ARResponseAdapter, require_audio_width
@@ -106,6 +107,25 @@ class NativeOwner:
         self.closed = True
 
 
+@contextmanager
+def native_initialization_rng(options):
+    """Seed construction locally, restoring CPU and only the requested CUDA RNG.
+
+    Never use torch.manual_seed: it also seeds every visible CUDA generator.
+    An explicit device list avoids fork_rng's implicit all-device enumeration.
+    """
+    import torch
+    device = torch.device(options.get('device', 'cpu'))
+    if device.type not in {'cpu', 'cuda'} or (device.type == 'cuda' and device.index is None):
+        raise ValueError('native construction requires cpu or an explicit CUDA device index')
+    devices = [device.index] if device.type == 'cuda' else []
+    with torch.random.fork_rng(devices=devices):
+        torch.random.default_generator.manual_seed(options.get('base_seed', 7))
+        if devices:
+            torch.cuda.default_generators[device.index].manual_seed(options.get('base_seed', 7))
+        yield
+
+
 def build_native(options, *, runtime=None, checkpoint_training=False):
     """Own the existing loader/slider/AR adapter and unwind partial setup."""
     validate_native_options(options)
@@ -119,8 +139,17 @@ def build_native(options, *, runtime=None, checkpoint_training=False):
     if runtime is not None:
         validate_staged(runtime, options)
     import torch
+    if options.get('dummy', False):
+        # Preserve the existing fixture cohort's construction/RNG behavior.
+        torch.manual_seed(options.get('base_seed', 7))
+        return _build_native(options, runtime, checkpoint_training, dependencies, assets)
+    with native_initialization_rng(options):
+        return _build_native(options, runtime, checkpoint_training, dependencies, assets)
+
+
+def _build_native(options, runtime, checkpoint_training, dependencies, assets):
+    import torch
     from .backend import YuE2Backend, architecture_of
-    torch.manual_seed(options.get('base_seed', 7))
     if runtime is None:
         runtime = YuE2Backend(device=options.get('device', 'cpu'), allow_hub=False,
             dummy=options.get('dummy', False), revision=options.get('revision'), cache_dir=options.get('cache_dir'),
@@ -146,6 +175,8 @@ def build_native(options, *, runtime=None, checkpoint_training=False):
         identity = dict(base=runtime.identity, frozen_base_sha256=loaded['frozen_base_sha256'] if loaded else frozen_digest(runtime.model),
                         loaded_checkpoint=loaded, native_numerical_profile=numerics,
                         dependencies=dependencies, native_assets=assets, product_sources=native_sources(), base_seed=options.get('base_seed', 7))
+        if not runtime.dummy:
+            identity['initialization_rng_profile'] = 'cpu-and-requested-cuda-fork-v1'
         slider = owner.attach_slider(runtime.model)
         native = NativeResponse(runtime, slider, model_identity=identity,
             checkpoint_modules=list(runtime.model.model.layers) if checkpoint_training and not runtime.dummy else (),
