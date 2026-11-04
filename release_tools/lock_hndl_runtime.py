@@ -6,14 +6,14 @@ from pathlib import Path
 import sys
 import zipfile
 
-CORE_COMMIT = 'a794e3b4a8813b012f2c4faa3da82b78d4a90214'
-CORE_WHEEL_SHA256 = '22e47ced4af8cb874d818db2f4006738f5f978cfcff324693931b6ab23f21c8a'
+CORE_COMMIT = 'ddb41423bcefc1fe76cd94d0f9b367353b3ea137'
+CORE_WHEEL_SHA256 = '0a78d4f88e0c5e5436acfb9f3aca2ae75a7889d9b4f6525cda4a38c42e39257f'
 ROOT = Path(__file__).resolve().parents[1]
 
 
 def generate(wheel):
     if hashlib.sha256(wheel.read_bytes()).hexdigest() != CORE_WHEEL_SHA256:
-        raise ValueError('requires the reviewed a794 core wheel')
+        raise ValueError('requires the reviewed ddb4142 core wheel')
     with zipfile.ZipFile(wheel) as archive:
         manifest = BytesParser().parsebytes(archive.read('particle_sliders_core-0.12.0.dist-info/METADATA'))
         if manifest['Version'] != '0.12.0' or 'particlegan==0.9.4' not in {

@@ -1,3 +1,7 @@
+Current package and new PG0.9.4 cohorts: see [INSTALL-COHORTS.md](INSTALL-COHORTS.md)
+and [LIFECYCLE.md](LIFECYCLE.md). The historical CLI instructions below require
+their original source checkout, core0.6/PG0.9.1 environment and unmodified locks.
+
 # Reproduce
 
 This draft uses installed `particle-sliders-core` **0.6.0** candidate commit

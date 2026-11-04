@@ -21,7 +21,7 @@ from particle_sliders.response import ResponseBackend
 from . import response_runtime as legacy
 from .response_native import NativeOwner, NativeResponse, NativeCleanupError, check_tokens
 
-CORE_PIN = 'a794e3b4a8813b012f2c4faa3da82b78d4a90214'
+CORE_PIN = 'ddb41423bcefc1fe76cd94d0f9b367353b3ea137'
 PG_VERSION = '0.9.4'
 PROFILE = 'release-0.9.4'
 DOMAIN = 'auto'

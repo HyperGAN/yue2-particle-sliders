@@ -62,6 +62,7 @@ def _rewrite(path, *, updates=None, remove=(), tensors=None):
 
 @pytest.mark.parametrize("with_model", [False, True], ids=["comfy", "live-model"])
 @pytest.mark.parametrize("payload", ["valid", "incomplete", "nonfinite", "wrong-alpha"])
+@pytest.mark.legacy_pg091
 def test_checkpoint_validation_preserves_rng_and_unattached_base(tmp_path, with_model, payload):
     stamp, path, _base = _checkpoint(tmp_path)
     if payload != "valid":
@@ -162,6 +163,7 @@ def test_reload_uses_exported_actual_bank_and_adapter_sign(tmp_path):
     assert all(adapter.multiplier == 0 for adapter in network.adapters.values())
 
 
+@pytest.mark.legacy_pg091
 def test_comfy_checks_actual_tensor_payload(tmp_path):
     stamp, path, _base = _checkpoint(tmp_path)
     assert validate_slider_file(path, stamp)["path"] == str(path)
@@ -170,6 +172,7 @@ def test_comfy_checks_actual_tensor_payload(tmp_path):
         validate_slider_file(path, stamp)
 
 
+@pytest.mark.legacy_pg091
 def test_valid_published_checkpoint_keeps_legacy_recipe_provenance(tmp_path):
     stamp, path, _base = _checkpoint(tmp_path)
     _rewrite(path, updates={
@@ -180,6 +183,7 @@ def test_valid_published_checkpoint_keeps_legacy_recipe_provenance(tmp_path):
 
 
 @pytest.mark.parametrize("fault", ["missing", "version", "objective", "weights", "base", "source"])
+@pytest.mark.legacy_pg091
 def test_conditional_export_signature_cannot_claim_another_game(tmp_path, fault):
     stamp, path, _base = _checkpoint(tmp_path)
     dependencies = configure_integration()
@@ -211,6 +215,7 @@ def test_conditional_export_signature_cannot_claim_another_game(tmp_path, fault)
         validate_slider_file(path, stamp)
 
 
+@pytest.mark.legacy_pg091
 def test_dummy_delta_uses_off_even_when_off_is_last_or_absent_and_replays(tmp_path):
     stamp, path, _base = _checkpoint(tmp_path, dummy=True)
     args = parse_args(["--dummy", "--weights", str(path), "--output_dir", str(tmp_path / "out"), "--scales", "1,0"])

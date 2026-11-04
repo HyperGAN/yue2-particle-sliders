@@ -1,3 +1,7 @@
+> Historical PR6/a794 record. The active default and optional preview now pin
+> coreddb4142/PG0.9.4; see [the current HNDL guide](hypergan-hndl-cohort.md).
+> The receipts below apply only to their original a794 source.
+
 # Modern preview migration to core a794
 
 Only the active YuE2 HyperGAN/HNDL preview moves to the exact public shared-core

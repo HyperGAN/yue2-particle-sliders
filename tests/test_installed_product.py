@@ -8,7 +8,8 @@ import pytest
 
 import yue2_sliders
 _distribution = metadata.distribution('yue2-particle-sliders')
-if Path(yue2_sliders.__file__).resolve().parent != Path(_distribution.locate_file('yue2_sliders')).resolve():
+if (Path(yue2_sliders.__file__).resolve().parent != Path(_distribution.locate_file('yue2_sliders')).resolve()
+        or not Path(_distribution.locate_file('yue2_sliders/_assets')).is_dir()):
     pytest.skip('run outside the checkout against the installed product wheel', allow_module_level=True)
 
 
@@ -45,13 +46,13 @@ def test_installed_data_and_entrypoints_keep_their_cohorts():
         assert ep.load().name == 'yue2'
 
 
-def test_default_fresh_process_discovers_only_its_installed_core082_backends(tmp_path):
+def test_default_fresh_process_discovers_only_its_installed_core012_backends(tmp_path):
     import subprocess
     import sys
     code = '''
 import importlib.abc, sys
 from importlib import metadata
-assert metadata.version('particle-sliders-core') == '0.8.2'
+assert metadata.version('particle-sliders-core') == '0.12.0'
 class Guard(importlib.abc.MetaPathFinder):
     def find_spec(self, fullname, path=None, target=None):
         if fullname in {'yue2_sliders.hndl_response', 'particle_sliders.fibo_hndl', 'hypergan', 'hndl'}:
@@ -64,14 +65,14 @@ for entry in distribution.entry_points:
 for group in ('particle_sliders.response_backends', 'particle_sliders.inference_backends'):
     assert not list(metadata.entry_points(group=group, name='yue2-hndl'))
 assert 'hndl' not in sys.modules and 'hypergan' not in sys.modules
-print('default installed discovery passed without modern imports')
+print('default installed discovery passed without optional HNDL imports')
 '''
     result = subprocess.run([sys.executable, '-I', '-c', code], cwd=tmp_path,
                             capture_output=True, text=True, timeout=30)
     assert result.returncode == 0, result.stdout + result.stderr
 
 
-def test_digest_supports_the_declared_python310_api(tmp_path, monkeypatch):
+def test_streaming_file_digest_remains_available_without_hashlib_helper(tmp_path, monkeypatch):
     from yue2_sliders.backend import file_digest
     monkeypatch.delattr(hashlib, 'file_digest', raising=False)
     data = b'YuE2 provenance\x00' * 100000  # Cross the streaming chunk boundary.
@@ -86,12 +87,12 @@ def test_new_shared_version_is_rejected_without_touching_the_lock(monkeypatch):
     original = runtime.metadata.distribution
 
     class NewCore:
-        version = '0.12.0'
+        version = '0.13.0'
         def read_text(self, name):
             return '{}'
 
     monkeypatch.setattr(runtime.metadata, 'distribution', lambda name:
                         NewCore() if name == 'particle-sliders-core' else original(name))
-    with pytest.raises(ValueError, match='locked wheel'):
+    with pytest.raises(ValueError, match='core version differs'):
         runtime.verify_runtime()
     assert runtime.LOCK.read_bytes() == lock

@@ -7,6 +7,8 @@ import sys
 from types import ModuleType, SimpleNamespace
 
 import pytest
+
+pytestmark = pytest.mark.legacy_pg091
 import torch
 
 

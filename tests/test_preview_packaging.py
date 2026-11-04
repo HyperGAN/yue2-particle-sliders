@@ -9,9 +9,9 @@ SPEC = importlib.util.spec_from_file_location('preview_builder', ROOT / 'release
 BUILDER = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(BUILDER)
 ANCHORS = [
-    'particle-sliders-core @ git+https://github.com/HyperGAN/particle-sliders.git@f6807a91546e43e198645a3f8925d2dc7c9e03b4#subdirectory=packages/particle-sliders-core',
-    'version = "0.2.0"',
-    'requires-python = ">=3.10"',
+    'particle-sliders-core @ git+https://github.com/HyperGAN/particle-sliders.git@ddb41423bcefc1fe76cd94d0f9b367353b3ea137#subdirectory=packages/particle-sliders-core',
+    'version = "0.3.0"',
+    'requires-python = ">=3.11"',
     'yue2_sliders = ["lifecycle-runtime.lock.json"]',
     'yue2 = "yue2_sliders.lifecycle:BACKEND"',
     'yue2 = "yue2_sliders.response_native:INFERENCE"',

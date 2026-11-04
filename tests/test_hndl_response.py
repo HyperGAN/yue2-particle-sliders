@@ -318,7 +318,7 @@ def test_preview_metadata_and_native_only_reload_without_training_construction(t
     import subprocess
     import sys
     distribution = metadata.distribution('yue2-particle-sliders')
-    assert distribution.version == '0.3.0.dev1'
+    assert distribution.version == '0.4.0.dev0'
     from packaging.specifiers import SpecifierSet
     assert SpecifierSet(distribution.metadata['Requires-Python']) == SpecifierSet('>=3.11,<3.15')
     core = next(r for r in distribution.requires if r.startswith('particle-sliders-core'))

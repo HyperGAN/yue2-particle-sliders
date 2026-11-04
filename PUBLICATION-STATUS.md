@@ -1,3 +1,16 @@
+Current upgrade validation: [PG0.9.4 source and installed checks](docs/pg094-upgrade.md).
+
+# Current PG0.9.4 package cohort
+
+The default package moves to 0.3.0 / core0.12.0 at
+`ddb41423bcefc1fe76cd94d0f9b367353b3ea137` / official PG0.9.4.
+This is a source/package update for new numerical-response cohorts. The 16
+published controls, audio samples, historical CDF and PG091 receipts are unchanged.
+Native width2048 remains refused; no pretrained/GPU/acoustic result is claimed.
+See [LIFECYCLE.md](LIFECYCLE.md) and [installation cohorts](INSTALL-COHORTS.md).
+
+The following receipt is historical and retains its original identities.
+
 # Current inventory update
 
 See [the inventory evidence index](docs/inventory-20261031.md) and the separate

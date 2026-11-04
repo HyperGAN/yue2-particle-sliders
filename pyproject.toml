@@ -4,14 +4,14 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "yue2-particle-sliders"
-version = "0.2.0"
+version = "0.3.0"
 description = "YuE2 native AR hidden-response particle slider lifecycle (integration draft)"
 readme = "LIFECYCLE.md"
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 license = {file = "LICENSE"}
-# Exact local candidate wheel/source identity is checked by the factory lock.
-# The default requirements entry delegates to this exact immutable cohort.
-dependencies = ["particle-sliders-core @ git+https://github.com/HyperGAN/particle-sliders.git@f6807a91546e43e198645a3f8925d2dc7c9e03b4#subdirectory=packages/particle-sliders-core", "torch>=2.6,<3", "PyYAML>=6", "safetensors>=0.4", "numpy>=1.26"]
+# Current lifecycle sources and exact official PG release are verified at runtime.
+# Historical CDF and PG091 reproduction locks remain separate.
+dependencies = ["particle-sliders-core @ git+https://github.com/HyperGAN/particle-sliders.git@ddb41423bcefc1fe76cd94d0f9b367353b3ea137#subdirectory=packages/particle-sliders-core", "torch>=2.6,<3", "PyYAML>=6", "safetensors>=0.4", "numpy>=1.26"]
 
 [project.optional-dependencies]
 test = ["pytest>=8"]

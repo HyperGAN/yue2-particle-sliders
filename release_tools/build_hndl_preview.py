@@ -20,11 +20,11 @@ def replace_once(text, old, new):
 
 
 def preview_metadata(text):
-    old = 'particle-sliders-core @ git+https://github.com/HyperGAN/particle-sliders.git@f6807a91546e43e198645a3f8925d2dc7c9e03b4#subdirectory=packages/particle-sliders-core'
-    new = 'particle-sliders-core[hypergan-hndl] @ git+https://github.com/HyperGAN/particle-sliders.git@a794e3b4a8813b012f2c4faa3da82b78d4a90214#subdirectory=packages/particle-sliders-core'
+    old = 'particle-sliders-core @ git+https://github.com/HyperGAN/particle-sliders.git@ddb41423bcefc1fe76cd94d0f9b367353b3ea137#subdirectory=packages/particle-sliders-core'
+    new = 'particle-sliders-core[hypergan-hndl] @ git+https://github.com/HyperGAN/particle-sliders.git@ddb41423bcefc1fe76cd94d0f9b367353b3ea137#subdirectory=packages/particle-sliders-core'
     text = replace_once(text, old, new)
-    text = replace_once(text, 'version = "0.2.0"', 'version = "0.3.0.dev1"')
-    text = replace_once(text, 'requires-python = ">=3.10"', 'requires-python = ">=3.11,<3.15"')
+    text = replace_once(text, 'version = "0.3.0"', 'version = "0.4.0.dev0"')
+    text = replace_once(text, 'requires-python = ">=3.11"', 'requires-python = ">=3.11,<3.15"')
     text = replace_once(text, 'yue2_sliders = ["lifecycle-runtime.lock.json"]',
         'yue2_sliders = ["lifecycle-runtime.lock.json", "hndl-runtime.lock.json", "hndl_audio_critic.hndl"]')
     text = replace_once(text, 'yue2 = "yue2_sliders.lifecycle:BACKEND"',

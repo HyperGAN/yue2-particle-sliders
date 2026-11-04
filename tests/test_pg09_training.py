@@ -15,6 +15,8 @@ import subprocess
 import sys
 
 import pytest
+
+pytestmark = pytest.mark.legacy_pg091
 import torch
 from safetensors.torch import load_file
 
