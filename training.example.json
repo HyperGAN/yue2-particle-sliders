@@ -1,0 +1,21 @@
+{
+  "backend": "yue2",
+  "cohort": "yue2-new-owned-run",
+  "options": {
+    "steps": 128,
+    "dummy": false,
+    "device": "cuda:0",
+    "rows": [
+      {
+        "neutral": "soft piano",
+        "positive": "bright guitar",
+        "lyrics": "[verse]\nThe train rolls"
+      },
+      {
+        "neutral": "quiet flute",
+        "positive": "loud brass",
+        "lyrics": "[verse]\nThe river runs"
+      }
+    ]
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "schema": "particle-slider-profile-v1",
+  "name": "yue2-source",
+  "product": "yue2-particle-sliders",
+  "config_kind": "session",
+  "backend": "yue2",
+  "interface": "response",
+  "status": "source_only",
+  "runtime": {
+    "python": "python3"
+  },
+  "capabilities": {
+    "resume": true,
+    "periodic_checkpoint": true,
+    "check": true
+  },
+  "default_checkpoint_every": 32,
+  "evidence": "yue2_sliders/lifecycle.py",
+  "status_reason": "PG 0.9.1 response-session source exists, but the native model width is explicitly gated. Only an explicit small CPU fixture is currently admitted; released historical weights use a different gmix recipe.",
+  "source_revision": "0cdc1901a0636e12ee1898270156544101a53867"
+}
