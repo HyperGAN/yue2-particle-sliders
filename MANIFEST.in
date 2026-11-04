@@ -4,3 +4,8 @@ recursive-include release_tools *.py
 recursive-include scripts *.py
 recursive-include configs *.json *.yaml
 recursive-include cohorts *.py *.json *.hndl
+
+include LEARNING-RATES.md
+recursive-include compatibility *.txt *.json
+recursive-include cohorts/pre-lr-hndl *.py *.json
+include docs/lr-migration.json

@@ -33,6 +33,20 @@ def preview_metadata(text):
         'yue2-hndl = "yue2_sliders.hndl_response:INFERENCE"')
 
 
+def restore_pre_lr_runtime(root, destination):
+    import hashlib
+    import json
+    archive = root / 'cohorts/pre-lr-hndl'
+    manifest = json.loads((archive / 'manifest.json').read_text())
+    for relative, expected in manifest['files'].items():
+        data = (archive / relative).read_bytes()
+        if hashlib.sha256(data).hexdigest() != expected:
+            raise ValueError('archived YuE2 HNDL runtime differs: ' + relative)
+        (destination / relative).write_bytes(data)
+    (destination / 'yue2_sliders/learning_rates.py').unlink(missing_ok=True)
+    shutil.copytree(archive, destination / 'cohorts/pre-lr-hndl')
+
+
 def main():
     output = Path(sys.argv[1]).resolve()
     output.mkdir(parents=True, exist_ok=True)
@@ -45,6 +59,8 @@ def main():
             shutil.copyfile(ROOT / 'cohorts' / 'hndl' / 'yue2_sliders' / name, source / 'yue2_sliders' / name)
         shutil.copyfile(ROOT / 'LICENSE', source / 'LICENSE')
         shutil.copyfile(ROOT / 'docs/hypergan-hndl-cohort.md', source / 'LIFECYCLE.md')
+        restore_pre_lr_runtime(ROOT, source)
+        (source / 'MANIFEST.in').write_text('recursive-include cohorts/pre-lr-hndl *.py *.json\n')
         (source / 'pyproject.toml').write_text(text)
         subprocess.run([sys.executable, '-m', 'pip', 'wheel', '--no-deps', '--no-build-isolation',
                         '--no-index', str(source), '-w', str(output)], check=True)

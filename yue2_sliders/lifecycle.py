@@ -7,7 +7,8 @@ from .response_native import build_native, INFERENCE
 
 _ALLOWED = {'rows', 'dummy', 'device', 'base_precision', 'steps', 'seed', 'batch',
             'sample_seeds', 'history_tokens', 'preset', 'sampling', 'ema_decay',
-            'revision', 'cache_dir', 'pg_version', 'pg_source_profile', 'penalty_input_domain'}
+            'revision', 'cache_dir', 'pg_version', 'pg_source_profile', 'penalty_input_domain',
+            'lr', 'd_lr_mult', 'prior_lr_mult'}
 
 
 def _rows(options):
@@ -23,6 +24,8 @@ def _native_options(options):
 def validate(options):
     if set(options) - _ALLOWED:
         raise ValueError('unsupported YuE2 response options: ' + str(sorted(set(options) - _ALLOWED)))
+    from .learning_rates import recipe_overrides
+    recipe_overrides(**{key: options.get(key) for key in ('lr', 'd_lr_mult', 'prior_lr_mult')})
     rows = _rows(options)
     validate_native_options(_native_options(options))
     for key, default, low in [('steps', 4, 1), ('seed', 7, 0), ('batch', 2, 2),
@@ -51,6 +54,8 @@ def preflight(options, request, staged):
 
 def prepare(options, *, runtime=None):
     validate(options)
+    from .learning_rates import recipe_overrides
+    rates = recipe_overrides(**{key: options.get(key) for key in ('lr', 'd_lr_mult', 'prior_lr_mult')})
     native, restore, observe = build_native(_native_options(options), runtime=runtime, checkpoint_training=True)
     provider = None
     closed = False
@@ -75,7 +80,7 @@ def prepare(options, *, runtime=None):
         game = ConditionalPG09(native, provider, critic, particles=native.particles,
             response_domain='continuous_vector', preset=options.get('preset', 'bispf_optimized'),
             batch_size=options.get('batch', 2), seed=options.get('seed', 7), total_steps=options.get('steps', 4),
-            sampling=options.get('sampling', 'balanced'), pg_source_profile=PROFILE, penalty_input_domain=DOMAIN)
+            sampling=options.get('sampling', 'balanced'), pg_source_profile=PROFILE, penalty_input_domain=DOMAIN, recipe_overrides=rates)
         spec = INFERENCE.specification(native, model_identity=native.model_identity,
             protocol=PROTOCOL, configuration=native.inference_configuration)
         return Binding(game, close, inference=spec, observation=observe)
