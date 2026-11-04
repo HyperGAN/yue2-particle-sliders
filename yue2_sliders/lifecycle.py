@@ -3,7 +3,7 @@ from particle_sliders.lifecycle import Binding
 from particle_sliders.response import ResponseBackend
 
 from .response_runtime import PG_VERSION, PROFILE, DOMAIN, PROTOCOL, capabilities, validate_native_options, validate_staged, engine_options
-from .response_native import build_native, INFERENCE
+from .response_native import build_native, native_initialization_rng, INFERENCE
 
 _ALLOWED = {'rows', 'dummy', 'device', 'base_precision', 'steps', 'seed', 'batch',
             'sample_seeds', 'history_tokens', 'preset', 'sampling', 'ema_decay',
@@ -54,6 +54,23 @@ def preflight(options, request, staged):
 
 def prepare(options, *, runtime=None):
     validate(options)
+    if options.get('dummy', False):
+        return _prepare(options, runtime=runtime)
+    # Refuse numerical/source/asset changes before a CUDA fork can initialize
+    # the requested device. build_native independently rechecks its own entry.
+    from .response_runtime import verify_runtime
+    from .native_assets import verify_native
+    native_options = _native_options(options)
+    verify_runtime(native_options)
+    verify_native(native_options)
+    # The native base/adapter loader preserves the caller's RNG. The provider,
+    # critic and game must also have an explicit seed, rather than inheriting
+    # whichever caller state happened to precede a fresh reconstruction.
+    with native_initialization_rng(native_options):
+        return _prepare(options, runtime=runtime)
+
+
+def _prepare(options, *, runtime=None):
     from .learning_rates import recipe_overrides
     rates = recipe_overrides(**{key: options.get(key) for key in ('lr', 'd_lr_mult', 'prior_lr_mult')})
     native, restore, observe = build_native(_native_options(options), runtime=runtime, checkpoint_training=True)

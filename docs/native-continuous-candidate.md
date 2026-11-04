@@ -111,3 +111,11 @@ queried. The native identity records `cpu-and-requested-cuda-fork-v1`. This is a
 new native source cohort, not a rebinding of the earlier strict-source artifacts.
 The CPU dummy fixture and archived reproduction sources keep their prior RNG
 behavior. This change does not qualify pretrained GPU execution or audio quality.
+
+The native training factory also scopes provider, critic and game construction;
+the preserved loader RNG must not leave the critic dependent on caller state.
+Source identity includes the factory, provider and history-preparation bytes,
+read without importing training modules during native-only inference. Fresh
+reconstruction must match actual network/critic/prior/stream/config states before
+continuation. The earlier native cbbf/v4 attempt stopped on a critic-initialization
+mismatch; its packets are not migrated to this source cohort.
