@@ -8,7 +8,7 @@ from .response_native import build_native, INFERENCE
 _ALLOWED = {'rows', 'dummy', 'device', 'base_precision', 'steps', 'seed', 'batch',
             'sample_seeds', 'history_tokens', 'preset', 'sampling', 'ema_decay',
             'revision', 'cache_dir', 'pg_version', 'pg_source_profile', 'penalty_input_domain',
-            'lr', 'd_lr_mult', 'prior_lr_mult'}
+            'lr', 'd_lr_mult', 'prior_lr_mult', 'native_numerical_profile'}
 
 
 def _rows(options):
@@ -18,7 +18,7 @@ def _rows(options):
 
 def _native_options(options):
     return {**{key: options[key] for key in ('dummy', 'device', 'base_precision', 'revision', 'cache_dir',
-        'pg_version', 'pg_source_profile', 'penalty_input_domain') if key in options}, 'base_seed': options.get('seed', 7)}
+        'pg_version', 'pg_source_profile', 'penalty_input_domain', 'native_numerical_profile') if key in options}, 'base_seed': options.get('seed', 7)}
 
 
 def validate(options):

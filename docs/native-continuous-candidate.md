@@ -23,7 +23,21 @@ The native loader uses `yue2-infer` 0.1.6 from immutable upstream commit
 `ef1936f2ee39fe8de486a0f47a481c95f8d4da87`. Its actual dependency requirements
 include Torch 2.10.0 and Transformers 4.57.6. This candidate additionally binds
 actual Torch `2.10.0+cu128` / CUDA build `12.8`, BF16 base precision and an explicit
-CUDA device. Metadata may report Torch `2.10.0`; the runtime build is checked
+CUDA device. The caller must explicitly select
+`native_numerical_profile="yue2-bf16-sdpa-math-strict-v1"` and configure its process
+before model construction. The product only inspects these settings and refuses
+a mismatch; it never changes the caller's process policy. The profile requires
+erroring deterministic algorithms, `CUBLAS_WORKSPACE_CONFIG=:4096:8`, highest
+FP32 matmul precision, TF32 disabled for matmul/cuDNN, cuDNN deterministic mode
+with benchmarking disabled, and FP16/BF16 reduced-precision reductions disabled.
+Native attention is explicitly loaded as `sdpa`; its native grouped-query call
+to `torch.nn.functional.scaled_dot_product_attention` admits only the math
+backend (flash, memory-efficient and cuDNN SDPA disabled, low-precision math
+reductions disabled). TF32 force-on environment overrides are refused. The
+actual flags and attention implementation become part of native identity and
+raw/EMA inference reconstruction.
+
+Metadata may report Torch `2.10.0`; the runtime build is checked
 separately. The full dependency map is in `native_assets.py`.
 
 Use an existing local `m-a-p/YuE2-3B` snapshot at revision
@@ -47,6 +61,7 @@ A candidate session adds these options to the normal paired sound/lyrics rows:
 ```python
 native_options = dict(
     device='cuda:0', base_precision='bfloat16',
+    native_numerical_profile='yue2-bf16-sdpa-math-strict-v1',
     revision='14fc6c6f146441b1dd6363fcb2e01e82a6914cb7',
     cache_dir='/path/to/local/huggingface/hub',
     pg_source_profile='source-801ae1e-continuous-v1',
@@ -61,3 +76,28 @@ loader key/shape comparison validate readiness without a pretrained forward.
 They do not establish native training, acoustic quality or a recommended LR.
 A measured real-model probe must verify teacher/OFF responses, both optimizer
 updates, exact resume, frozen base and portable inference before an LR search.
+
+The caller must set the strict policy before opening a session or inference
+artifact. Set the CUBLAS workspace environment before importing Torch:
+
+```python
+import os
+os.environ['CUBLAS_WORKSPACE_CONFIG'] = ':4096:8'
+import torch
+torch.use_deterministic_algorithms(True, warn_only=False)
+torch.backends.cudnn.benchmark = False
+torch.backends.cudnn.deterministic = True
+torch.set_float32_matmul_precision('highest')
+torch.backends.cuda.matmul.allow_tf32 = False
+torch.backends.cudnn.allow_tf32 = False
+torch.backends.cuda.matmul.allow_fp16_reduced_precision_reduction = False
+torch.backends.cuda.matmul.allow_bf16_reduced_precision_reduction = False
+torch.backends.cuda.enable_flash_sdp(False)
+torch.backends.cuda.enable_mem_efficient_sdp(False)
+torch.backends.cuda.enable_cudnn_sdp(False)
+torch.backends.cuda.enable_math_sdp(True)
+torch.backends.cuda.allow_fp16_bf16_reduction_math_sdp(False)
+```
+
+This explicit native policy does not apply to the CPU dummy fixture or alter
+the strict default official PG release profile.

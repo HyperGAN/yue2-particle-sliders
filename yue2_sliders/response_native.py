@@ -123,10 +123,14 @@ def build_native(options, *, runtime=None, checkpoint_training=False):
     torch.manual_seed(options.get('base_seed', 7))
     if runtime is None:
         runtime = YuE2Backend(device=options.get('device', 'cpu'), allow_hub=False,
-            dummy=options.get('dummy', False), revision=options.get('revision'), cache_dir=options.get('cache_dir'))
+            dummy=options.get('dummy', False), revision=options.get('revision'), cache_dir=options.get('cache_dir'),
+            **({'attention_implementation': 'sdpa'} if not options.get('dummy', False) else {}))
     validate_staged(runtime, options)
     loaded = None
+    numerics = None
     if not runtime.dummy:
+        from .native_assets import numerical_profile
+        numerics = numerical_profile(options, runtime.model)
         from .backend import require_yue2
         _, model_class = require_yue2()
         if type(runtime) is not YuE2Backend or type(runtime.model) is not model_class or 'hidden' in vars(runtime):
@@ -140,7 +144,7 @@ def build_native(options, *, runtime=None, checkpoint_training=False):
     owner = NativeOwner(runtime.model)
     try:
         identity = dict(base=runtime.identity, frozen_base_sha256=loaded['frozen_base_sha256'] if loaded else frozen_digest(runtime.model),
-                        loaded_checkpoint=loaded,
+                        loaded_checkpoint=loaded, native_numerical_profile=numerics,
                         dependencies=dependencies, native_assets=assets, product_sources=native_sources(), base_seed=options.get('base_seed', 7))
         slider = owner.attach_slider(runtime.model)
         native = NativeResponse(runtime, slider, model_identity=identity,
@@ -151,6 +155,8 @@ def build_native(options, *, runtime=None, checkpoint_training=False):
             base_precision='float32' if device.type == 'cpu' else 'bfloat16', architecture=architecture_of(runtime.model),
             pg_version=PG_VERSION, **engine_options(options),
             context_limit=int(runtime.model.config.max_position_embeddings))
+        if not runtime.dummy:
+            native.inference_configuration['native_numerical_profile'] = options['native_numerical_profile']
         return native, owner.close, partial(observation, runtime)
     except BaseException as setup_error:
         try:
@@ -166,7 +172,8 @@ def _native_options(options, configuration):
 
 def validate_inference(options, spec):
     config = spec.configuration
-    if set(options) - _RUNTIME or set(config) != _CONFIGURATION:
+    expected = _CONFIGURATION | ({'native_numerical_profile'} if not config.get('dummy', False) else set())
+    if set(options) - _RUNTIME or set(config) != expected:
         raise ValueError('native-only runtime accepts device/revision/cache_dir, never training rows or game options')
     if config['base_precision'] != 'float32' and 'device' not in options:
         raise ValueError('native device must be explicit')

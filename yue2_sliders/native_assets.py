@@ -9,6 +9,7 @@ MODEL_REVISION = '14fc6c6f146441b1dd6363fcb2e01e82a6914cb7'
 UPSTREAM_COMMIT = 'ef1936f2ee39fe8de486a0f47a481c95f8d4da87'
 UPSTREAM_URL = 'https://github.com/multimodal-art-projection/YuE.git'
 PROFILE = 'source-801ae1e-continuous-v1'
+NUMERICAL_PROFILE = 'yue2-bf16-sdpa-math-strict-v1'
 LOCK = Path(__file__).with_name('native-assets.lock.json')
 VERSIONS = {'yue2-infer': '0.1.6', 'torch': '2.10.0',
     'transformers': '4.57.6', 'huggingface-hub': '0.36.2',
@@ -33,6 +34,52 @@ def sources(root):
             if p.is_file() and '__pycache__' not in p.parts and p.suffix != '.pyc'}
 
 
+def numerical_profile(options, model=None):
+    """Inspect caller-owned strict math flags; never changes process settings."""
+    import os
+    import torch
+    if options.get('native_numerical_profile') != NUMERICAL_PROFILE:
+        raise ValueError('native YuE2 requires the explicit strict numerical profile')
+    actual = dict(
+        deterministic_algorithms=torch.are_deterministic_algorithms_enabled(),
+        deterministic_warn_only=torch.is_deterministic_algorithms_warn_only_enabled(),
+        cudnn_benchmark=torch.backends.cudnn.benchmark,
+        cudnn_deterministic=torch.backends.cudnn.deterministic,
+        tf32_matmul=torch.backends.cuda.matmul.allow_tf32,
+        tf32_cudnn=torch.backends.cudnn.allow_tf32,
+        float32_matmul_precision=torch.get_float32_matmul_precision(),
+        fp16_reduced_precision_reduction=torch.backends.cuda.matmul.allow_fp16_reduced_precision_reduction,
+        bf16_reduced_precision_reduction=torch.backends.cuda.matmul.allow_bf16_reduced_precision_reduction,
+        flash_sdp=torch.backends.cuda.flash_sdp_enabled(),
+        memory_efficient_sdp=torch.backends.cuda.mem_efficient_sdp_enabled(),
+        cudnn_sdp=torch.backends.cuda.cudnn_sdp_enabled(),
+        math_sdp=torch.backends.cuda.math_sdp_enabled(),
+        math_sdp_low_precision_reduction=torch.backends.cuda.fp16_bf16_reduction_math_sdp_allowed(),
+        cublas_workspace_config=os.environ.get('CUBLAS_WORKSPACE_CONFIG'),
+    )
+    expected = dict(deterministic_algorithms=True, deterministic_warn_only=False,
+        cudnn_benchmark=False, cudnn_deterministic=True, tf32_matmul=False,
+        tf32_cudnn=False, float32_matmul_precision='highest',
+        fp16_reduced_precision_reduction=False, bf16_reduced_precision_reduction=False,
+        flash_sdp=False, memory_efficient_sdp=False, cudnn_sdp=False, math_sdp=True,
+        math_sdp_low_precision_reduction=False, cublas_workspace_config=':4096:8')
+    if actual != expected:
+        changed = sorted(key for key in expected if actual[key] != expected[key])
+        raise ValueError('native YuE2 strict numerical policy differs: ' + ', '.join(changed))
+    overrides = {key: os.environ.get(key) for key in
+        ('TORCH_ALLOW_TF32_CUBLAS_OVERRIDE', 'NVIDIA_TF32_OVERRIDE')}
+    if any(value not in (None, '0') for value in overrides.values()):
+        raise ValueError('native YuE2 strict numerical policy refuses TF32 environment override')
+    implementation = 'sdpa'
+    if model is not None and getattr(model.config, '_attn_implementation', None) != implementation:
+        raise ValueError('loaded native YuE2 attention implementation differs from strict SDPA')
+    return dict(profile=NUMERICAL_PROFILE, actual_flags=actual, environment_overrides=overrides,
+        attention=dict(transformers_implementation=implementation,
+            native_function='yue2.modeling_yue2.sdpa',
+            torch_function='torch.nn.functional.scaled_dot_product_attention',
+            enabled_backend='math', native_grouped_query_attention=True))
+
+
 def verify_native(options):
     """Verify the declared BF16 CUDA candidate before loader allocation/attachment."""
     if (options.get('pg_source_profile'), options.get('penalty_input_domain')) != (PROFILE, 'continuous'):
@@ -44,6 +91,7 @@ def verify_native(options):
     import torch
     if torch.__version__ != '2.10.0+cu128' or torch.version.cuda != '12.8':
         raise ValueError('native YuE2 requires actual Torch2.10.0+cu128/CUDA12.8')
+    numerics = numerical_profile(options)
     actual_versions = {name: metadata.version(name) for name in VERSIONS}
     if actual_versions != VERSIONS:
         raise ValueError('native YuE2 numerical runtime differs from the declared source candidate')
@@ -78,7 +126,7 @@ def verify_native(options):
         raise ValueError('native YuE2 cached architecture/precision differs')
     return dict(schema='yue2-native-assets-v1', model_id=MODEL_ID, revision=MODEL_REVISION,
         manifest_sha256=file_sha256(LOCK), upstream_commit=UPSTREAM_COMMIT,
-        runtime_versions=actual_versions, actual_torch=torch.__version__, cuda_build=torch.version.cuda, architecture=ARCHITECTURE,
+        runtime_versions=actual_versions, actual_torch=torch.__version__, cuda_build=torch.version.cuda, architecture=ARCHITECTURE, numerical_profile=numerics,
         qualification='exact native BF16 source candidate; native GPU/resume/acoustic quality not yet qualified')
 
 
