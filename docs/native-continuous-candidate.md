@@ -102,3 +102,12 @@ torch.backends.cuda.allow_fp16_bf16_reduction_math_sdp(False)
 
 This explicit native policy does not apply to the CPU dummy fixture or alter
 the strict default official PG release profile.
+# Construction RNG ownership
+
+Native construction seeds the CPU default generator and only the explicitly
+requested CUDA device inside a forked RNG scope. Both caller states are restored
+on success or failure; other visible CUDA generators are neither seeded nor
+queried. The native identity records `cpu-and-requested-cuda-fork-v1`. This is a
+new native source cohort, not a rebinding of the earlier strict-source artifacts.
+The CPU dummy fixture and archived reproduction sources keep their prior RNG
+behavior. This change does not qualify pretrained GPU execution or audio quality.
