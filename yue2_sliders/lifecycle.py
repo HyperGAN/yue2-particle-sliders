@@ -2,13 +2,13 @@
 from particle_sliders.lifecycle import Binding
 from particle_sliders.response import ResponseBackend
 
-from .response_runtime import PG_VERSION, PROFILE, DOMAIN, PROTOCOL, capabilities, validate_native_options, validate_staged
+from .response_runtime import PG_VERSION, PROFILE, DOMAIN, PROTOCOL, capabilities, validate_native_options, validate_staged, engine_options
 from .response_native import build_native, INFERENCE
 
 _ALLOWED = {'rows', 'dummy', 'device', 'base_precision', 'steps', 'seed', 'batch',
             'sample_seeds', 'history_tokens', 'preset', 'sampling', 'ema_decay',
             'revision', 'cache_dir', 'pg_version', 'pg_source_profile', 'penalty_input_domain',
-            'lr', 'd_lr_mult', 'prior_lr_mult'}
+            'lr', 'd_lr_mult', 'prior_lr_mult', 'native_numerical_profile'}
 
 
 def _rows(options):
@@ -18,7 +18,7 @@ def _rows(options):
 
 def _native_options(options):
     return {**{key: options[key] for key in ('dummy', 'device', 'base_precision', 'revision', 'cache_dir',
-        'pg_version', 'pg_source_profile', 'penalty_input_domain') if key in options}, 'base_seed': options.get('seed', 7)}
+        'pg_version', 'pg_source_profile', 'penalty_input_domain', 'native_numerical_profile') if key in options}, 'base_seed': options.get('seed', 7)}
 
 
 def validate(options):
@@ -80,10 +80,17 @@ def prepare(options, *, runtime=None):
         game = ConditionalPG09(native, provider, critic, particles=native.particles,
             response_domain='continuous_vector', preset=options.get('preset', 'bispf_optimized'),
             batch_size=options.get('batch', 2), seed=options.get('seed', 7), total_steps=options.get('steps', 4),
-            sampling=options.get('sampling', 'balanced'), pg_source_profile=PROFILE, penalty_input_domain=DOMAIN, recipe_overrides=rates)
+            sampling=options.get('sampling', 'balanced'), recipe_overrides=rates, **engine_options(options))
         spec = INFERENCE.specification(native, model_identity=native.model_identity,
             protocol=PROTOCOL, configuration=native.inference_configuration)
-        return Binding(game, close, inference=spec, observation=observe)
+        before_update = None
+        if not native.backend.dummy:
+            def before_update(context):
+                from .native_assets import numerical_profile
+                if numerical_profile(_native_options(options), native.model) != native.model_identity['native_numerical_profile']:
+                    raise ValueError('native YuE2 current numerical identity differs before update')
+                return True
+        return Binding(game, close, inference=spec, observation=observe, before_update=before_update)
     except BaseException:
         close()
         raise

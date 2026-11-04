@@ -1,7 +1,7 @@
 # YuE2 current numerical-response lifecycle
 
 The default `yue2-particle-sliders` package **0.3.0** uses shared core **0.12.0**
-at `ddb41423bcefc1fe76cd94d0f9b367353b3ea137` and official **ParticleGAN 0.9.4**
+at `5d68473a098801ee1ab3ebbb12463daef51c6346` and default official **ParticleGAN 0.9.4**
 at `330eb94ee748cdcad131b0275d8de75fd5a7f96f`. Python **3.11 or newer** is required.
 Install with `python -m pip install .` or `python -m pip install -r requirements.txt`.
 The core Git requirement selects this exact source commit; its metadata pins
@@ -12,6 +12,11 @@ and `yue2_sliders.response_native:INFERENCE` for native-only numerical inference
 `particle-slider` comes from the pinned shared core. The game uses its public
 `ConditionalPG09` compatibility name, which now executes the official PG0.9.4
 `release-0.9.4/auto` objective, optimizers, regularizers and checkpoint lifecycle.
+An opt-in native source candidate uses the exact upstream PG commit
+`801ae1ead8f88b88eca8f5398137e3e1bc01ad36`, selected only by
+`pg_source_profile="source-801ae1e-continuous-v1"` together with
+`penalty_input_domain="continuous"`. It is distinct from the official same-version
+wheel; a version-only replacement is refused.
 No ParticleGAN objective or fallback formula is copied into this product.
 The existing 128x4 routed bank, rank8/alpha8 q/k/v/o adapter geometry, frozen YuE2
 backbone, positive/neutral histories and raw-logit audio critic are preserved.
@@ -19,7 +24,10 @@ backbone, positive/neutral histories and raw-logit audio critic are preserved.
 The CPU fixture has response shape `[1,32]`. Native `m-a-p/YuE2-3B` produces
 `[1,2048]`: official PG0.9.4 still rejects this continuous-vector width before
 loading pretrained weights. We do not truncate, reshape or change its domain to
-bypass that gate. Waveform rendering, acoustic quality, pretrained/GPU training,
+bypass that gate. The explicit source candidate admits the native width after
+complete shared/upstream source and local model/tokenizer checks; see
+[native source candidate](docs/native-continuous-candidate.md). Native GPU
+execution remains unqualified until a separate measured proof. Waveform rendering, acoustic quality, pretrained/GPU training,
 negative strengths and token generation remain unqualified. The separate
 [HNDL preview](docs/hypergan-hndl-cohort.md) has the same native-width boundary.
 
@@ -63,7 +71,7 @@ a song. Native runtime options are `device`, `revision` and `cache_dir`.
 
 `lifecycle-runtime.lock.json` binds every packaged shared source/data file,
 including nested package data and HNDL graphs, the exact core version and Git
-commit, official PG wheel/source identity and its released source digest.
+commit, both explicitly selected PG wheel/source identities and source digests.
 Core provenance must be the locked wheel archive or the exact Git commit;
 missing provenance and altered bytes are rejected before native construction.
 Regenerate deterministically from the reviewed artifact with

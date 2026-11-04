@@ -153,7 +153,10 @@ class YuE2Backend:
         revision: str | None = None,
         cache_dir: str | None = None,
         dummy: bool = False,
+        attention_implementation: str | None = None,
     ):
+        if attention_implementation not in (None, "sdpa"):
+            raise ValueError("unsupported explicit YuE2 attention implementation")
         self.model_id = model_id
         self.vae_id = vae_id
         self.dummy = bool(dummy)
@@ -180,7 +183,8 @@ class YuE2Backend:
         self.identity = model_identity(path)
         self.tokenizer = YuE2TextTokenizer(path / "qwen.tiktoken")
         dtype = torch.float32 if str(device).startswith("cpu") else torch.bfloat16
-        self.model = model_cls.from_pretrained(path, local_files_only=True, torch_dtype=dtype).eval()
+        attention = {} if attention_implementation is None else {"attn_implementation": attention_implementation}
+        self.model = model_cls.from_pretrained(path, local_files_only=True, torch_dtype=dtype, **attention).eval()
         self.model.to(device).requires_grad_(False)
         # Silence unused-import warnings if a caller only needed the classes.
         del config_cls

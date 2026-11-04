@@ -79,7 +79,7 @@ def test_native_width_and_unrecovered_profile_refuse_before_loading(monkeypatch)
     with pytest.raises(ValueError, match='width >=170'):
         open_response(SessionConfig('yue2', 'native-refusal-only', **options))
     options.update(pg_source_profile='alz-continuous-v1', penalty_input_domain='continuous')
-    with pytest.raises(ValueError, match='unrecovered'):
+    with pytest.raises(ValueError, match='explicitly qualified'):
         open_response(SessionConfig('yue2', 'unrecovered-refusal-only', **options))
     assert not torch.cuda.is_initialized()
 
