@@ -83,7 +83,14 @@ def prepare(options, *, runtime=None):
             sampling=options.get('sampling', 'balanced'), recipe_overrides=rates, **engine_options(options))
         spec = INFERENCE.specification(native, model_identity=native.model_identity,
             protocol=PROTOCOL, configuration=native.inference_configuration)
-        return Binding(game, close, inference=spec, observation=observe)
+        before_update = None
+        if not native.backend.dummy:
+            def before_update(context):
+                from .native_assets import numerical_profile
+                if numerical_profile(_native_options(options), native.model) != native.model_identity['native_numerical_profile']:
+                    raise ValueError('native YuE2 current numerical identity differs before update')
+                return True
+        return Binding(game, close, inference=spec, observation=observe, before_update=before_update)
     except BaseException:
         close()
         raise

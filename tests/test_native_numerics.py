@@ -120,3 +120,19 @@ def test_changed_policy_refuses_before_native_loader_allocation(monkeypatch,stri
             revision=MODEL_REVISION,pg_source_profile='source-801ae1e-continuous-v1',
             penalty_input_domain='continuous'))
     assert not torch.cuda.is_initialized()
+
+
+def test_numerical_observation_refuses_changed_policy_before_native_body(strict_math):
+    from yue2_sliders.response_runtime import observation
+    model=torch.nn.Linear(2,2).eval().requires_grad_(False)
+    model.config=SimpleNamespace(_attn_implementation='sdpa')
+    runtime=SimpleNamespace(model=model)
+    identity=numerical_profile(strict_math,model)
+    with observation(runtime,native_options=strict_math,expected_numerics=identity):
+        pass
+    torch.backends.cuda.enable_flash_sdp(True)
+    reached=False
+    with pytest.raises(ValueError,match='strict numerical policy'):
+        with observation(runtime,native_options=strict_math,expected_numerics=identity):
+            reached=True
+    assert not reached and not torch.cuda.is_initialized()

@@ -157,7 +157,8 @@ def build_native(options, *, runtime=None, checkpoint_training=False):
             context_limit=int(runtime.model.config.max_position_embeddings))
         if not runtime.dummy:
             native.inference_configuration['native_numerical_profile'] = options['native_numerical_profile']
-        return native, owner.close, partial(observation, runtime)
+        return native, owner.close, partial(observation, runtime,
+            native_options=options if not runtime.dummy else None, expected_numerics=numerics)
     except BaseException as setup_error:
         try:
             owner.close()

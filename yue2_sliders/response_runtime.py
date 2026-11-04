@@ -134,13 +134,17 @@ def frozen_digest(model):
 
 
 @contextmanager
-def observation(runtime):
+def observation(runtime, *, native_options=None, expected_numerics=None):
     """Restore native buffer registrations/values, modes and owned hook flags.
 
     Base weights are immutable and not copied. YuE2 hidden() uses use_cache=False;
     no external KV/token sampler is invoked by the inference response callback.
     """
     import torch
+    if native_options is not None:
+        from .native_assets import numerical_profile
+        if numerical_profile(native_options, runtime.model) != expected_numerics:
+            raise ValueError('native YuE2 current numerical identity differs before observation')
     from particle_sliders.lifecycle import native_cleanup
     restore = native_cleanup(runtime.model)
     buffers = [(m, dict(m._buffers), set(m._non_persistent_buffers_set)) for m in runtime.model.modules()]

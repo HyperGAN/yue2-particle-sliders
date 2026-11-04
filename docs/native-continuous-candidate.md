@@ -35,7 +35,8 @@ to `torch.nn.functional.scaled_dot_product_attention` admits only the math
 backend (flash, memory-efficient and cuDNN SDPA disabled, low-precision math
 reductions disabled). TF32 force-on environment overrides are refused. The
 actual flags and attention implementation become part of native identity and
-raw/EMA inference reconstruction.
+raw/EMA inference reconstruction. The same identity is checked before each
+native optimizer update and observed inference/evaluation operation.
 
 Metadata may report Torch `2.10.0`; the runtime build is checked
 separately. The full dependency map is in `native_assets.py`.
