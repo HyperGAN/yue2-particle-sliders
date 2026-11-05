@@ -21,4 +21,4 @@ Use the same exact SessionConfig for continuation. The shared `particle-slider t
 
 The128×4 bank, rank8/alpha8 q/k/v/o geometry, frozen model and paired positive/neutral histories are unchanged. PGversion/profile/protocol/source identity is new. PG094 and source801 profiles refuse; old checkpoints/portable artifacts require their old source environment. [Historical lifecycle](docs/lifecycle-pg094.md) and [installation cohorts](INSTALL-COHORTS.md) retain those routes.
 
-Omitted rates keep inherited optimized defaults. Measured historical LR results do not transfer to this new source cohort. Newnative proof and fresh source-qualified evaluation remain pending; CPU fixtures are not that proof.
+Omitted rates keep inherited optimized defaults. The [current source-qualified native recipe](LEARNING-RATES.md#measured-pg095-native-recipe) now has fresh PG0.9.5 native full2 versus independent1+1 proof, public RAW/OFF replay, matched32/64 search, selected128 and sealed confirmation. Historical LR results still do not transfer to this new source cohort, and CPU fixtures alone are not native evidence.

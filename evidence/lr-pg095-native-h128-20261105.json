@@ -1,0 +1,115 @@
+{
+  "schema": "yue2-native-pg095-lr-evidence-v1",
+  "date": "2026-11-05",
+  "source": {
+    "product_commit": "2991dfe262b878ae3e5ba1ccd9786c51792c36f2",
+    "core_commit": "3dd672a7f9b8c169daef90fd63e4bb42b9ddc423",
+    "PG_version": "0.9.5"
+  },
+  "model": {
+    "repository": "m-a-p/YuE2-3B",
+    "revision": "14fc6c6f146441b1dd6363fcb2e01e82a6914cb7",
+    "upstream_runtime_commit": "ef1936f2ee39fe8de486a0f47a481c95f8d4da87"
+  },
+  "profile": {
+    "name": "yue2-bf16-sdpa-math-strict-pg095-v1",
+    "base_precision": "bfloat16",
+    "response_shape": [
+      1,
+      2048
+    ],
+    "rank": 8,
+    "alpha": 8,
+    "bank": [
+      128,
+      4
+    ],
+    "horizon": 128,
+    "batch": 2,
+    "seed": 7,
+    "sample_seeds": 1,
+    "history_tokens": 4,
+    "ema_decay": 0.9,
+    "torch": "2.10.0+cu128",
+    "transformers": "4.57.6",
+    "yue2_infer": "0.1.6",
+    "penalty_input_domain": "continuous",
+    "pg_source_profile": "release-0.9.5"
+  },
+  "metric": "S/T/N FP64 BEFORE subtraction; pooled SSE / teacher-edit energy within each complete example; equal mean of fixed teacher-only valid examples; exact-zero excluded/undefined; all students finite.",
+  "search": {
+    "G": [
+      1e-05,
+      0.0001,
+      0.0003
+    ],
+    "actual_D": 0.018,
+    "actual_P": 0.030000000000000002,
+    "common_horizon": 128,
+    "completed32": [
+      0.9818130551535953,
+      0.8652588520008746,
+      0.8577362379052998
+    ],
+    "completed64": [
+      0.9919034022018826,
+      0.7767620677498525,
+      1.7660816462666913
+    ],
+    "selection": "All three matched64 choose interior G.0001, then 128 and sealed2 confirmation; no finite>OFF veto.",
+    "recorded_physical_training_calls": 257,
+    "logical_training_calls": 256,
+    "duplicate_proof_calls": 1,
+    "prior_inflight_update_unknown_retained_separately": true
+  },
+  "selection": {
+    "G": 0.0001,
+    "D": 0.018,
+    "P": 0.030000000000000002,
+    "dmult": 179.99999999999997,
+    "pmult": 300.0,
+    "actual_rate_hex": {
+      "G": "0x1.a36e2eb1c432dp-14",
+      "D": "0x1.26e978d4fdf3bp-6",
+      "P": "0x1.eb851eb851eb9p-6"
+    },
+    "budget128_development_primary": 1.3220490203092785
+  },
+  "sealed_confirmation": {
+    "primary": 0.5525904019655886,
+    "examples": 2,
+    "valid": 2,
+    "excluded": 0,
+    "optimizer_updates": 0,
+    "selected128_packet_unchanged": true,
+    "all_students_finite": true
+  },
+  "mechanical_evidence": {
+    "fresh_full2_vs_fresh1_plus1_exact": true,
+    "public_RAW_and_OFF_replay_exact": true,
+    "frozen_base_exact": true,
+    "pristine_detach": true,
+    "exit0_reaped": true,
+    "saved_fields_independent_FP64_equal_example_audit": true,
+    "CPU_observation_threads": 2
+  },
+  "data_sha256": {
+    "development_sha256": "bdceefcaabc523549e45db4ca9207ea045716eb6a613de3ec776187ed252e1c3",
+    "sealed_confirmation_sha256": "e677655a6f6c3a83b018506a80e4dd28a81affa3ab1acd31dc7437ac3748e303"
+  },
+  "receipts_sha256": {
+    "independent-saved-fields-audit-v1.json": "f884b46cff33725a91dea062f973e0cbe84ebbe31a06dc5459f852bbb786adc1",
+    "confirmation-qualification-v1.json": "1bea1f90822b66cfbf8bf943073154e56c0de1ce82882b5bf977941058e2eedb",
+    "selection128-v1.json": "c33b8a62ae9d6a470b9accc812037885f1ae7040e10951b08c5cb1157224f309",
+    "ultimate-selection64-v2.json": "5be9f86d272d8a09527a88cf1b1ca548cfe0f23d9baadc84ad08fc998aea42bd",
+    "ultimate-selection128-v2.json": "ff54655887ac15b84eb72e7caedfae3d59373a170e34d65f072702ef2f8fbe0c"
+  },
+  "local_recommendation_sha256": "a2c20f24c893114ba42ba62e28adfd400b37588a7a858994540be5febaa40167",
+  "limits": [
+    "Small fixed source/data/numerical cohort; no claim of an optimal universal LR.",
+    "Development128 is above OFF=1; the complete budget and sealed confirmation are reported unchanged.",
+    "No audio, acoustic, semantic, preservation or subjective quality claim.",
+    "Old PG094/PG801 checkpoints retain their old source; no cross-version resume claim."
+  ],
+  "defaults_changed": false
+}

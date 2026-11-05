@@ -2,6 +2,8 @@ Current root package: **0.4.0 / core0.13.0 / published ParticleGAN0.9.5**, pinne
 
 The separate HNDL preview and historical controls below retain their original sources, environments and checkpoint identities.
 
+Current PG0.9.5 native2048 BF16 measurement: **G0.0001 / D0.018 / bank0.030000000000000002**, common128 schedule; sealed two-example RAW confirmation **0.5525904019655886**. See the [source-qualified recipe, exact multipliers and evidence](LEARNING-RATES.md#measured-pg095-native-recipe). Defaults and historical release weights are unchanged; this is a numerical hidden-response result, not an audio-quality claim.
+
 # YuE2 Particle Sliders
 
 Routed-particle composition sliders for [m-a-p/YuE2-3B](https://huggingface.co/m-a-p/YuE2-3B),

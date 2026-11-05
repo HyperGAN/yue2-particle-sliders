@@ -60,13 +60,13 @@ native_options = dict(
 )
 ```
 
-This is preparation for a separately admitted real-model proof. CPU random
-fixtures validate the common optimizer, exact checkpoint replay and raw/EMA
-native-only export contract. Source/asset verification and a complete meta
-loader key/shape comparison validate readiness without a pretrained forward.
-They do not establish native training, acoustic quality or a recommended LR.
-A measured real-model probe must verify teacher/OFF responses, both optimizer
-updates, exact resume, frozen base and portable inference before an LR search.
+Fresh real-model PG0.9.5 full2 versus independent1+1, teacher/OFF parity,
+frozen-base identity and public RAW/OFF replay have now completed for the
+[measured128 recipe](../LEARNING-RATES.md#measured-pg095-native-recipe).
+That source-qualified search and sealed confirmation are numerical hidden-response
+evidence. CPU random fixtures, source checks and meta key/shape comparisons
+remain software/readiness evidence, and no acoustic or semantic quality claim
+follows from either kind of check.
 
 The caller must set the strict policy before opening a session or inference
 artifact. Set the CUBLAS workspace environment before importing Torch:
