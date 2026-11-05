@@ -1,3 +1,9 @@
+# Current PG0.9.5 source migration
+
+Package0.4.0 adopts core3dd672a/core0.13 and published PG0.9.5 for fresh response cohorts. No existing published weights, native training result or measured LR is relabeled. [Migration](docs/pg095-migration.md).
+
+The following PG094 and earlier receipts are historical and retain their original identities.
+
 Current upgrade validation: [PG0.9.4 source and installed checks](docs/pg094-upgrade.md).
 
 # Current PG0.9.4 package cohort

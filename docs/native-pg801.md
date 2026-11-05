@@ -1,0 +1,121 @@
+# YuE2 native continuous source candidate
+
+The public response interface preserves native `[1,2048]` AR states. The default
+`release-0.9.4/auto` profile still refuses this width before loading the model.
+A separate explicit candidate binds core
+`5d68473a098801ee1ab3ebbb12463daef51c6346` and ParticleGAN source
+`801ae1ead8f88b88eca8f5398137e3e1bc01ad36`, using
+`pg_source_profile="source-801ae1e-continuous-v1"` and
+`penalty_input_domain="continuous"`. Install the exact candidate PG wheel/source
+in a fresh environment; the official PyPI 0.9.4 wheel is a different source and
+is rejected for this candidate. For an immutable source installation:
+
+```sh
+python -m pip install "particlegan @ git+https://github.com/255BITS/ParticleGAN.git@801ae1ead8f88b88eca8f5398137e3e1bc01ad36"
+python -m pip install ".[native]"
+```
+
+The shared core independently checks every imported ParticleGAN Python source
+against its qualified manifest. Use a fresh environment, not an archived song
+or control reproduction environment.
+
+The native loader uses `yue2-infer` 0.1.6 from immutable upstream commit
+`ef1936f2ee39fe8de486a0f47a481c95f8d4da87`. Its actual dependency requirements
+include Torch 2.10.0 and Transformers 4.57.6. This candidate additionally binds
+actual Torch `2.10.0+cu128` / CUDA build `12.8`, BF16 base precision and an explicit
+CUDA device. The caller must explicitly select
+`native_numerical_profile="yue2-bf16-sdpa-math-strict-v1"` and configure its process
+before model construction. The product only inspects these settings and refuses
+a mismatch; it never changes the caller's process policy. The profile requires
+erroring deterministic algorithms, `CUBLAS_WORKSPACE_CONFIG=:4096:8`, highest
+FP32 matmul precision, TF32 disabled for matmul/cuDNN, cuDNN deterministic mode
+with benchmarking disabled, and FP16/BF16 reduced-precision reductions disabled.
+Native attention is explicitly loaded as `sdpa`; its native grouped-query call
+to `torch.nn.functional.scaled_dot_product_attention` admits only the math
+backend (flash, memory-efficient and cuDNN SDPA disabled, low-precision math
+reductions disabled). TF32 force-on environment overrides are refused. The
+actual flags and attention implementation become part of native identity and
+raw/EMA inference reconstruction. The same identity is checked before each
+native optimizer update and observed inference/evaluation operation.
+
+Metadata may report Torch `2.10.0`; the runtime build is checked
+separately. The full dependency map is in `native_assets.py`.
+
+Use an existing local `m-a-p/YuE2-3B` snapshot at revision
+`14fc6c6f146441b1dd6363fcb2e01e82a6914cb7`, passed as the full `revision` and its
+Hugging Face `cache_dir`. The loader never downloads weights. Before loading,
+`native-assets.lock.json` verifies every cached model/tokenizer file and every
+installed upstream package source file, the upstream immutable Git origin and
+the native architecture. After loading, every frozen model tensor must equal
+its BF16 checkpoint tensor before an adapter can attach; staged runtimes must
+pass the same complete check. The BF16 checkpoint contains 3,630,684,224 parameters
+(6.76 GiB of tensor data), before activations or adapters. Hidden-response work
+does not load the optional YuE2 VAE.
+
+Training still delegates all GAN losses, regularizers, optimizers, particle
+prior and continuation state to shared `ConditionalPG09`. This change preserves
+the current public routed adapter bank and shared audio critic. The separate
+archived HNDL and historical CDF/PG091 cohorts are unchanged.
+
+A candidate session adds these options to the normal paired sound/lyrics rows:
+
+```python
+native_options = dict(
+    device='cuda:0', base_precision='bfloat16',
+    native_numerical_profile='yue2-bf16-sdpa-math-strict-v1',
+    revision='14fc6c6f146441b1dd6363fcb2e01e82a6914cb7',
+    cache_dir='/path/to/local/huggingface/hub',
+    pg_source_profile='source-801ae1e-continuous-v1',
+    penalty_input_domain='continuous',
+)
+```
+
+This is preparation for a separately admitted real-model proof. CPU random
+fixtures validate the common optimizer, exact checkpoint replay and raw/EMA
+native-only export contract. Source/asset verification and a complete meta
+loader key/shape comparison validate readiness without a pretrained forward.
+They do not establish native training, acoustic quality or a recommended LR.
+A measured real-model probe must verify teacher/OFF responses, both optimizer
+updates, exact resume, frozen base and portable inference before an LR search.
+
+The caller must set the strict policy before opening a session or inference
+artifact. Set the CUBLAS workspace environment before importing Torch:
+
+```python
+import os
+os.environ['CUBLAS_WORKSPACE_CONFIG'] = ':4096:8'
+import torch
+torch.use_deterministic_algorithms(True, warn_only=False)
+torch.backends.cudnn.benchmark = False
+torch.backends.cudnn.deterministic = True
+torch.set_float32_matmul_precision('highest')
+torch.backends.cuda.matmul.allow_tf32 = False
+torch.backends.cudnn.allow_tf32 = False
+torch.backends.cuda.matmul.allow_fp16_reduced_precision_reduction = False
+torch.backends.cuda.matmul.allow_bf16_reduced_precision_reduction = False
+torch.backends.cuda.enable_flash_sdp(False)
+torch.backends.cuda.enable_mem_efficient_sdp(False)
+torch.backends.cuda.enable_cudnn_sdp(False)
+torch.backends.cuda.enable_math_sdp(True)
+torch.backends.cuda.allow_fp16_bf16_reduction_math_sdp(False)
+```
+
+This explicit native policy does not apply to the CPU dummy fixture or alter
+the strict default official PG release profile.
+# Construction RNG ownership
+
+Native construction seeds the CPU default generator and only the explicitly
+requested CUDA device inside a forked RNG scope. Both caller states are restored
+on success or failure; other visible CUDA generators are neither seeded nor
+queried. The native identity records `cpu-and-requested-cuda-fork-v1`. This is a
+new native source cohort, not a rebinding of the earlier strict-source artifacts.
+The CPU dummy fixture and archived reproduction sources keep their prior RNG
+behavior. This change does not qualify pretrained GPU execution or audio quality.
+
+The native training factory also scopes provider, critic and game construction;
+the preserved loader RNG must not leave the critic dependent on caller state.
+Source identity includes the factory, provider and history-preparation bytes,
+read without importing training modules during native-only inference. Fresh
+reconstruction must match actual network/critic/prior/stream/config states before
+continuation. The earlier native cbbf/v4 attempt stopped on a critic-initialization
+mismatch; its packets are not migrated to this source cohort.

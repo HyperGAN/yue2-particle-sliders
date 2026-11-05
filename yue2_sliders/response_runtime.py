@@ -9,17 +9,17 @@ import sys
 
 from particle_sliders.response import ResponseCapabilities
 
-CORE_PIN = '5d68473a098801ee1ab3ebbb12463daef51c6346'
-PG_VERSION = '0.9.4'
-PROFILE = 'release-0.9.4'
+CORE_PIN = '3dd672a7f9b8c169daef90fd63e4bb42b9ddc423'
+PG_VERSION = '0.9.5'
+PROFILE = 'release-0.9.5'
 DOMAIN = 'auto'
-NATIVE_PROFILE = 'source-801ae1e-continuous-v1'
+NATIVE_PROFILE = 'release-0.9.5'
 LOCK = Path(__file__).with_name('lifecycle-runtime.lock.json')
-PROTOCOL = 'yue2-native-final-ar-hidden-response-v1'
+PROTOCOL = 'yue2-native-final-ar-hidden-response-v2-pg095'
 
 
 def engine_options(options):
-    from particle_sliders.pg094 import engine_options as shared_options
+    from particle_sliders.pg095 import engine_options as shared_options
     return shared_options(options)
 
 
@@ -72,7 +72,7 @@ def verify_runtime(options=None):
     lock = json.loads(LOCK.read_text())
     core, pg = lock['core'], lock['particlegan']
     if (lock['schema'], core['commit'], core['version'], pg['version']) != (
-            'yue2-response-runtime-v3', CORE_PIN, '0.12.0', PG_VERSION):
+            'yue2-response-runtime-v4-pg095', CORE_PIN, '0.13.0', PG_VERSION):
         raise ValueError('response code and canonical source lock disagree')
     distribution = metadata.distribution(core['distribution'])
     direct = json.loads(distribution.read_text('direct_url.json') or '{}')
@@ -87,7 +87,7 @@ def verify_runtime(options=None):
             'git', CORE_PIN, 'https://github.com/HyperGAN/particle-sliders'):
         raise ValueError('core requires exact wheel archive or Git commit provenance')
     if 'particlegan==' + PG_VERSION not in {requirement.replace(' ', '') for requirement in distribution.requires or ()}:
-        raise ValueError('core metadata must retain the exact PG0.9.4 dependency')
+        raise ValueError('core metadata must retain the exact PG0.9.5 dependency')
     pg_distribution = metadata.distribution('particlegan')
     pg_direct = json.loads(pg_distribution.read_text('direct_url.json') or '{}')
     if pg_distribution.version != PG_VERSION or ('archive_info' in pg_direct and
@@ -108,7 +108,7 @@ def verify_runtime(options=None):
     from particle_sliders.pg09 import _released_sources
     if _released_sources(profile) != pg['profiles'][profile]['source_sha256']:
         raise ValueError('PG source digest differs from the canonical lock')
-    from particle_sliders.pg094 import validate_pg09_domain
+    from particle_sliders.pg095 import validate_pg09_domain
     validate_pg09_domain((1, 1), response_domain='continuous_vector', **selected)
     return dict(core_commit=CORE_PIN, pg_version=PG_VERSION, **selected,
                 canonical_sources_sha256=hashlib.sha256(json.dumps(lock['source_sha256'], sort_keys=True).encode()).hexdigest())

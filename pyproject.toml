@@ -4,14 +4,14 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "yue2-particle-sliders"
-version = "0.3.0"
+version = "0.4.0"
 description = "YuE2 native AR hidden-response particle slider lifecycle (integration draft)"
 readme = "LIFECYCLE.md"
 requires-python = ">=3.11"
 license = {file = "LICENSE"}
 # Current lifecycle sources and exact official PG release are verified at runtime.
 # Historical CDF and PG091 reproduction locks remain separate.
-dependencies = ["particle-sliders-core @ git+https://github.com/HyperGAN/particle-sliders.git@5d68473a098801ee1ab3ebbb12463daef51c6346#subdirectory=packages/particle-sliders-core", "torch>=2.6,<3", "PyYAML>=6", "safetensors>=0.4", "numpy>=1.26"]
+dependencies = ["particle-sliders-core @ git+https://github.com/HyperGAN/particle-sliders.git@3dd672a7f9b8c169daef90fd63e4bb42b9ddc423#subdirectory=packages/particle-sliders-core", "torch>=2.6,<3", "PyYAML>=6", "safetensors>=0.4", "numpy>=1.26"]
 
 [project.optional-dependencies]
 native = ["yue2-infer @ git+https://github.com/multimodal-art-projection/YuE.git@ef1936f2ee39fe8de486a0f47a481c95f8d4da87"]

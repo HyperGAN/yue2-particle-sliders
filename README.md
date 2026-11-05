@@ -1,11 +1,6 @@
-Current upgrade validation: [PG0.9.4 source and installed checks](docs/pg094-upgrade.md).
+Current root package: **0.4.0 / core0.13.0 / published ParticleGAN0.9.5**, pinned to `3dd672a7f9b8c169daef90fd63e4bb42b9ddc423` (Python>=3.11). See [migration](docs/pg095-migration.md), [installation cohorts](INSTALL-COHORTS.md), and [response lifecycle](LIFECYCLE.md). Native2048-wide responses require explicit `release-0.9.5/continuous`; default auto keeps its width gate. CPU conformance does not qualify new native training or transfer historical LR results.
 
-The default package is **0.3.0 / shared core0.12.0 / official ParticleGAN0.9.4**,
-with exact core source `ddb41423bcefc1fe76cd94d0f9b367353b3ea137` and Python>=3.11.
-See [current installation cohorts](INSTALL-COHORTS.md) and the
-[current numerical-response lifecycle](LIFECYCLE.md). The separate
-[HNDL preview](docs/hypergan-hndl-cohort.md) uses the same current core.
-Native width2048 remains gated; no pretrained/acoustic qualification is claimed.
+The separate HNDL preview and historical controls below retain their original sources, environments and checkpoint identities.
 
 # YuE2 Particle Sliders
 
