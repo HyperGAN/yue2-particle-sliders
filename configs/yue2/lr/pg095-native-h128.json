@@ -1,0 +1,41 @@
+{
+  "schema": "yue2-native-pg095-lr-options-v1",
+  "status": "measured-source-qualified-starting-recipe",
+  "source": {
+    "product_commit": "2991dfe262b878ae3e5ba1ccd9786c51792c36f2",
+    "core_commit": "3dd672a7f9b8c169daef90fd63e4bb42b9ddc423",
+    "PG_version": "0.9.5"
+  },
+  "options": {
+    "lr": 0.0001,
+    "d_lr_mult": 179.99999999999997,
+    "prior_lr_mult": 300.0,
+    "steps": 128,
+    "batch": 2,
+    "seed": 7,
+    "sample_seeds": 1,
+    "history_tokens": 4,
+    "ema_decay": 0.9,
+    "base_precision": "bfloat16",
+    "native_numerical_profile": "yue2-bf16-sdpa-math-strict-pg095-v1",
+    "pg_source_profile": "release-0.9.5",
+    "penalty_input_domain": "continuous",
+    "revision": "14fc6c6f146441b1dd6363fcb2e01e82a6914cb7"
+  },
+  "actual_optimizer_rates": {
+    "g": [
+      0.0001,
+      0.030000000000000002
+    ],
+    "d": [
+      0.018
+    ]
+  },
+  "actual_rate_hex": {
+    "G": "0x1.a36e2eb1c432dp-14",
+    "D": "0x1.26e978d4fdf3bp-6",
+    "P": "0x1.eb851eb851eb9p-6"
+  },
+  "usage": "Merge options into a fresh common SessionConfig, supplying your own paired rows and local cache_dir/device. Configure the strict numerical policy before loading. This is not a complete session file.",
+  "scope": "Native2048 BF16 rank8/alpha8 q/k/v/o, 128x4 bank, 128-step schedule; source-qualified measurement, not a default change or checkpoint migration."
+}
