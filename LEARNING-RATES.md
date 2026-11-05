@@ -6,7 +6,15 @@ For the source-qualified native2048 BF16 cohort, use **G = 0.0001**, **D = 0.018
 
 Three G values completed matched32 and matched64 with identical actual D/P, native initialization, teachers and horizon. G0.0001 won the matched64 comparison, between G0.00001 and G0.0003. Its development RAW relative SSE was **0.7767620677498525 at64** and **1.3220490203092785 at128**. The same128 checkpoint then scored **0.5525904019655886** on two previously sealed held-out examples, with no optimizer updates, two valid examples and no exclusions. The above-OFF development128 result is retained; no candidate or endpoint was dropped for that score. [Sanitized evidence](evidence/lr-pg095-native-h128-20261105.json) records all matched scores, exact rates, native mechanical checks and the independent saved-field FP64 audit.
 
-This measurement binds product `2991dfe262b878ae3e5ba1ccd9786c51792c36f2`, core `3dd672a7f9b8c169daef90fd63e4bb42b9ddc423`, official PG0.9.5, `release-0.9.5/continuous`, and `yue2-bf16-sdpa-math-strict-pg095-v1`. It uses YuE2-3B revision `14fc6c6f146441b1dd6363fcb2e01e82a6914cb7`, Torch2.10.0+cu128, Transformers4.57.6 and yue2-infer0.1.6; rank8/alpha8 q/k/v/o adapters, the complete128×4 bank, batch2, seed7, one sample seed, four history tokens and EMA0.9. RAW, rather than EMA, selects and confirms the rate. This small fixed cohort supports a source-qualified starting recipe; it does not establish a universal optimum or audio/semantic quality.
+This measurement binds product `2991dfe262b878ae3e5ba1ccd9786c51792c36f2`, core `3dd672a7f9b8c169daef90fd63e4bb42b9ddc423`, official PG0.9.5, `release-0.9.5/continuous`, and `yue2-bf16-sdpa-math-strict-pg095-v1`. It uses YuE2-3B revision `14fc6c6f146441b1dd6363fcb2e01e82a6914cb7`, Torch2.10.0+cu128, Transformers4.57.6 and yue2-infer0.1.6; rank8/alpha8 q/k/v/o adapters, the complete128×4 bank, batch2, seed7, one sample seed, four history tokens. That measurement maintained an EMA0.9 shadow, but every
+selection and confirmation value used RAW; its evidence and packets are unchanged. This small fixed cohort supports a source-qualified starting recipe; it does not establish a universal optimum or audio/semantic quality.
+
+For **new sessions**, the options preset now explicitly sets `ema_decay=null`.
+Use RAW weights for training, evaluation, export and inference; do not add EMA
+averaging, comparison or selection. This is a fresh starting configuration,
+not a relabeling of the EMA-enabled measurement or a new native qualification.
+An old EMA-enabled checkpoint requires its original configuration and source;
+do not resume it into the new no-EMA cohort.
 
 Configure the [strict native process policy](docs/native-continuous-candidate.md) before model construction, then create a **fresh** session with your paired training rows and local cache:
 

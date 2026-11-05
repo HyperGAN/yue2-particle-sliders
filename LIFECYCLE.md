@@ -10,12 +10,17 @@ from particle_sliders.response import open_response
 c = SessionConfig('yue2', 'fresh-yue2-pg095', dummy=True,
     rows=[dict(neutral='soft piano', positive='bright piano', lyrics='A new day'),
           dict(neutral='quiet flute', positive='strong flute', lyrics='A river runs')],
-    steps=4, seed=7, batch=2, sample_seeds=1, history_tokens=4, ema_decay=.9)
+    steps=4, seed=7, batch=2, sample_seeds=1, history_tokens=4, ema_decay=None)
 with open_response(c) as session:
     session.train()
     session.checkpoint('training.pt')
     session.export_inference('raw.pt', selection='raw')
 ```
+
+New sessions disable EMA explicitly with `ema_decay=None` and use RAW weights
+for training, evaluation, export and inference. Do not add EMA averaging,
+comparison or selection. Historical EMA packets retain their original source
+and configuration; they cannot resume into this fresh no-EMA configuration.
 
 Use the same exact SessionConfig for continuation. The shared `particle-slider train --interface response` and `infer --mode response` APIs retain their interfaces. Native-only artifacts accept token IDs and exact device/revision/cache_dir runtime options; they return final AR hidden responses. They cannot train/resume, generate tokens or synthesize music.
 
