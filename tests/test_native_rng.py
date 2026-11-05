@@ -150,8 +150,8 @@ def test_native_prepare_refuses_preflight_before_forking_or_constructing(monkeyp
     assert visited == []
 
 
-@pytest.mark.parametrize('source_profile', ['release-0.9.4', 'source-801ae1e-continuous-v1'])
-def test_fresh_process_native_factory_scope_initializes_same_real_game_and_exact_continuation(source_profile):
+@pytest.mark.parametrize('domain', ['auto', 'continuous'])
+def test_fresh_process_native_factory_scope_initializes_same_real_game_and_exact_continuation(domain):
     """Replace only the pretrained boundary with the existing random CPU host.
 
     The native prepare branch constructs the actual provider, audio critic,
@@ -159,6 +159,7 @@ def test_fresh_process_native_factory_scope_initializes_same_real_game_and_exact
     Before the outer scope fix the critic differs across these caller seeds.
     """
     import json, os, subprocess, sys
+    source_profile = 'release-0.9.5'
     from particle_sliders.pg09 import _released_sources
     try:
         _released_sources(source_profile)
@@ -183,7 +184,7 @@ torch.rand(37)
 before = torch.get_rng_state().clone()
 options = dict(device='cpu', seed=7, steps=2, batch=2, sample_seeds=1, history_tokens=4,
     pg_source_profile=os.environ['TEST_PG_SOURCE_PROFILE'],
-    penalty_input_domain='auto' if os.environ['TEST_PG_SOURCE_PROFILE']=='release-0.9.4' else 'continuous',
+    penalty_input_domain=os.environ['TEST_PG_DOMAIN'],
     rows=[dict(neutral='soft piano', positive='bright piano', lyrics='A new day begins'),
           dict(neutral='quiet flute', positive='strong flute', lyrics='The river carries light')])
 binding = lifecycle.prepare(options)
@@ -214,7 +215,7 @@ print(json.dumps(dict(initial=hashes, first=first, second=second, final=final,
     outputs = []
     for caller, hashseed in [('1234', '19'), ('98765', '403')]:
         environment = dict(os.environ, CUDA_VISIBLE_DEVICES='', PYTHONHASHSEED=hashseed,
-                           CALLER_SEED=caller, TEST_PG_SOURCE_PROFILE=source_profile,
+                           CALLER_SEED=caller, TEST_PG_SOURCE_PROFILE=source_profile, TEST_PG_DOMAIN=domain,
                            OMP_NUM_THREADS='2', MKL_NUM_THREADS='2')
         run = subprocess.run([sys.executable, '-c', code], env=environment,
                              text=True, capture_output=True, timeout=60)

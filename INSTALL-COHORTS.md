@@ -1,35 +1,16 @@
 # Installation cohorts
 
-The default package is now `yue2-particle-sliders` **0.3.0**, with Python>=3.11,
-shared core **0.12.0** pinned to
-`ddb41423bcefc1fe76cd94d0f9b367353b3ea137`, and official ParticleGAN **0.9.4**.
-`requirements.txt` delegates to this same immutable package requirement.
-A fresh environment and new cohort are required; old source-bound checkpoints
-are not rebound. The [current lifecycle guide](LIFECYCLE.md) documents the
-`yue2` response training and native-only inference entry points.
+The root package0.4.0 requires Python>=3.11, core0.13.0 at `3dd672a7f9b8c169daef90fd63e4bb42b9ddc423`, and published `particlegan==0.9.5`. `requirements.txt` installs this same package. Use a new environment and a fresh training cohort.
 
 ```bash
-python3.11 -m venv .venv-pg094
-. .venv-pg094/bin/activate
+python3.11 -m venv .venv-pg095
+. .venv-pg095/bin/activate
 python -m pip install .
 particle-slider --help
 ```
 
-`lifecycle-runtime.lock.json` verifies the current exact core archive or Git
-provenance, all packaged source/data bytes and official PG release sources.
-Native width2048 remains refused before loading the model. CPU numerical fixture
-checks do not establish pretrained/GPU/acoustic qualification.
+The source lock checks core archive/Git provenance, every packaged source/data byte, and the published PG0.9.5 source manifest. Native continuous vectors use explicit `pg_source_profile="release-0.9.5"`, `penalty_input_domain="continuous"`; see [native guide](docs/native-continuous-candidate.md). Auto remains width-gated.
 
-The optional [HNDL preview](docs/hypergan-hndl-cohort.md) builds package
-`0.4.0.dev0`, pins the same core with its `hypergan-hndl` extra and installs only
-`yue2-hndl` entry points. It requires Python>=3.11,<3.15. Keep it in its own
-environment; do not install both product wheels together.
+PG094/PG801 packets require their original product/core/source environment, including measured source7757474/core5d68473. The old [lifecycle](docs/lifecycle-pg094.md) and [PG801 native guide](docs/native-pg801.md) remain historical. No packet is converted or rebound by this update.
 
-The historical CDF trainer requires its original core0.6.0/PG0.9.1 environment,
-`requirements-legacy.txt`, original source checkout and immutable
-`configs/yue2/shared-runtime.lock.json`. The previous core0.8.2/PG0.9.1 lifecycle
-lock is archived at `configs/yue2/lifecycle-pg091.lock.json`, with its guide at
-[docs/lifecycle-pg091.md](docs/lifecycle-pg091.md). Reproduce that lifecycle from
-source commit `0cdc190` or the corresponding original reviewed source, not by
-installing this current package into the old environment. Historical packet
-sources, samples, publication metadata and model weights retain their identities.
+The separate [HNDL preview](docs/hypergan-hndl-cohort.md), CDF/core0.6/PG091 trainer, archived PG091 lifecycle, published16 controls and audio samples retain their original pins. Do not install the new root package into those environments. NewCPU tests are software evidence, not pretrained native execution or an LR measurement on0.9.5.

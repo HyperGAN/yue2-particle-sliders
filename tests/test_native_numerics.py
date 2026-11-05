@@ -107,17 +107,20 @@ def test_pinned_native_loader_accepts_explicit_sdpa_on_small_real_class(tmp_path
 
 def test_changed_policy_refuses_before_native_loader_allocation(monkeypatch,strict_math):
     from particle_sliders.pg09 import _released_sources
-    try:_released_sources('source-801ae1e-continuous-v1')
+    try:_released_sources('release-0.9.5')
     except RuntimeError:pytest.skip('separate exact PG801 candidate environment required')
     from yue2_sliders import backend
     from yue2_sliders.response_native import build_native
     from yue2_sliders.native_assets import MODEL_REVISION
     def forbidden(*args,**kwargs):raise AssertionError('native constructor reached before policy refusal')
     monkeypatch.setattr(backend,'YuE2Backend',forbidden)
+    # Isolate policy admission from the separately tested native runtime gate.
+    # This remains a CPU refusal control, not a native-version qualification.
+    monkeypatch.setattr(torch, '__version__', '2.10.0+cu128')
     torch.backends.cuda.enable_flash_sdp(True)
     with pytest.raises(ValueError,match='strict numerical policy.*flash_sdp'):
         build_native(dict(strict_math,device='cuda:0',base_precision='bfloat16',
-            revision=MODEL_REVISION,pg_source_profile='source-801ae1e-continuous-v1',
+            revision=MODEL_REVISION,pg_source_profile='release-0.9.5',
             penalty_input_domain='continuous'))
     assert not torch.cuda.is_initialized()
 

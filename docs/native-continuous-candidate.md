@@ -1,30 +1,20 @@
-# YuE2 native continuous source candidate
+# YuE2 released PG0.9.5 native continuous cohort
 
-The public response interface preserves native `[1,2048]` AR states. The default
-`release-0.9.4/auto` profile still refuses this width before loading the model.
-A separate explicit candidate binds core
-`5d68473a098801ee1ab3ebbb12463daef51c6346` and ParticleGAN source
-`801ae1ead8f88b88eca8f5398137e3e1bc01ad36`, using
-`pg_source_profile="source-801ae1e-continuous-v1"` and
-`penalty_input_domain="continuous"`. Install the exact candidate PG wheel/source
-in a fresh environment; the official PyPI 0.9.4 wheel is a different source and
-is rejected for this candidate. For an immutable source installation:
+The public response interface preserves native `[1,2048]` states. Core0.13.0 at `3dd672a7f9b8c169daef90fd63e4bb42b9ddc423` uses published PG0.9.5. Select `pg_source_profile="release-0.9.5"`, `penalty_input_domain="continuous"`; auto retains its width gate. Do not install the old PG801 overlay into this environment.
 
 ```sh
-python -m pip install "particlegan @ git+https://github.com/255BITS/ParticleGAN.git@801ae1ead8f88b88eca8f5398137e3e1bc01ad36"
+python -m pip install "particlegan==0.9.5"
 python -m pip install ".[native]"
 ```
 
-The shared core independently checks every imported ParticleGAN Python source
-against its qualified manifest. Use a fresh environment, not an archived song
-or control reproduction environment.
+The complete released PG source manifest is checked independently. This is a fresh numerical/source cohort: old PG094/PG801 packets need their original environment. CPU fixtures do not qualify new pretrained execution or transfer old LR results.
 
 The native loader uses `yue2-infer` 0.1.6 from immutable upstream commit
 `ef1936f2ee39fe8de486a0f47a481c95f8d4da87`. Its actual dependency requirements
 include Torch 2.10.0 and Transformers 4.57.6. This candidate additionally binds
 actual Torch `2.10.0+cu128` / CUDA build `12.8`, BF16 base precision and an explicit
 CUDA device. The caller must explicitly select
-`native_numerical_profile="yue2-bf16-sdpa-math-strict-v1"` and configure its process
+`native_numerical_profile="yue2-bf16-sdpa-math-strict-pg095-v1"` and configure its process
 before model construction. The product only inspects these settings and refuses
 a mismatch; it never changes the caller's process policy. The profile requires
 erroring deterministic algorithms, `CUBLAS_WORKSPACE_CONFIG=:4096:8`, highest
@@ -62,10 +52,10 @@ A candidate session adds these options to the normal paired sound/lyrics rows:
 ```python
 native_options = dict(
     device='cuda:0', base_precision='bfloat16',
-    native_numerical_profile='yue2-bf16-sdpa-math-strict-v1',
+    native_numerical_profile='yue2-bf16-sdpa-math-strict-pg095-v1',
     revision='14fc6c6f146441b1dd6363fcb2e01e82a6914cb7',
     cache_dir='/path/to/local/huggingface/hub',
-    pg_source_profile='source-801ae1e-continuous-v1',
+    pg_source_profile='release-0.9.5',
     penalty_input_domain='continuous',
 )
 ```

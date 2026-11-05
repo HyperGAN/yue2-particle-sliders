@@ -8,8 +8,8 @@ MODEL_ID = 'm-a-p/YuE2-3B'
 MODEL_REVISION = '14fc6c6f146441b1dd6363fcb2e01e82a6914cb7'
 UPSTREAM_COMMIT = 'ef1936f2ee39fe8de486a0f47a481c95f8d4da87'
 UPSTREAM_URL = 'https://github.com/multimodal-art-projection/YuE.git'
-PROFILE = 'source-801ae1e-continuous-v1'
-NUMERICAL_PROFILE = 'yue2-bf16-sdpa-math-strict-v1'
+PROFILE = 'release-0.9.5'
+NUMERICAL_PROFILE = 'yue2-bf16-sdpa-math-strict-pg095-v1'
 LOCK = Path(__file__).with_name('native-assets.lock.json')
 VERSIONS = {'yue2-infer': '0.1.6', 'torch': '2.10.0',
     'transformers': '4.57.6', 'huggingface-hub': '0.36.2',

@@ -1,4 +1,4 @@
-"""Current official PG094 lifecycle identity and installed CPU conformance."""
+"""Current official PG095 lifecycle identity and installed CPU conformance."""
 from copy import deepcopy
 import json
 from importlib import metadata
@@ -14,7 +14,7 @@ from yue2_sliders import response_runtime as runtime
 
 
 def config(preset='bispf_optimized'):
-    return SessionConfig('yue2', 'pg094-cpu-regression-' + preset, dummy=True,
+    return SessionConfig('yue2', 'pg095-cpu-regression-' + preset, dummy=True,
         rows=[dict(neutral='soft piano', positive='loud guitar', lyrics='A train rolls'),
               dict(neutral='quiet flute', positive='bright brass', lyrics='The river runs')],
         steps=2, seed=7, batch=2, sample_seeds=1, history_tokens=4,
@@ -22,10 +22,10 @@ def config(preset='bispf_optimized'):
 
 
 @pytest.mark.parametrize('preset', ['bispf', 'bispf_optimized'])
-def test_canonical_lifecycle_trains_with_official_pg094_and_keeps_base_frozen(preset):
+def test_canonical_lifecycle_trains_with_official_pg095_and_keeps_base_frozen(preset):
     with open_response(config(preset)) as run:
-        assert run.capabilities.pg_version == '0.9.4'
-        assert run.capabilities.pg_source_profile == 'release-0.9.4'
+        assert run.capabilities.pg_version == '0.9.5'
+        assert run.capabilities.pg_source_profile == 'release-0.9.5'
         before = run.game.backend.slider.particles.detach().clone()
         base = deepcopy(run.game.backend.model.state_dict())
         critic = deepcopy(run.game.critic.state_dict())
@@ -35,8 +35,8 @@ def test_canonical_lifecycle_trains_with_official_pg094_and_keeps_base_frozen(pr
         assert all(torch.equal(v, base[k]) for k, v in run.game.backend.model.state_dict().items())
         assert all(not p.requires_grad and p.grad is None for p in run.game.backend.model.parameters())
         state = run.game.state_dict()
-        assert state['config']['pg_version'] == '0.9.4'
-        assert state['config']['pg_source_profile'] == 'release-0.9.4'
+        assert state['config']['pg_version'] == '0.9.5'
+        assert state['config']['pg_source_profile'] == 'release-0.9.5'
         state['config']['pg_version'] = '0.9.1'
         with pytest.raises(ValueError, match='version|cohort|signature|mismatch|profile'):
             run.game.load_state_dict(state)
@@ -102,16 +102,16 @@ def test_archived_pg091_lifecycle_lock_is_distinct_from_current():
     current = json.loads(runtime.LOCK.read_text())
     assert archived['core']['commit'] == 'f6807a91546e43e198645a3f8925d2dc7c9e03b4'
     assert archived['particlegan']['version'] == '0.9.1'
-    assert current['core']['commit'] == '5d68473a098801ee1ab3ebbb12463daef51c6346'
-    assert current['particlegan']['version'] == '0.9.4'
-    assert current['particlegan']['release_commit'] == '330eb94ee748cdcad131b0275d8de75fd5a7f96f'
+    assert current['core']['commit'] == '3dd672a7f9b8c169daef90fd63e4bb42b9ddc423'
+    assert current['particlegan']['version'] == '0.9.5'
+    assert current['particlegan']['release_commit'] == '1b8355b184b21bb7d81104ee590813c262f6df0a'
 
 
 def test_unified_execution_uses_the_installed_response_backend_in_its_runtime(tmp_path):
     """Keep the newly merged shared execution API in the canonical source cohort."""
     import sys
     from particle_sliders.execution import resolve_request, execute_resolved_request
-    profile = dict(schema='particle-slider-profile-v1', name='yue2-pg094-cpu',
+    profile = dict(schema='particle-slider-profile-v1', name='yue2-pg095-cpu',
         product='yue2-particle-sliders', config_kind='session', interface='response',
         backend='yue2', status='fixture', runtime={'python': sys.executable},
         capabilities={'resume': True, 'periodic_checkpoint': True, 'check': True})

@@ -87,7 +87,7 @@ def _prepare(options, *, runtime=None):
             closed = True
     try:
         from .response_provider import PreparedBank
-        from particle_sliders import ConditionalPG09
+        from particle_sliders.pg095 import ConditionalPG095 as ConditionalPG09
         from particle_sliders.pg09_audio import AudioResponseCritic
         import torch
         provider = PreparedBank(native.backend, native, _rows(options),

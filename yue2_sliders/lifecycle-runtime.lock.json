@@ -1,35 +1,29 @@
 {
-  "schema": "yue2-response-runtime-v3",
-  "status": "EXPLICIT_CONTINUOUS_SOURCE_CANDIDATE_NATIVE_GPU_AND_ACOUSTIC_UNQUALIFIED",
+  "schema": "yue2-response-runtime-v4-pg095",
+  "status": "PG095_RELEASE_NATIVE_CONTINUOUS_SOURCE_READY_NOT_NATIVE_QUALIFIED",
   "core": {
     "distribution": "particle-sliders-core",
-    "version": "0.12.0",
+    "version": "0.13.0",
     "repository": "https://github.com/HyperGAN/particle-sliders",
-    "commit": "5d68473a098801ee1ab3ebbb12463daef51c6346",
-    "wheel_sha256": "434aa23289e42e303d45b12c1652d48a5c1c83982773f163b7428e80c124eb11"
+    "commit": "3dd672a7f9b8c169daef90fd63e4bb42b9ddc423",
+    "wheel_sha256": "af1f64ee624d103a9f77b949b57a97cfeddf37d0e56a8aa5cc93a7d94855dda2"
   },
   "particlegan": {
-    "version": "0.9.4",
-    "release_commit": "330eb94ee748cdcad131b0275d8de75fd5a7f96f",
+    "version": "0.9.5",
+    "release_commit": "1b8355b184b21bb7d81104ee590813c262f6df0a",
     "profiles": {
-      "release-0.9.4": {
-        "version": "0.9.4",
-        "commit": "330eb94ee748cdcad131b0275d8de75fd5a7f96f",
-        "wheel_sha256": "ad21eeaea861cf0582fc39aa96eb3fd8ab8cf21e8e0f0179f0597a9c42eb99b6",
-        "source_sha256": "2ccc05a2e2e4c9ce00187e6cd13495f0b468a6fb22644cd5f8993dd6ec80a3a8"
-      },
-      "source-801ae1e-continuous-v1": {
-        "version": "0.9.4",
-        "commit": "801ae1ead8f88b88eca8f5398137e3e1bc01ad36",
-        "wheel_sha256": "263f8edead2f972b87d03a93780e95929c8c03d2989f3770313b88cb3699c9d0",
-        "source_sha256": "c626043c847c08b5bdf88240931eea4259e74f0d2200645674fbb82c240fb556"
+      "release-0.9.5": {
+        "version": "0.9.5",
+        "commit": "1b8355b184b21bb7d81104ee590813c262f6df0a",
+        "wheel_sha256": "c1c0de7a635ac1b1634ba158eed050b6f6aed993e01f9b463435430c77d846ae",
+        "source_sha256": "d452f7c3277be32ab40cf4b45478dcf8cfb62b994e693184e278e8e2f4c5fc26"
       }
     }
   },
   "source_sha256": {
     "concept_slider_core/__init__.py": "9afadb5c36b00413160442900e6190a7d93f272b61413f72a932c1db948623d3",
     "particle_sliders/LICENSE": "2b61d4a8dd7a958b99133a92e92eede6f5e8b0f7b44d234665f822051e530685",
-    "particle_sliders/__init__.py": "dc38a3abd253f84c84ffff7f8534b2940eafa32f6e1a1006e57e30155c910ecb",
+    "particle_sliders/__init__.py": "c2c3139df614da4be89380117f4f6fffe24c8d689fa840897cd4ab60e6338e9c",
     "particle_sliders/_legacy_namespace.py": "322d09ff3131e62b1ec10f099cdd8e19f6314a01d9afb4b0e4ac18159c4b933a",
     "particle_sliders/_training.py": "0a5802997adec58998beb6598861f6a0f0aa1245a10053666e16300b67d3bc44",
     "particle_sliders/audio_closure_provenance.json": "d1eb31852cc6ea3328d03f52537f376abfa5d1c53e1e97abd0124b1fce7d65b5",
@@ -57,7 +51,7 @@
     "particle_sliders/inference.py": "a44ad31b8976f5ad4519f658e4d5ab3c0ab875c4345696eba728835971be914a",
     "particle_sliders/legacy_compat.py": "82d036b7ec0aa9e3da7efd7b932fd756ef07a7cad799434180ec9ae4f9280435",
     "particle_sliders/legacy_stamp.json": "3532272646d7ab6d7d304f289e5866225f066aac6a3f9a0691a53807a0cf0605",
-    "particle_sliders/lifecycle.py": "3055ed7e3662199ce8731b3ea667350c54390fe7f0a6774b9456ae52efe938f2",
+    "particle_sliders/lifecycle.py": "00c867a24dcbf03192bbe23f0a14314e583c53138736626f656774a4b9b278ad",
     "particle_sliders/locked_provenance.json": "006792143f3580da58fffac16bba2e4c47c1147d277359d8be4350d6d447f6ed",
     "particle_sliders/music3_native.py": "bbdd408259475b6d2a16158eaa283d302f22f6d8e7a64c44aad35d8a1e943819",
     "particle_sliders/native_lora.py": "9cb43b8b03148e11c9b957e81ed3897a965f2a21c69d440c6aaafee452aa6018",
@@ -68,12 +62,14 @@
     "particle_sliders/notrigger/train_notrigger.py": "eed2d95482bd631c8f9b75d5c3d41a6ec2ebef4a260258328910a03c5a9b0f5d",
     "particle_sliders/optimizer_policy.py": "9ae5fd84987d9a2ae4c202801a9f24b2fe4cebc6d0c8bdc737341a895a79b9a9",
     "particle_sliders/peft_scaling.py": "bdb9bdb8b77bfb785658542d48cd4fa04969320898fa83ed30e8d33bcef9640e",
-    "particle_sliders/pg09.py": "b86c57c93999100856fb434a11bb98aee1890493f62e65431eab50052e9d5ef0",
+    "particle_sliders/pg09.py": "96dcf51aa614539a3c9a8f169cf190e155d695b9df962cba058b37a65236a830",
     "particle_sliders/pg093.py": "61bcd076d0c79dc47ae041d79d45defee25d326fee34fd2cc5b6b42d6e878b8d",
     "particle_sliders/pg093_release.json": "551f015d5e8cb359d570f6b3eea4772f1f986267b92d51e58643733cb49b9a91",
-    "particle_sliders/pg094.py": "4253cd1c5b852e6422d55da30eec6d86fbe159a2f63d21d1babcc6a9726cdfe6",
+    "particle_sliders/pg094.py": "29e2d230ffcd0d217f090c19d144b06318d0758378713d88c284011aad0061cc",
     "particle_sliders/pg094_continuous.json": "ecd0db966cfe0f20b06e3df2d47d6b1420493d3ccabb0177fba5a86d5f533400",
     "particle_sliders/pg094_release.json": "c2405c54312f279ecfe070c555f8900d9865e7f0e32463f84712f160300ab186",
+    "particle_sliders/pg095.py": "ecfaf6ad16f092bb1b76df64201858671ccdc2a341d6c8c50650574dc9a937e3",
+    "particle_sliders/pg095_release.json": "670bda74564522d29c5e0d2d927104111dda2f3f3bce338364f42a8a177d0ed5",
     "particle_sliders/pg09_audio.py": "dc7bb1288d6f2a534e6b08eacb2fc0b2066f82e767da4dca4e07cf17f9d38a73",
     "particle_sliders/pg09_audio_cli.py": "4f054ba97afe4b8cf238646764f0d803f9c5abc03a1967003a29cae61f1a8f4a",
     "particle_sliders/pg09_backends.py": "2301cd70b2b0f99f64821ae378f0926a3b23e3695a33e38b54a4406697b201c9",

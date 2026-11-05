@@ -46,13 +46,13 @@ def test_installed_data_and_entrypoints_keep_their_cohorts():
         assert ep.load().name == 'yue2'
 
 
-def test_default_fresh_process_discovers_only_its_installed_core012_backends(tmp_path):
+def test_default_fresh_process_discovers_only_its_installed_core013_backends(tmp_path):
     import subprocess
     import sys
     code = '''
 import importlib.abc, sys
 from importlib import metadata
-assert metadata.version('particle-sliders-core') == '0.12.0'
+assert metadata.version('particle-sliders-core') == '0.13.0'
 class Guard(importlib.abc.MetaPathFinder):
     def find_spec(self, fullname, path=None, target=None):
         if fullname in {'yue2_sliders.hndl_response', 'particle_sliders.fibo_hndl', 'hypergan', 'hndl'}:
@@ -87,7 +87,7 @@ def test_new_shared_version_is_rejected_without_touching_the_lock(monkeypatch):
     original = runtime.metadata.distribution
 
     class NewCore:
-        version = '0.13.0'
+        version = '0.14.0'
         def read_text(self, name):
             return '{}'
 

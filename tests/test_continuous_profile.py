@@ -12,7 +12,7 @@ from particle_sliders.inference import open_inference
 from yue2_sliders import response_runtime as runtime
 from yue2_sliders.native_assets import verify_native, MODEL_REVISION
 
-PROFILE = 'source-801ae1e-continuous-v1'
+PROFILE = 'release-0.9.5'
 PAIR = dict(pg_source_profile=PROFILE, penalty_input_domain='continuous')
 
 
@@ -32,14 +32,20 @@ def config():
         steps=2, seed=7, batch=2, history_tokens=4, ema_decay=.9, **PAIR)
 
 
+def test_native_runtime_versions_keep_the_original_asset_lock():
+    from yue2_sliders.native_assets import LOCK, VERSIONS
+    assert VERSIONS == json.loads(LOCK.read_text())["runtime_versions"]
+
+
 def test_descriptor_preserves_explicit_native_width_and_profile():
     native = runtime.capabilities(PAIR)
     assert native.response_shape == (1, 2048)
     assert native.pg_source_profile == PROFILE
     assert native.penalty_input_domain == 'continuous'
-    assert runtime.capabilities({}).pg_source_profile == 'release-0.9.4'
+    assert runtime.capabilities({}).pg_source_profile == 'release-0.9.5'
     assert runtime.capabilities({}).penalty_input_domain == 'auto'
-    for invalid in (dict(pg_source_profile=PROFILE), dict(penalty_input_domain='continuous'),
+    for invalid in (dict(pg_source_profile='source-801ae1e-continuous-v1', penalty_input_domain='continuous'),
+                    dict(pg_source_profile='release-0.9.4'),
                     dict(pg_source_profile='alz-continuous-v1', penalty_input_domain='continuous')):
         with pytest.raises(ValueError, match='explicitly qualified'):
             runtime.validate_native_options(invalid)
@@ -54,7 +60,7 @@ def test_native_source_candidate_requires_explicit_precision_and_revision_before
     assert not torch.cuda.is_initialized()
 
 
-@pytest.mark.skipif(not candidate_installed(), reason='requires separate exact PG801 source environment')
+@pytest.mark.skipif(not candidate_installed(), reason='requires exact published PG0.9.5 source environment')
 @pytest.mark.parametrize('selection', ['raw', 'ema'])
 def test_explicit_profile_cpu_fixture_exact_resume_and_native_only_exports(tmp_path, selection):
     """Real shared optimizers on a bounded random fixture, no pretrained claim."""
