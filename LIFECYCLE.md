@@ -26,4 +26,10 @@ Use the same exact SessionConfig for continuation. The shared `particle-slider t
 
 The128×4 bank, rank8/alpha8 q/k/v/o geometry, frozen model and paired positive/neutral histories are unchanged. PGversion/profile/protocol/source identity is new. PG094 and source801 profiles refuse; old checkpoints/portable artifacts require their old source environment. [Historical lifecycle](docs/lifecycle-pg094.md) and [installation cohorts](INSTALL-COHORTS.md) retain those routes.
 
-Omitted rates keep inherited optimized defaults. The [current source-qualified native recipe](LEARNING-RATES.md#measured-pg095-native-recipe) now has fresh PG0.9.5 native full2 versus independent1+1 proof, public RAW/OFF replay, matched32/64 search, selected128 and sealed confirmation. Historical LR results still do not transfer to this new source cohort, and CPU fixtures alone are not native evidence.
+Omitted rates keep inherited optimized defaults. The current
+[finished-audio decision](LEARNING-RATES.md) selects saved G0.00001 RAW64/h128,
+using only the four-case equal-mean piano-stem attack-rise ON−OFF proxy. Reuse
+that existing result, with its separator leakage limits; no extra confirmation
+or replay is required. The earlier G0.0001 response-SSE screen and retained
+native mechanical proofs have distinct scopes. This documentation changes no
+source, checkpoint, defaults or response API.
