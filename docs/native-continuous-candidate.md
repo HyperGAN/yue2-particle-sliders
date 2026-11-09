@@ -60,13 +60,15 @@ native_options = dict(
 )
 ```
 
-Fresh real-model PG0.9.5 full2 versus independent1+1, teacher/OFF parity,
-frozen-base identity and public RAW/OFF replay have now completed for the
-[measured128 recipe](../LEARNING-RATES.md#measured-pg095-native-recipe).
-That source-qualified search and sealed confirmation are numerical hidden-response
-evidence. CPU random fixtures, source checks and meta key/shape comparisons
-remain software/readiness evidence, and no acoustic or semantic quality claim
-follows from either kind of check.
+The original PG0.9.5 full2/exact1+1, teacher/OFF, frozen-base and public RAW
+proofs remain retained. The current [finished-audio decision](../LEARNING-RATES.md)
+uses existing cell1 G0.00001 RAW64/h128 and a four-case equal-mean piano-stem
+attack-rise ON−OFF proxy. Its separation leakage limits remain explicit; it is
+not a broad acoustic-quality claim. The old G0.0001 RAW128 teacher-SSE screen
+is diagnostic history, not the current selector. No repeated search, native
+proof, render, rerating or extra confirmation is required. CPU fixtures still
+have software scope; native assets/numerics and exact checkpoint identity do not
+change with this documentation.
 
 The caller must set the strict policy before opening a session or inference
 artifact. Set the CUBLAS workspace environment before importing Torch:

@@ -2,11 +2,17 @@ Current root package: **0.4.0 / core0.13.0 / published ParticleGAN0.9.5**, pinne
 
 The separate HNDL preview and historical controls below retain their original sources, environments and checkpoint identities.
 
-Current PG0.9.5 native2048 BF16 measurement: **G0.0001 / D0.018 / bank0.030000000000000002**, common128 schedule; sealed two-example RAW confirmation **0.5525904019655886**. See the [source-qualified recipe, exact multipliers and evidence](LEARNING-RATES.md#measured-pg095-native-recipe). Defaults and historical release weights are unchanged; this is a numerical hidden-response result, not an audio-quality claim.
-New sessions explicitly set `ema_decay=None` and use RAW weights throughout;
-EMA averaging, comparison and selection are not part of current guidance.
-The linked recipe distinguishes the original measurement from this fresh
-no-EMA starting configuration.
+Current finished-audio decision: use existing **cell1 G0.00001 RAW64** at fixed
+D0.018 / bank0.030000000000000002, batch2/horizon128. Its equal-case frozen
+estimated-piano attack-rise ON−OFF mean is **+0.014077682560999588** over four
+matched cases, best of three saved rates. [Exact common options and scope](LEARNING-RATES.md).
+This piano-stem proxy can contain separator leakage/artifacts; it is not human
+listening or general acoustic-quality validation. Reuse the existing search,
+RAW checkpoints, audio and scores; no new search, rerating or extra confirmation.
+The older G0.0001 RAW128 teacher-SSE score0.5525904019655886 remains diagnostic
+history. Defaults and historical release weights are unchanged. Historical
+training EMA0.9 stays recorded; selection/inference use RAW, and new sessions
+explicitly set `ema_decay=None` without averaging or an EMA comparison.
 
 # YuE2 Particle Sliders
 

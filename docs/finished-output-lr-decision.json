@@ -1,0 +1,82 @@
+{
+  "schema": "documented-finished-output-LR-decision-v1",
+  "product_id": "yue2-particle-sliders",
+  "as_of": "2026-11-09",
+  "selection_metric": "Equal-case mean intended-effect intensity ON minus matched OFF in finished outputs",
+  "teacher_SSE_used_for_selection": false,
+  "preservation_beauty_confidence_or_completion_tiebreak": false,
+  "prospective_ema_decay": null,
+  "source_rate_pack_SHA256": "d06a3585ef9b3aaccfffe6352beb419b289c860c49c96a8df30c9459dda4a573",
+  "status": "best_tested_selected_from_existing_intended_effect_scores",
+  "rate_overrides": {
+    "lr": 1e-05,
+    "d_lr_mult": 1799.9999999999998,
+    "prior_lr_mult": 3000.0,
+    "ema_decay": null
+  },
+  "actual_rates": {
+    "G": 1e-05,
+    "D": 0.018,
+    "bank": 0.030000000000000002
+  },
+  "comparison_updates": 64,
+  "comparison_cases": 4,
+  "comparison_arms": 3,
+  "horizon": 128,
+  "batch": 2,
+  "best_tested_control_id": "cell1",
+  "mean_effect_gain": 0.014077682560999588,
+  "per_case_gains": {
+    "dev0-seed42": 0.0011001460193804657,
+    "dev0-seed43": 0.010706288613985149,
+    "dev1-seed42": 0.04213708875363009,
+    "dev1-seed43": 0.002367206857002646
+  },
+  "all_candidate_means": [
+    {
+      "control_id": "cell0",
+      "G": 0.0001,
+      "mean_gain": -0.0006603240009776523
+    },
+    {
+      "control_id": "cell1",
+      "G": 1e-05,
+      "mean_gain": 0.014077682560999588
+    },
+    {
+      "control_id": "cell2",
+      "G": 0.0003,
+      "mean_gain": -0.011665111312551407
+    }
+  ],
+  "scope": "Best tested within the existing YuE2 RAW64/h128 four-case saved bank and fixed D/bank only. Full original audio, frozen estimated-piano attack-rise scalar. No global/joint optimum, human/acoustic-quality validation or default change.",
+  "measurement_kind": "FROZEN_PIANO_ESTIMATE_ATTACK_RISE_PROXY_NOT_HUMAN",
+  "separator_leakage_caveat": "The experimental estimated piano stem can contain leakage/artifacts. Two reference anchors validate direction only, not independent piano attribution in mixtures.",
+  "historical_training_ema_decay": 0.9,
+  "completed_search_reused": true,
+  "additional_fresh_confirmation_required": false,
+  "next_step": "Use existing YuE2 cell1 G1e-05 RAW64, best in the completed four-case proxy comparison. No repeated search or extra confirmation is required.",
+  "evidence": {
+    "result": {
+      "artifact_id": "result.json",
+      "bytes": 42992,
+      "sha256": "f0b20dd1651bc4fbe057e63c59e64f6b8354e0761de9ad12f4e04814f0cf5526"
+    },
+    "decision": {
+      "artifact_id": "root-existing-fourcase-audio-LR-selection-v1.json",
+      "bytes": 3505,
+      "sha256": "da27ff73e9b27bb3cddabd90b5fd886f1ffe082416367589ec5e7a6d45678fcf"
+    },
+    "Root_terminal": {
+      "artifact_id": "root-actual-terminal-reap-resource0-v1.json",
+      "bytes": 12509,
+      "sha256": "ffc3f9639baf8c6a9ac15884c29ae9b9ebe3209872cfca934a10da485f3bd692"
+    },
+    "RAW": {
+      "artifact_id": "raw-v2.pt",
+      "bytes": 17610230,
+      "sha256": "8b05953b665e384bff6be8bb9391f8a0f2ab396022f9a51103d8a3cd30a3ab0b"
+    }
+  },
+  "usage": "Documentation metadata and exact option literals only; not a complete training configuration, artifact loader, changed package default, or instruction to replay completed training."
+}
