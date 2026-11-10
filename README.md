@@ -102,3 +102,7 @@ Formulation exams stay in [HyperGAN/particle-sliders](https://github.com/HyperGA
 `V2_SPEC` is `analysis/slider2d/yue2_gmix_v2_exam.py` there.
 
 Learning-rate controls and preserved defaults: [LEARNING-RATES.md](LEARNING-RATES.md).
+
+## Opt-in cached fresh initialization
+
+The separate [fresh95 owner API](fresh95/FRESH95.md) adds explicit fresh, whole-FULL resume and RAW hidden-response inference in its own installed distribution. Four tiny installed-owner software cases passed with one update; this does not qualify new pretrained/acoustic execution. Original registrations, saved cohorts, historical EMA and learning-rate decisions remain unchanged. Authentic completed cache and owner admission are required.

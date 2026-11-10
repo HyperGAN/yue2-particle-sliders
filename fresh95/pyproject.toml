@@ -1,0 +1,13 @@
+[build-system]
+requires = ["setuptools>=84.2.1"]
+build-backend = "setuptools.build_meta"
+[project]
+name = "yue2-explicit-fresh95"
+version = "0.1.0"
+description = "Explicit cached YuE2 fresh095 owner; original native/source gates retained"
+readme = "FRESH95.md"
+requires-python = ">=3.11"
+dependencies = ["yue2-particle-sliders==0.4.0", "particlegan==0.9.5", "torch>=2.6,<3"]
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["yue2_fresh95*"]
