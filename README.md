@@ -16,6 +16,8 @@ explicitly set `ema_decay=None` without averaging or an EMA comparison.
 
 # YuE2 Particle Sliders
 
+**Calculated memory:** Native BF16 AR response training: **14 GiB GPU / 24 GiB host** at batch 2/256 tokens. The conservative full-length eager music pipeline has a separate **92 GiB GPU** budget. [Full memory ledger and limits](MEMORY.md). These are planning estimates, not measured peaks.
+
 Routed-particle composition sliders for [m-a-p/YuE2-3B](https://huggingface.co/m-a-p/YuE2-3B),
 with the VAE at [m-a-p/YuE2-Vae](https://huggingface.co/m-a-p/YuE2-Vae).
 `yue2-particle-sliders` is the YuE2 product repo in the Anima / Krea2 layout. It owns Hub ids,
