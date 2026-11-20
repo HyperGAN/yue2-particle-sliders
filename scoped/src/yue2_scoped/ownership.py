@@ -30,7 +30,7 @@ def guard():
     from .policy import INIT_SHA
     record_guard(distribution('yue2-particle-sliders','0.4.0'),'yue2_sliders',Path(yue2_sliders.__file__).absolute().parent,ORIGINAL)
     lock=verify_runtime()  # Original canonical577 + actual distribution/import-origin guards unchanged.
-    if metadata.version('particlegan')!='0.11.0'or source_record(pg_init.__file__)['sha256']!=INIT_SHA:raise RuntimeError('exact public PG095 initializer required')
+    if metadata.version('particlegan')!='0.11.0'or source_record(pg_init.__file__)['sha256']!=INIT_SHA:raise RuntimeError('exact public ParticleGAN 0.11.0 initializer required')
     own=Path(__file__).absolute().parent
     record_guard(distribution('yue2-explicit-scoped','0.1.0'),'yue2_scoped',own,
         {p.name:source_record(p)for p in sorted(own.glob('*.py'))})
