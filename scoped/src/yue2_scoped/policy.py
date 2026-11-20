@@ -1,4 +1,4 @@
-"""Official PG095 same-Parameter QR at native a=1 RMS; bank R2Normal std1."""
+"""Official ParticleGAN 0.11.0 same-Parameter QR at native a=1 RMS; bank R2Normal std1."""
 from dataclasses import dataclass
 from importlib import metadata
 import hashlib,math,torch
@@ -61,7 +61,7 @@ def declarations(slider,critic):
 def initialize(slider,critic,construction,options,sources):
     if(not isinstance(construction,Construction)or construction.mode!='fresh'or not construction.cohort
             or construction.options_sha256!=hashlib.sha256(canonical(options).encode()).hexdigest()):raise ValueError('explicit fresh intent before optimizers required')
-    if metadata.version('particlegan')!='0.11.0'or source_record(pg_init.__file__)['sha256']!=INIT_SHA:raise ValueError('exact public PG095 initializer required')
+    if metadata.version('particlegan')!='0.11.0'or source_record(pg_init.__file__)['sha256']!=INIT_SHA:raise ValueError('exact public ParticleGAN 0.11.0 initializer required')
     rows=declarations(slider,critic);ids=[id(r['parameter'])for r in rows];before=[tensor_sha(r['parameter'])for r in rows]
     holder=DeclaredOwned(rows);seeds={'p'+str(i):seed_for(options['config']['seed'],r['name'])for i,r in enumerate(rows)}
     pg_init.deterministic_orthogonal_(holder,strict=True,parameter_seeds=seeds)
