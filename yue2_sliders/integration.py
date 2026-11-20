@@ -57,8 +57,8 @@ def verify_lock(lock, core_pin):
             source = getattr(module, "__file__", None)
             if source is None or not Path(source).resolve().is_relative_to(package):
                 raise ValueError(f"already imported {name} from an unqualified source: {source}")
-    for name in ("particle_sliders", "particle_sliders.pg09", "particle_sliders.pg09_audio",
-                 "particle_sliders.pg09_backends"):
+    for name in ("particle_sliders", "particle_sliders.engine", "particle_sliders.audio",
+                 "particle_sliders.backends"):
         module = importlib.import_module(name)
         source = Path(module.__file__).resolve()
         relative = str(source.relative_to(root)) if source.is_relative_to(root) else None

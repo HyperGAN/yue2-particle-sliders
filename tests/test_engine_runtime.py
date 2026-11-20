@@ -18,14 +18,14 @@ def config(preset='bispf_optimized'):
         rows=[dict(neutral='soft piano', positive='loud guitar', lyrics='A train rolls'),
               dict(neutral='quiet flute', positive='bright brass', lyrics='The river runs')],
         steps=2, seed=7, batch=2, sample_seeds=1, history_tokens=4,
-        preset=preset, ema_decay=.9)
+        preset=preset, ema_decay=None)
 
 
 @pytest.mark.parametrize('preset', ['bispf', 'bispf_optimized'])
 def test_canonical_lifecycle_trains_with_official_pg095_and_keeps_base_frozen(preset):
     with open_response(config(preset)) as run:
-        assert run.capabilities.pg_version == '0.9.5'
-        assert run.capabilities.pg_source_profile == 'release-0.9.5'
+        assert run.capabilities.pg_version == '0.11.0'
+        assert run.capabilities.pg_source_profile == 'release-0.11.0'
         before = run.game.backend.slider.particles.detach().clone()
         base = deepcopy(run.game.backend.model.state_dict())
         critic = deepcopy(run.game.critic.state_dict())
@@ -35,8 +35,8 @@ def test_canonical_lifecycle_trains_with_official_pg095_and_keeps_base_frozen(pr
         assert all(torch.equal(v, base[k]) for k, v in run.game.backend.model.state_dict().items())
         assert all(not p.requires_grad and p.grad is None for p in run.game.backend.model.parameters())
         state = run.game.state_dict()
-        assert state['config']['pg_version'] == '0.9.5'
-        assert state['config']['pg_source_profile'] == 'release-0.9.5'
+        assert state['config']['pg_version'] == '0.11.0'
+        assert state['config']['pg_source_profile'] == 'release-0.11.0'
         state['config']['pg_version'] = '0.9.1'
         with pytest.raises(ValueError, match='version|cohort|signature|mismatch|profile'):
             run.game.load_state_dict(state)
@@ -53,6 +53,7 @@ def test_current_core_archive_or_exact_git_provenance_required(monkeypatch, prov
         'wrong-vcs': {'url': 'https://github.com/HyperGAN/particle-sliders.git',
                       'vcs_info': {'vcs': 'git', 'commit_id': '0' * 40}},
         'exact-vcs': {'url': 'https://github.com/HyperGAN/particle-sliders.git',
+                      'subdirectory': 'packages/particle-sliders-core',
                       'vcs_info': {'vcs': 'git', 'commit_id': runtime.CORE_PIN}},
     }
     class CoreView:
@@ -76,8 +77,8 @@ def test_full_current_source_closure_rejects_tampering_before_native_load(tmp_pa
     distribution = original('particle-sliders-core')
     for name in ('particle_sliders', 'concept_slider_core'):
         shutil.copytree(distribution.locate_file(name), tmp_path / name)
-    source = tmp_path / {'python': 'particle_sliders/pg09.py',
-        'graph': 'particle_sliders/fibo_projection.hndl',
+    source = tmp_path / {'python': 'particle_sliders/engine.py',
+        'graph': 'particle_sliders/engine_release.json',
         'nested-data': 'particle_sliders/new-data/extra.bin'}[tamper]
     source.parent.mkdir(exist_ok=True)
     source.write_bytes((source.read_bytes() if source.exists() else b'') + b'\n# tamper\n')
@@ -102,9 +103,9 @@ def test_archived_pg091_lifecycle_lock_is_distinct_from_current():
     current = json.loads(runtime.LOCK.read_text())
     assert archived['core']['commit'] == 'f6807a91546e43e198645a3f8925d2dc7c9e03b4'
     assert archived['particlegan']['version'] == '0.9.1'
-    assert current['core']['commit'] == '3dd672a7f9b8c169daef90fd63e4bb42b9ddc423'
-    assert current['particlegan']['version'] == '0.9.5'
-    assert current['particlegan']['release_commit'] == '1b8355b184b21bb7d81104ee590813c262f6df0a'
+    assert current['core']['commit'] == 'c13890f8e2a1ecf1dc8eb9f2a37f9187cb9fea78'
+    assert current['particlegan']['version'] == '0.11.0'
+    assert current['particlegan']['release_commit'] == 'b86f0379b4d887f4cde88d686aedc04661a2b61b'
 
 
 def test_unified_execution_uses_the_installed_response_backend_in_its_runtime(tmp_path):

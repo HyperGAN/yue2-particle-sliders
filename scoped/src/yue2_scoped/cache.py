@@ -2,10 +2,10 @@
 from dataclasses import fields
 from pathlib import Path
 import torch
-from particle_sliders.pg09_audio import AudioRow,PreparedAudioResponse,audio_conditions
+from particle_sliders.audio import AudioRow,PreparedAudioResponse,audio_conditions
 from . import PROFILE,ownership
 from .util import canonical,equal,read_packet,save_packet,source_record,tree
-SCHEMA='YuE2-completed-original-PreparedAudioResponses-fresh95-cache-v1'
+SCHEMA='YuE2-completed-original-PreparedAudioResponses-scoped-cache-v1'
 
 def file_record(row):
     if(not isinstance(row,dict)or set(row)!={'path','bytes','sha256'}or not isinstance(row['path'],str)

@@ -9,17 +9,17 @@ import sys
 
 from particle_sliders.response import ResponseCapabilities
 
-CORE_PIN = '3dd672a7f9b8c169daef90fd63e4bb42b9ddc423'
-PG_VERSION = '0.9.5'
-PROFILE = 'release-0.9.5'
+CORE_PIN = 'c13890f8e2a1ecf1dc8eb9f2a37f9187cb9fea78'
+PG_VERSION = '0.11.0'
+PROFILE = 'release-0.11.0'
 DOMAIN = 'auto'
-NATIVE_PROFILE = 'release-0.9.5'
+NATIVE_PROFILE = 'release-0.11.0'
 LOCK = Path(__file__).with_name('lifecycle-runtime.lock.json')
-PROTOCOL = 'yue2-native-final-ar-hidden-response-v2-pg095'
+PROTOCOL = 'yue2-native-final-ar-hidden-response-v2-engine'
 
 
 def engine_options(options):
-    from particle_sliders.pg095 import engine_options as shared_options
+    from particle_sliders.engine import engine_options as shared_options
     return shared_options(options)
 
 
@@ -72,7 +72,7 @@ def verify_runtime(options=None):
     lock = json.loads(LOCK.read_text())
     core, pg = lock['core'], lock['particlegan']
     if (lock['schema'], core['commit'], core['version'], pg['version']) != (
-            'yue2-response-runtime-v4-pg095', CORE_PIN, '0.13.0', PG_VERSION):
+            'yue2-response-runtime-v4-engine', CORE_PIN, '0.15.1', PG_VERSION):
         raise ValueError('response code and canonical source lock disagree')
     distribution = metadata.distribution(core['distribution'])
     direct = json.loads(distribution.read_text('direct_url.json') or '{}')
@@ -81,13 +81,13 @@ def verify_runtime(options=None):
     if distribution.version != core['version']:
         raise ValueError('core version differs from the current runtime lock')
     if 'archive_info' in direct:
-        if archive_sha != core['wheel_sha256']:
+        if not core.get('wheel_sha256') or archive_sha != core['wheel_sha256']:
             raise ValueError('core wheel SHA256 differs from the exact current artifact')
-    elif (vcs.get('vcs'), vcs.get('commit_id'), direct.get('url', '').removesuffix('.git')) != (
-            'git', CORE_PIN, 'https://github.com/HyperGAN/particle-sliders'):
+    elif (vcs.get('vcs'), vcs.get('commit_id'), direct.get('url', '').removesuffix('.git'), direct.get('subdirectory')) != (
+            'git', CORE_PIN, 'https://github.com/HyperGAN/particle-sliders', 'packages/particle-sliders-core'):
         raise ValueError('core requires exact wheel archive or Git commit provenance')
     if 'particlegan==' + PG_VERSION not in {requirement.replace(' ', '') for requirement in distribution.requires or ()}:
-        raise ValueError('core metadata must retain the exact PG0.9.5 dependency')
+        raise ValueError('core metadata must retain the exact PG0.11.0 dependency')
     pg_distribution = metadata.distribution('particlegan')
     pg_direct = json.loads(pg_distribution.read_text('direct_url.json') or '{}')
     if pg_distribution.version != PG_VERSION or ('archive_info' in pg_direct and
@@ -105,11 +105,11 @@ def verify_runtime(options=None):
             source = getattr(module, '__file__', None)
             if source is None or not Path(source).resolve().is_relative_to(root) or str(Path(source).resolve().relative_to(root)) not in actual:
                 raise ValueError('unqualified shared import origin: ' + name)
-    from particle_sliders.pg09 import _released_sources
+    from particle_sliders.engine import _released_sources
     if _released_sources(profile) != pg['profiles'][profile]['source_sha256']:
         raise ValueError('PG source digest differs from the canonical lock')
-    from particle_sliders.pg095 import validate_pg09_domain
-    validate_pg09_domain((1, 1), response_domain='continuous_vector', **selected)
+    from particle_sliders.engine import validate_engine_domain
+    validate_engine_domain((1, 1), response_domain='continuous_vector', **selected)
     return dict(core_commit=CORE_PIN, pg_version=PG_VERSION, **selected,
                 canonical_sources_sha256=hashlib.sha256(json.dumps(lock['source_sha256'], sort_keys=True).encode()).hexdigest())
 
@@ -120,7 +120,7 @@ def native_sources():
     names = ('__init__.py', 'response_runtime.py', 'response_native.py', 'backend.py', 'slider.py',
              'stamp.py', 'defaults.py', 'prompts.py', 'lifecycle-runtime.lock.json',
              'native_assets.py', 'native-assets.lock.json', 'lifecycle.py',
-             'response_provider.py', 'train.py')
+             'response_provider.py', 'train.py', 'response_binding.py', 'native_binding.py')
     return {name: hashlib.sha256((root / name).read_bytes()).hexdigest() for name in names}
 
 

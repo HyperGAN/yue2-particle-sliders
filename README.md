@@ -1,4 +1,4 @@
-Current root package: **0.4.0 / core0.13.0 / published ParticleGAN0.9.5**, pinned to `3dd672a7f9b8c169daef90fd63e4bb42b9ddc423` (Python>=3.11). See [migration](docs/pg095-migration.md), [installation cohorts](INSTALL-COHORTS.md), and [response lifecycle](LIFECYCLE.md). Native2048-wide responses require explicit `release-0.9.5/continuous`; default auto keeps its width gate. CPU conformance does not qualify new native training or transfer historical LR results.
+Current root package: **0.4.0 / core0.15.1 / published ParticleGAN0.11.0**, pinned to `c13890f8e2a1ecf1dc8eb9f2a37f9187cb9fea78` (Python>=3.11). See [migration](docs/pg095-migration.md), [installation cohorts](INSTALL-COHORTS.md), and [response lifecycle](LIFECYCLE.md). Native2048-wide responses require explicit `release-0.11.0/continuous`; default auto keeps its width gate. CPU conformance does not qualify new native training or transfer historical LR results.
 
 The separate HNDL preview and historical controls below retain their original sources, environments and checkpoint identities.
 
@@ -107,4 +107,4 @@ Learning-rate controls and preserved defaults: [LEARNING-RATES.md](LEARNING-RATE
 
 ## Opt-in cached fresh initialization
 
-The separate [fresh95 owner API](fresh95/FRESH95.md) adds explicit fresh, whole-FULL resume and RAW hidden-response inference in its own installed distribution. Four tiny installed-owner software cases passed with one update; this does not qualify new pretrained/acoustic execution. Original registrations, saved cohorts, historical EMA and learning-rate decisions remain unchanged. Authentic completed cache and owner admission are required.
+The separate [scoped owner API](scoped/README.md) adds explicit fresh, whole-FULL resume and RAW hidden-response inference in its own installed distribution. Four tiny installed-owner software cases passed with one update; this does not qualify new pretrained/acoustic execution. Original registrations, saved cohorts, historical EMA and learning-rate decisions remain unchanged. Authentic completed cache and owner admission are required.

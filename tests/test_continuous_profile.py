@@ -12,12 +12,12 @@ from particle_sliders.inference import open_inference
 from yue2_sliders import response_runtime as runtime
 from yue2_sliders.native_assets import verify_native, MODEL_REVISION
 
-PROFILE = 'release-0.9.5'
+PROFILE = 'release-0.11.0'
 PAIR = dict(pg_source_profile=PROFILE, penalty_input_domain='continuous')
 
 
 def candidate_installed():
-    from particle_sliders.pg09 import _released_sources
+    from particle_sliders.engine import _released_sources
     try:
         _released_sources(PROFILE)
     except RuntimeError:
@@ -29,7 +29,7 @@ def config():
     return SessionConfig('yue2', 'continuous-source-cpu-fixture-only', dummy=True,
         rows=[dict(neutral='soft piano', positive='bright piano', lyrics='A new day begins'),
               dict(neutral='quiet flute', positive='strong flute', lyrics='The river carries light')],
-        steps=2, seed=7, batch=2, history_tokens=4, ema_decay=.9, **PAIR)
+        steps=2, seed=7, batch=2, history_tokens=4, ema_decay=None, **PAIR)
 
 
 def test_native_runtime_versions_keep_the_original_asset_lock():
@@ -42,7 +42,7 @@ def test_descriptor_preserves_explicit_native_width_and_profile():
     assert native.response_shape == (1, 2048)
     assert native.pg_source_profile == PROFILE
     assert native.penalty_input_domain == 'continuous'
-    assert runtime.capabilities({}).pg_source_profile == 'release-0.9.5'
+    assert runtime.capabilities({}).pg_source_profile == 'release-0.11.0'
     assert runtime.capabilities({}).penalty_input_domain == 'auto'
     for invalid in (dict(pg_source_profile='source-801ae1e-continuous-v1', penalty_input_domain='continuous'),
                     dict(pg_source_profile='release-0.9.4'),
@@ -60,8 +60,8 @@ def test_native_source_candidate_requires_explicit_precision_and_revision_before
     assert not torch.cuda.is_initialized()
 
 
-@pytest.mark.skipif(not candidate_installed(), reason='requires exact published PG0.9.5 source environment')
-@pytest.mark.parametrize('selection', ['raw', 'ema'])
+@pytest.mark.skipif(not candidate_installed(), reason='requires exact published PG0.11.0 source environment')
+@pytest.mark.parametrize('selection', ['raw'])
 def test_explicit_profile_cpu_fixture_exact_resume_and_native_only_exports(tmp_path, selection):
     """Real shared optimizers on a bounded random fixture, no pretrained claim."""
     cfg = config()

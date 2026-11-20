@@ -3,12 +3,13 @@ from copy import deepcopy
 import math
 import pytest,torch
 from yue2_sliders.backend import YuE2Backend
-from particle_sliders.pg09_audio import AudioRow,PreparedAudioResponse,YuE2ARResponseAdapter
+from particle_sliders.audio import AudioRow,PreparedAudioResponse
+from yue2_sliders.response_binding import YuE2ARResponseAdapter
 from particle_sliders.lifecycle import UnsupportedOperation
 from yue2_sliders import lifecycle as original
-from yue2_fresh95 import open_training,open_inference,save_prepared_cache,file_pin,Checkpoint
-from yue2_fresh95 import api,cache,policy,ownership
-from yue2_fresh95.util import equal
+from yue2_scoped import open_training,open_inference,save_prepared_cache,file_pin,Checkpoint
+from yue2_scoped import api,cache,policy,ownership
+from yue2_scoped.util import equal
 
 def bare(seed):
     with torch.random.fork_rng(devices=[]):
@@ -27,7 +28,7 @@ def staged(tmp_path,monkeypatch):
     monkeypatch.setattr(YuE2ARResponseAdapter,'prepare',forbidden)
     runtime=bare(7);base=deepcopy(runtime.model.state_dict())
     config=dict(lane='cpu-fixture',model_identity={},steps=3,batch=2,seed=7,width=32,device='cpu',base_precision='float32',checkpointing=False,
-        max_sequence_length=256,pg_source_profile='release-0.9.5',penalty_input_domain='auto',preset='bispf_optimized',ema_decay=None,lr=.001,d_lr_mult=18.,prior_lr_mult=30.)
+        max_sequence_length=256,pg_source_profile='release-0.11.0',penalty_input_domain='auto',preset='bispf_optimized',ema_decay=None,lr=.001,d_lr_mult=18.,prior_lr_mult=30.)
     config['model_identity']=api.model_identity(runtime,config)
     prepared=[PreparedAudioResponse(AudioRow((11+i,17,19),(29+i,17,19),2,1.),torch.linspace(-.15,.3,32).reshape(1,32)+i*.01,torch.linspace(-.2,.1,32).reshape(1,32))for i in range(3)]
     data=tmp_path/'NEW-completed-synthetic-fields.pt';torch.save([cache.dump(x)for x in prepared],data)
@@ -42,7 +43,7 @@ def opened(staged,name):
     return open_training(directory=root/name,mode='fresh',**options)
 
 def test_new_same_Parameter_a1_down_R2bank_zeroUP_critic_router_KEEP_before_optimizers(staged,monkeypatch):
-    initialize=policy.initialize;game=api.ConditionalPG095;seen=[];_,root,_=staged
+    initialize=policy.initialize;game=api.ConditionalParticleGAN;seen=[];_,root,_=staged
     def initializing(slider,critic,*args):
         ids=[id(p)for p in slider.parameters()]+[id(p)for p in critic.parameters()];before=deepcopy(critic.state_dict())
         receipt=initialize(slider,critic,*args)
@@ -57,7 +58,7 @@ def test_new_same_Parameter_a1_down_R2bank_zeroUP_critic_router_KEEP_before_opti
         assert kwargs['particles']is backend.backend.slider.particles is backend.network.particles
         assert kwargs['response_scale']==1.0
         return game(backend,*args,**kwargs)
-    monkeypatch.setattr(policy,'initialize',initializing);monkeypatch.setattr(api,'ConditionalPG095',constructing)
+    monkeypatch.setattr(policy,'initialize',initializing);monkeypatch.setattr(api,'ConditionalParticleGAN',constructing)
     with opened(staged,'before-opts')as owner:
         assert owner.game.completed_steps==0 and owner.game.prior.z is owner.slider.particles
         assert owner.game.state_dict()['config']['backend']['fresh_initialization']['receipt']==seen[-1]
@@ -93,7 +94,7 @@ def test_new_ONE_update_whole_FULL_optimizer_cursors_RNG_RAW_no_cache_or_initial
     monkeypatch.setattr(policy,'initialize',forbidden)
     with open_training(directory=root/'resume',mode='resume',resume=full,**options)as resumed:
         assert resumed.inherited_steps==1 and equal(state,resumed.game.state_dict())
-    monkeypatch.setattr(api,'load_cache',forbidden);monkeypatch.setattr(api,'ConditionalPG095',forbidden)
+    monkeypatch.setattr(api,'load_cache',forbidden);monkeypatch.setattr(api,'ConditionalParticleGAN',forbidden)
     with open_inference(raw,component_factory=factory,owner_admission=lambda request:True)as inferred:
         assert inferred.completed_steps==1 and not hasattr(inferred,'game')and not hasattr(inferred,'critic')and equal(network,inferred.network.state_dict())
         before=torch.get_rng_state().clone();value=inferred.response(token_ids=(11,17,19),strength=.5,seed=17)

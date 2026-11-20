@@ -76,11 +76,11 @@ def checkpoint(directory, name="pg09-cpu"):
 
 @pytest.mark.parametrize("preset", ["bispf", "bispf_optimized"])
 def test_entry_point_executes_shared_game_with_live_bank_and_gan_only(tmp_path, installed_package, monkeypatch, preset):
-    from particle_sliders import ConditionalPG09
+    from particle_sliders.engine import ConditionalParticleGAN
     from particlegan import get_recipe
     from yue2_sliders.train import parse_args, train
 
-    original = ConditionalPG09.step
+    original = ConditionalParticleGAN.step
     observed = {}
 
     def forbidden(*_args, **_kwargs):
@@ -123,7 +123,7 @@ def test_entry_point_executes_shared_game_with_live_bank_and_gan_only(tmp_path, 
         observed["game"] = game
         return metrics
 
-    monkeypatch.setattr(ConditionalPG09, "step", traced)
+    monkeypatch.setattr(ConditionalParticleGAN, "step", traced)
     sidecar = train(parse_args(arguments(tmp_path, extra=("--preset", preset))))
     assert Path(sidecar).is_file()
     assert observed["calls"] == 3

@@ -1,6 +1,6 @@
 # Explicit cached YuE2 fresh095 owner
 
-This additional `yue2_fresh95` namespace is an opt-in composition with the captured `yue2-particle-sliders==0.4.0` owner, exact core0.13/3dd and public ParticleGAN0.9.5. It neither changes the original response/inference registrations nor upgrades an existing runtime. Install genuine distributions with their generated RECORDs; a Source-directory overlay is rejected.
+This additional `yue2_scoped` namespace is an opt-in composition with the captured `yue2-particle-sliders==0.4.0` owner, exact core0.13/3dd and public ParticleGAN0.11.0. It neither changes the original response/inference registrations nor upgrades an existing runtime. Install genuine distributions with their generated RECORDs; a Source-directory overlay is rejected.
 
 The original registered route is a final native AR hidden-state response: width32 in the original CPU stand-in, width2048 for the exact native YuE2 BF16/strict-SDPA cohort. It does not decode music or claim a waveform/native audio qualification. The installed tiny software validation did not load pretrained models. The original native runtime/assets/whole-loaded-checkpoint/numerical guards remain mandatory on the native lane, unchanged. The isolated installed-owner CPU8 execution passed all four new software cases with one tiny original-game update and genuinely closed0/resource0. This validates the tiny software route, not public-wheel/pretrained/acoustic execution.
 
@@ -15,7 +15,7 @@ The owner supplies an already completed original `PreparedAudioResponse`/`AudioR
 ## Fresh, strict FULL and RAW
 
 ```python
-from yue2_fresh95 import open_training, open_inference, file_pin
+from yue2_scoped import open_training, open_inference, file_pin
 
 # authenticated_cache is a typed whole-file pin from save_prepared_cache.
 # config and the owner callbacks describe one explicitly admitted NEW cohort.
@@ -53,10 +53,10 @@ Four newly authored tiny software nodes cover same-Parameter policy/zero-UP/KEEP
 
 ## Separate optional installation
 
-This directory is a standalone `yue2-explicit-fresh95==0.1.0` subproject. The repository root remains `yue2-particle-sliders==0.4.0` with its original metadata, registrations, defaults and LR history. Use an isolated environment whose genuine original owner/core3dd/PG0.9.5 distributions and Sources already match the guards. Installing matching version strings alone is insufficient. Once those dependencies and setuptools84.2.1+ are available, install only this addon from the verified checkout:
+This directory is a standalone `yue2-explicit-scoped==0.1.0` subproject. The repository root remains `yue2-particle-sliders==0.4.0` with its original metadata, registrations, defaults and LR history. Use an isolated environment whose genuine original owner/core3dd/PG0.11.0 distributions and Sources already match the guards. Installing matching version strings alone is insufficient. Once those dependencies and setuptools84.2.1+ are available, install only this addon from the verified checkout:
 
 ```bash
-python -m pip install --no-deps --no-build-isolation ./fresh95
+python -m pip install --no-deps --no-build-isolation ./scoped
 ```
 
 This command creates a genuine owning RECORD; a `PYTHONPATH` Source overlay is not equivalent. It neither resolves nor upgrades dependencies. The application owner must admit components/resources and supply completed-cache provenance before the API can run. There is no new CLI or automatic pretrained loader. Existing root tests/registrations and [LR guidance](../LEARNING-RATES.md) remain separate. Published helper wheels, arbitrary public dependency resolution and full native/acoustic execution are not established by the local software result.

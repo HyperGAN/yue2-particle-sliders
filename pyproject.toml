@@ -11,7 +11,7 @@ requires-python = ">=3.11"
 license = {file = "LICENSE"}
 # Current lifecycle sources and exact official PG release are verified at runtime.
 # Historical CDF and PG091 reproduction locks remain separate.
-dependencies = ["particle-sliders-core @ git+https://github.com/HyperGAN/particle-sliders.git@3dd672a7f9b8c169daef90fd63e4bb42b9ddc423#subdirectory=packages/particle-sliders-core", "torch>=2.6,<3", "PyYAML>=6", "safetensors>=0.4", "numpy>=1.26"]
+dependencies = ["particle-sliders-core @ git+https://github.com/HyperGAN/particle-sliders.git@c13890f8e2a1ecf1dc8eb9f2a37f9187cb9fea78#subdirectory=packages/particle-sliders-core", "torch>=2.6,<3", "PyYAML>=6", "safetensors>=0.4", "numpy>=1.26"]
 
 [project.optional-dependencies]
 native = ["yue2-infer @ git+https://github.com/multimodal-art-projection/YuE.git@ef1936f2ee39fe8de486a0f47a481c95f8d4da87"]

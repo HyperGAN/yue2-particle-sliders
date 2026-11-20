@@ -194,7 +194,7 @@ def test_conditional_export_signature_cannot_claim_another_game(tmp_path, fault)
         backend=dict(family="yue2_native_ar", student_conditioning="neutral", trained_scales=[1.0],
                      model_identity=dict(base=BASE_IDENTITY, integration_dependencies=deepcopy(dependencies))),
     )
-    updates = dict(training_game="conditional-pg09-v1", training_recipe="bispf_optimized",
+    updates = dict(training_game="conditional-engine-v1", training_recipe="bispf_optimized",
                    training_weights="active", ema=False, integration_dependencies=dependencies, game_signature=signature)
     _rewrite(path, updates=updates)
     assert validate_slider_file(path, stamp)["path"] == str(path)

@@ -16,7 +16,7 @@ class PreparedBank:
                    len(runtime.prefix(row['positive'], row['lyrics']))) + history_tokens > limit:
                 raise ValueError('prompt plus history exceeds the native context limit')
         from .train import prepare_bank
-        from particle_sliders.pg09_audio import audio_conditions
+        from particle_sliders.audio import audio_conditions
         self._rows = tuple(prepare_bank(runtime, adapter, rows, sample_seeds=sample_seeds,
                                       history_tokens=history_tokens, seed=seed))
         self._conditions = audio_conditions(self._rows).detach().clone()
