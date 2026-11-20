@@ -159,8 +159,8 @@ def test_fresh_process_native_factory_scope_initializes_same_real_game_and_exact
     Before the outer scope fix the critic differs across these caller seeds.
     """
     import json, os, subprocess, sys
-    source_profile = 'release-0.9.5'
-    from particle_sliders.pg09 import _released_sources
+    source_profile = 'release-0.11.0'
+    from particle_sliders.engine import _released_sources
     try:
         _released_sources(source_profile)
     except RuntimeError:
@@ -171,7 +171,7 @@ import json, os
 import torch
 from yue2_sliders import lifecycle, native_assets
 from yue2_sliders.response_native import build_native as actual_build
-from particle_sliders.pg09 import _hash
+from particle_sliders.engine import _hash
 # The fixture boundary has the same caller-RNG-preserving behavior as the
 # genuine native loader. Do not inherit dummy's historical global seed.
 def fixture_boundary(options, **kwargs):

@@ -4,7 +4,7 @@ from contextlib import contextmanager
 import pytest
 import torch
 
-from particle_sliders.pg09_backends import checkpoint_with_adapter_scale
+from particle_sliders.backends import checkpoint_with_adapter_scale
 from yue2_sliders.backend import YuE2Backend, attention_targets
 from yue2_sliders.response_native import NativeOwner, NativeResponse
 from yue2_sliders.slider import RoutedProjection
@@ -44,7 +44,7 @@ def make_owned(seed=7, checkpointed=True, runtime=None):
 
 def assert_detached(runtime):
     assert all('forward' not in vars(module) for module in attention_targets(runtime.model).values())
-    assert not any(getattr(module, '_pg09_scale_checkpoint', False) for module in runtime.model.modules())
+    assert not any(getattr(module, '_adapter_scale_checkpoint', False) for module in runtime.model.modules())
     assert runtime.model.training
 
 
@@ -57,7 +57,7 @@ def test_checkpoint_conflict_retains_owner_closes_siblings_and_retries(conflict)
         foreign = lambda *args, **kwargs: None
         block.forward = foreign
     else:
-        block._pg09_scale_checkpoint = False
+        block._adapter_scale_checkpoint = False
     try:
         with pytest.raises(RuntimeError, match='ownership changed') as caught:
             owner.close()
@@ -65,14 +65,14 @@ def test_checkpoint_conflict_retains_owner_closes_siblings_and_retries(conflict)
         assert not owner.closed
         assert not runtime.model.training  # Broader restoration has not run.
         assert isinstance(getattr(blocks[1].forward, '__self__', None), RoutedProjection)
-        assert not getattr(blocks[1], '_pg09_scale_checkpoint', False)
+        assert not getattr(blocks[1], '_adapter_scale_checkpoint', False)
         if conflict == 'forward':
             assert block.forward is foreign
         else:
-            assert block._pg09_scale_checkpoint is False
+            assert block._adapter_scale_checkpoint is False
     finally:
         block.forward = wrapper
-        block._pg09_scale_checkpoint = True
+        block._adapter_scale_checkpoint = True
         owner.close()
     owner.close()
     native.close_checkpointing()
@@ -92,7 +92,7 @@ def test_projection_conflict_does_not_overwrite_external_owner_and_retry_is_safe
         assert projection.forward is foreign
         assert not owner.closed and not runtime.model.training
         # Checkpoint handles and successful projection siblings are already gone.
-        assert all(not getattr(block, '_pg09_scale_checkpoint', False) for block in blocks)
+        assert all(not getattr(block, '_adapter_scale_checkpoint', False) for block in blocks)
         assert 'forward' not in vars(runtime.model.model.layers[1].self_attn.k_proj)
     finally:
         projection.forward = owned
@@ -110,7 +110,7 @@ def test_nested_outer_handle_survives_product_cleanup_and_same_handle_nesting():
             runtime, native, owner, _ = make_owned(runtime=runtime)
             owner.close()
             assert block.forward is outer_forward
-            assert block._pg09_scale_checkpoint is True
+            assert block._adapter_scale_checkpoint is True
         assert block.forward is outer_forward  # Inner same-handle scope did not close it.
     assert_detached(runtime)
     with pytest.raises(RuntimeError, match='already closed'):

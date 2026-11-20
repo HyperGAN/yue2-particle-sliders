@@ -1,7 +1,7 @@
 """Train a YuE2 AR slider on the shared winning formulation.
 
 ``python scripts/train_yue2.py --dummy`` runs on CPU and does not download Hub
-weights. The shared ``ConditionalPG09`` owns every update, optimizer and checkpoint.
+weights. The shared ``ConditionalParticleGAN`` owns every update, optimizer and checkpoint.
 ``winning_formulation()`` supplies only the existing routed adapter architecture.
 """
 
@@ -50,7 +50,7 @@ def build_parser() -> argparse.ArgumentParser:
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         description=(
             "Train a routed-particle slider on m-a-p/YuE2-3B. "
-            "ConditionalPG09 trains the public GAN-only recipe; winning_formulation() supplies adapter geometry. "
+            "ConditionalParticleGAN trains the public GAN-only recipe; winning_formulation() supplies adapter geometry. "
             "--dummy does not download Hub weights."
         ),
     )
@@ -208,7 +208,7 @@ def card_for(args: argparse.Namespace, stamp, locked: dict, *, rows: int) -> dic
         "formulation_provisional": stamp.formulation_provisional,
         "recipe_name": locked["recipe_name"],
         "core_pin": CORE_PIN,
-        "training_game": "conditional-pg09-v1",
+        "training_game": "conditional-engine-v1",
         "training_recipe": args.preset,
         "sampling": args.sampling,
         "trained_scales": [1.0],
@@ -230,7 +230,7 @@ def card_for(args: argparse.Namespace, stamp, locked: dict, *, rows: int) -> dic
 
 
 def prepare_bank(backend, adapter, rows, *, sample_seeds, history_tokens, seed):
-    from particle_sliders.pg09_audio import AudioRow
+    from particle_sliders.audio import AudioRow
 
     limit = int(getattr(backend.model.config, "max_position_embeddings", 10**9))
     total = len(rows) * int(sample_seeds)
@@ -270,9 +270,10 @@ def _atomic_save(packet, path):
 
 
 def train(args: argparse.Namespace) -> dict | Path:
-    from particle_sliders import ConditionalPG09
-    from particle_sliders.pg09_audio import (
-        YuE2ARResponseAdapter, AudioResponseCritic, audio_conditions, require_audio_width,
+    from particle_sliders.engine import ConditionalParticleGAN
+    from .response_binding import YuE2ARResponseAdapter
+    from particle_sliders.audio import (
+        AudioResponseCritic, audio_conditions, require_audio_width,
     )
 
     prompts_path = _resolve_path(args.prompts_file)
@@ -313,7 +314,7 @@ def train(args: argparse.Namespace) -> dict | Path:
     conditions = audio_conditions(prepared)
     device = next(network.parameters()).device
     critic = AudioResponseCritic(width, conditions.shape[1]).to(device)
-    game = ConditionalPG09(adapter, prepared, critic, conditions=conditions,
+    game = ConditionalParticleGAN(adapter, prepared, critic, conditions=conditions,
         particles=adapter.particles, response_domain="continuous_vector",
         preset=args.preset, batch_size=int(locked["adv_batch"]), seed=args.seed,
         total_steps=args.steps, sampling=args.sampling, **options)

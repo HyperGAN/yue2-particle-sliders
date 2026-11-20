@@ -19,7 +19,7 @@ def config():
     return SessionConfig('yue2', 'ownership-proposal-test-cohort', dummy=True,
         rows=[dict(neutral='a soft piano', positive='a loud guitar', lyrics='[verse]\nA train rolls'),
               dict(neutral='a quiet flute', positive='a bright brass', lyrics='[verse]\nThe river runs')],
-        steps=4, seed=7, batch=2, sample_seeds=1, history_tokens=4, ema_decay=.9)
+        steps=4, seed=7, batch=2, sample_seeds=1, history_tokens=4, ema_decay=None)
 
 
 def assert_same(left, right):
@@ -37,7 +37,7 @@ def assert_same(left, right):
         assert left == right
 
 
-def test_response_split_resume_ema_and_separate_image_packet_contract(tmp_path):
+def test_response_split_resume_raw_and_separate_image_packet_contract(tmp_path):
     cfg = config()
     with open_response(cfg) as full:
         full.train()
@@ -52,9 +52,11 @@ def test_response_split_resume_ema_and_separate_image_packet_contract(tmp_path):
         assert actual['schema'] == 'particle-sliders-response-session-v1-training'
         assert resumed.capabilities.modality == 'audio_ar_hidden'
         assert resumed.capabilities.response_shape == (1, 32)
-        for selection in ('raw', 'ema'):
+        for selection in ('raw',):
             packet = resumed.export(selection=selection)
             assert packet['schema'] == 'particle-sliders-response-session-v1-inference'
+        with pytest.raises(ValueError, match='raw current weights'):
+            resumed.export(selection='ema')
         before = deepcopy(actual)
         bad = deepcopy(actual)
         bad['sha256'] = '0' * 64
@@ -84,7 +86,7 @@ def test_native_width_and_unrecovered_profile_refuse_before_loading(monkeypatch)
     assert not torch.cuda.is_initialized()
 
 
-@pytest.mark.parametrize('selection', ['raw', 'ema'])
+@pytest.mark.parametrize('selection', ['raw'])
 def test_native_only_fresh_process_without_training_imports(tmp_path, selection):
     cfg = config()
     artifact = tmp_path / (selection + '-v2.pt')
@@ -112,13 +114,13 @@ sys.meta_path.insert(0, ForbidTraining())
 import torch
 torch.set_num_threads(1)
 torch.set_num_interop_threads(1)
-import particle_sliders.pg09 as pg
-import particle_sliders.pg09_audio as audio
+import particle_sliders.engine as pg
+import particle_sliders.audio as audio
 from particle_sliders.inference import open_inference
 
 def forbidden(*args, **kwargs):
     raise AssertionError('native-only inference constructed training components')
-pg.ConditionalPG09.__init__ = forbidden
+pg.ConditionalParticleGAN.__init__ = forbidden
 audio.AudioResponseCritic.__init__ = forbidden
 torch.optim.Optimizer.__init__ = forbidden
 with open_inference(sys.argv[2], operation='response', options={'device':'cpu'}) as run:
@@ -151,7 +153,7 @@ with open_inference(sys.argv[2], operation='response', options={'device':'cpu'})
 
 
 def test_binding_cleanup_retry_remains_available_after_session_close_conflict():
-    from particle_sliders.pg09_backends import checkpoint_with_adapter_scale
+    from particle_sliders.backends import checkpoint_with_adapter_scale
     run = open_response(config())
     native = run.game.backend
     block = native.model.model.layers[0]
@@ -172,6 +174,6 @@ def test_binding_cleanup_retry_remains_available_after_session_close_conflict():
         run.close()
     run.close()
     assert 'forward' not in vars(block)
-    assert not getattr(block, '_pg09_scale_checkpoint', False)
+    assert not getattr(block, '_adapter_scale_checkpoint', False)
     assert all('forward' not in vars(module) for module in native.backend.model.modules()
                if isinstance(module, torch.nn.Linear))

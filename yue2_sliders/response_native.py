@@ -3,7 +3,8 @@ from functools import partial
 from contextlib import contextmanager
 
 from particle_sliders.inference import InferenceBackend, InferenceBinding, native_identity
-from particle_sliders.pg09_audio import YuE2ARResponseAdapter, require_audio_width
+from particle_sliders.audio import require_audio_width
+from .response_binding import YuE2ARResponseAdapter
 
 from .response_runtime import (PG_VERSION, PROFILE, DOMAIN, PROTOCOL, capabilities,
     validate_native_options, validate_staged, verify_runtime, native_sources, frozen_digest, observation, engine_options)

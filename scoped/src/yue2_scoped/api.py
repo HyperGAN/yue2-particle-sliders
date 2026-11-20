@@ -3,12 +3,12 @@ from contextlib import contextmanager
 from copy import deepcopy
 from pathlib import Path
 import hashlib,torch
-from particle_sliders.pg095 import ConditionalPG095
+from particle_sliders.engine import ConditionalParticleGAN
 from . import PROFILE,ownership,policy
 from .cache import load_cache,to_device,teacher_identity
 from .util import canonical,equal,new_directory,read_packet,save_packet,write_json
-FULL_SCHEMA='YuE2-explicit-cached-fresh95-FULL-v1'
-RAW_SCHEMA='YuE2-explicit-cached-fresh95-RAW-v1'
+FULL_SCHEMA='YuE2-explicit-cached-scoped-FULL-v1'
+RAW_SCHEMA='YuE2-explicit-cached-scoped-RAW-v1'
 CONSTRUCTOR='new-owner-original-ParticleSlider-seed-and-critic-seed-plus1-v1'
 
 def original_options(config):
@@ -108,13 +108,13 @@ class Training(NativeOwner):
         try:
             self._components(request,component_factory)
             from yue2_sliders.response_native import native_initialization_rng
-            from particle_sliders.pg09_audio import AudioResponseCritic
+            from particle_sliders.audio import AudioResponseCritic
             options=original_options(self.config);options['base_seed']+=1
             with native_initialization_rng(options):self.critic=AudioResponseCritic(self.config['width'],conditions.shape[1]).to(self.config['device'])
             self.initialization=policy.initialize(self.slider,self.critic,self.construction,self.options,self.sources)if mode=='fresh'else deepcopy(packet['initialization'])
             new_directory(self.directory);write_json(self.directory/'initialization.json',self.initialization)
             self.backend=ReceiptBackend(self.adapter,self.initialization,self.sources,self.cache_identity)
-            self.game=ConditionalPG095(self.backend,to_device(prepared,self.config['device']),self.critic,conditions=conditions.to(self.config['device']),particles=self.slider.particles,
+            self.game=ConditionalParticleGAN(self.backend,to_device(prepared,self.config['device']),self.critic,conditions=conditions.to(self.config['device']),particles=self.slider.particles,
                 response_domain='continuous_vector',response_scale=1.0,preset=self.config['preset'],total_steps=self.config['steps'],batch_size=self.config['batch'],seed=self.config['seed'],
                 pg_source_profile=self.config['pg_source_profile'],penalty_input_domain=self.config['penalty_input_domain'],recipe_overrides={k:self.config[k]for k in('lr','d_lr_mult','prior_lr_mult')})
             if packet is not None:

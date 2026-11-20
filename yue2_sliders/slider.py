@@ -202,7 +202,7 @@ def validate_record(record, stamp, *, allow_dummy=False, model_identity=None):
         raise ValueError("Slider was trained on different base model weights")
     if bool(identity.get("dummy")) != bool(record.get("dummy")):
         raise ValueError("Slider model_identity and dummy provenance disagree")
-    if record.get("training_game") == "conditional-pg09-v1":
+    if record.get("training_game") == "conditional-engine-v1":
         _validate_game_signature(record)
     elif "training_game" in record:
         raise ValueError("Unknown slider training_game")

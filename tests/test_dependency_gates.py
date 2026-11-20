@@ -94,8 +94,8 @@ dependency = configure_integration()
 from comfy_yue2 import YuE2ParticleSlider
 handle = YuE2ParticleSlider().load('', 0)[0]
 import particle_sliders
-from particle_sliders.pg09_audio import YuE2ARResponseAdapter
-from particle_sliders.pg09_backends import AdapterParameters
+from yue2_sliders.response_binding import YuE2ARResponseAdapter
+from particle_sliders.backends import AdapterParameters
 print(json.dumps(dict(handle=handle, dependency=dependency, core=particle_sliders.__file__,
     audio_module=YuE2ARResponseAdapter.__module__, backend_module=AdapterParameters.__module__,
     executable=sys.executable, legacy_audio_imported=any(n.startswith('conceptmod.textsliders') for n in sys.modules),
@@ -111,8 +111,8 @@ print(json.dumps(dict(handle=handle, dependency=dependency, core=particle_slider
     assert receipt["dependency"] == dependency
     assert receipt["dependency"]["core"]["version"] == "0.6.0"
     assert receipt["dependency"]["particlegan"]["version"] == "0.9.1"
-    assert receipt["audio_module"] == "particle_sliders.pg09_audio"
-    assert receipt["backend_module"] == "particle_sliders.pg09_backends"
+    assert receipt["audio_module"] == "particle_sliders.audio"
+    assert receipt["backend_module"] == "particle_sliders.backends"
     assert receipt["legacy_audio_imported"] is False
     assert receipt["handle"]["strength"] == 0
     assert receipt["cuda"] is False

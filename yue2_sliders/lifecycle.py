@@ -87,14 +87,14 @@ def _prepare(options, *, runtime=None):
             closed = True
     try:
         from .response_provider import PreparedBank
-        from particle_sliders.pg095 import ConditionalPG095 as ConditionalPG09
-        from particle_sliders.pg09_audio import AudioResponseCritic
+        from particle_sliders.engine import ConditionalParticleGAN
+        from particle_sliders.audio import AudioResponseCritic
         import torch
         provider = PreparedBank(native.backend, native, _rows(options),
             sample_seeds=options.get('sample_seeds', 1), history_tokens=options.get('history_tokens', 4), seed=options.get('seed', 7))
         critic = AudioResponseCritic(native.model.config.hidden_size, provider.condition_width).to(
             device=next(native.network.parameters()).device, dtype=torch.float32)
-        game = ConditionalPG09(native, provider, critic, particles=native.particles,
+        game = ConditionalParticleGAN(native, provider, critic, particles=native.particles,
             response_domain='continuous_vector', preset=options.get('preset', 'bispf_optimized'),
             batch_size=options.get('batch', 2), seed=options.get('seed', 7), total_steps=options.get('steps', 4),
             sampling=options.get('sampling', 'balanced'), recipe_overrides=rates, **engine_options(options))

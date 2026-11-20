@@ -13,9 +13,9 @@ from yue2_sliders.stamp import locked_stamp
 from yue2_sliders.train import _frozen_digest
 
 configure_integration()
-from particle_sliders import ConditionalPG09
-from particle_sliders.pg09_audio import AudioRow, AudioResponseCritic, YuE2ARResponseAdapter, audio_conditions
-from particle_sliders.pg09 import validate_pg09_domain
+from particle_sliders.engine import ConditionalParticleGAN
+from particle_sliders.audio import AudioRow, AudioResponseCritic, YuE2ARResponseAdapter, audio_conditions
+from particle_sliders.engine import validate_engine_domain
 
 
 def equal(first, second):
@@ -46,14 +46,14 @@ def build(preset):
         ([1, 3, 5, 7], [2, 3, 5, 7]), ([8, 9, 5, 7], [10, 9, 5, 7]))]
     conditions = audio_conditions(rows)
     critic = AudioResponseCritic(2048, conditions.shape[1])
-    game = ConditionalPG09(adapter, rows, critic, conditions=conditions, particles=slider.particles,
+    game = ConditionalParticleGAN(adapter, rows, critic, conditions=conditions, particles=slider.particles,
         preset=preset, total_steps=3, batch_size=2, response_domain='continuous_vector', **options)
     return backend, adapter, game
 
 
 def main():
     torch.set_num_threads(1)
-    gate = validate_pg09_domain((1, 2048), response_domain='continuous_vector',
+    gate = validate_engine_domain((1, 2048), response_domain='continuous_vector',
         pg_source_profile='alz-continuous-v1', penalty_input_domain='continuous')
     receipts = []
     for preset in ('bispf', 'bispf_optimized'):

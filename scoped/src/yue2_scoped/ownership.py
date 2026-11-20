@@ -5,8 +5,8 @@ import base64,csv,io
 from .baseline import ORIGINAL
 from .util import source_record
 
-MARKER='_yue2_explicit_cached_fresh95_owner'
-ATTRS=('forward','_pg09_scale_checkpoint','gradient_checkpointing','_gradient_checkpointing_func')
+MARKER='_yue2_explicit_cached_scoped_owner'
+ATTRS=('forward','_adapter_scale_checkpoint','gradient_checkpointing','_gradient_checkpointing_func')
 
 def distribution(name,version):
     normal=lambda s:s.lower().replace('_','-')
@@ -30,18 +30,18 @@ def guard():
     from .policy import INIT_SHA
     record_guard(distribution('yue2-particle-sliders','0.4.0'),'yue2_sliders',Path(yue2_sliders.__file__).absolute().parent,ORIGINAL)
     lock=verify_runtime()  # Original canonical577 + actual distribution/import-origin guards unchanged.
-    if metadata.version('particlegan')!='0.9.5'or source_record(pg_init.__file__)['sha256']!=INIT_SHA:raise RuntimeError('exact public PG095 initializer required')
+    if metadata.version('particlegan')!='0.11.0'or source_record(pg_init.__file__)['sha256']!=INIT_SHA:raise RuntimeError('exact public PG095 initializer required')
     own=Path(__file__).absolute().parent
-    record_guard(distribution('yue2-explicit-fresh95','0.1.0'),'yue2_fresh95',own,
+    record_guard(distribution('yue2-explicit-scoped','0.1.0'),'yue2_scoped',own,
         {p.name:source_record(p)for p in sorted(own.glob('*.py'))})
-    return dict(core=lock,PG='0.9.5',original_guard_unchanged=True,genuine_original_and_addon_RECORD=True)
+    return dict(core=lock,PG='0.11.0',original_guard_unchanged=True,genuine_original_and_addon_RECORD=True)
 
 def sources():
     import yue2_sliders
-    from particle_sliders import reference,pg09_audio,pg09,pg095,pg09_backends,lifecycle
+    from particle_sliders import reference,audio,engine,backends,lifecycle
     root=Path(yue2_sliders.__file__).absolute().parent
     return dict(own={p.name:source_record(p)for p in sorted(Path(__file__).absolute().parent.glob('*.py'))},original={n:source_record(root/n)for n in ORIGINAL},
-        core={m.__name__:source_record(m.__file__)for m in(reference,pg09_audio,pg09,pg095,pg09_backends,lifecycle)})
+        core={m.__name__:source_record(m.__file__)for m in(reference,audio,engine,backends,lifecycle)})
 
 class Attachment:
     def __init__(self,runtime):

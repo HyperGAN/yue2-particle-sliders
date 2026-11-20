@@ -1,6 +1,6 @@
-# YuE2 PG0.9.5 numerical-response lifecycle
+# YuE2 PG0.11.0 numerical-response lifecycle
 
-Root package0.4.0 pins core0.13.0 at `3dd672a7f9b8c169daef90fd63e4bb42b9ddc423`, with published ParticleGAN0.9.5/tag1b8355b and release profile `release-0.9.5`. Public entrypoints remain `yue2_sliders.lifecycle:BACKEND` and `yue2_sliders.response_native:INFERENCE`; the shared core owns all game/update/optimizer/regularizer mathematics. The runtime delegates to `particle_sliders.pg095` and checks its complete source lock.
+Root package0.4.0 pins core0.15.1 at `c13890f8e2a1ecf1dc8eb9f2a37f9187cb9fea78`, with published ParticleGAN0.11.0/tagb86f037 and release profile `release-0.11.0`. Public entrypoints remain `yue2_sliders.lifecycle:BACKEND` and `yue2_sliders.response_native:INFERENCE`; the shared core owns all game/update/optimizer/regularizer mathematics. The runtime delegates to `particle_sliders.pg095` and checks its complete source lock.
 
 Default CPU fixtures use width32/auto. Genuine native2048-wide states require explicit continuous input domain, exact local assets and the strict native policy in [the native guide](docs/native-continuous-candidate.md). No projection, token generation or waveform rendering is introduced.
 

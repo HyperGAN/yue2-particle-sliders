@@ -125,7 +125,7 @@ def equal_tree(actual, expected):
 
 
 def test_old_pg090_full_checkpoint_is_rejected_without_mutation(tmp_path, monkeypatch):
-    from particle_sliders import ConditionalPG09
+    from particle_sliders.engine import ConditionalParticleGAN
     from yue2_sliders.integration import configure_integration
     from yue2_sliders.train import parse_args, train
 
@@ -146,7 +146,7 @@ def test_old_pg090_full_checkpoint_is_rejected_without_mutation(tmp_path, monkey
     historical = tmp_path / "historical-pg090.pt"
     torch.save(packet, historical)
     original_historical = historical.read_bytes()
-    original_restore = ConditionalPG09.load_state_dict
+    original_restore = ConditionalParticleGAN.load_state_dict
     rejected_receivers = []
 
     def observe_rejection(game, state):
@@ -158,7 +158,7 @@ def test_old_pg090_full_checkpoint_is_rejected_without_mutation(tmp_path, monkey
             rejected_receivers.append(game)
             raise
 
-    monkeypatch.setattr(ConditionalPG09, "load_state_dict", observe_rejection)
+    monkeypatch.setattr(ConditionalParticleGAN, "load_state_dict", observe_rejection)
     with pytest.raises(ValueError, match="mismatch"):
         train(parse_args(arguments(rejected, "--resume", str(historical))))
     assert len(rejected_receivers) == 1
@@ -195,7 +195,7 @@ def optimizer_identifier(packet, optimizer, parameter):
 
 def assert_invalid_optimizer_resume_is_transactional(
         tmp_path, monkeypatch, *, preset, optimizer_name, mutation, initial_steps=1, sparse_critic=False):
-    from particle_sliders import ConditionalPG09
+    from particle_sliders.engine import ConditionalParticleGAN
     from yue2_sliders.integration import configure_integration
     from yue2_sliders.train import parse_args, train
 
@@ -208,7 +208,7 @@ def assert_invalid_optimizer_resume_is_transactional(
         return ["--dummy", "--name", "optimizer-gate", "--save_dir", str(destination),
                 "--steps", "3", "--save_every", "1", "--seed", "7", "--preset", preset, *extra]
 
-    original_step = ConditionalPG09.step
+    original_step = ConditionalParticleGAN.step
     initial_games = []
 
     def observe_initial_game(game):
@@ -219,7 +219,7 @@ def assert_invalid_optimizer_resume_is_transactional(
         return metrics
 
     with monkeypatch.context() as initial_observer:
-        initial_observer.setattr(ConditionalPG09, "step", observe_initial_game)
+        initial_observer.setattr(ConditionalParticleGAN, "step", observe_initial_game)
         train(parse_args(arguments(first, "--until", str(initial_steps))))
     assert len(initial_games) == initial_steps
     checkpoint = first / "optimizer-gate_checkpoint.pt"
@@ -273,7 +273,7 @@ def assert_invalid_optimizer_resume_is_transactional(
     incompatible = tmp_path / f"{optimizer_name}-{mutation}.pt"
     torch.save(packet, incompatible)
     original_incompatible = incompatible.read_bytes()
-    original_restore = ConditionalPG09.load_state_dict
+    original_restore = ConditionalParticleGAN.load_state_dict
     rejected_receivers = []
 
     def observe_rejection(game, state):
@@ -287,7 +287,7 @@ def assert_invalid_optimizer_resume_is_transactional(
         else:
             pytest.fail(f"Resume accepted invalid {preset} {optimizer_name} history: {mutation}")
 
-    monkeypatch.setattr(ConditionalPG09, "load_state_dict", observe_rejection)
+    monkeypatch.setattr(ConditionalParticleGAN, "load_state_dict", observe_rejection)
     with pytest.raises(ValueError, match="(?i)optimizer|adam|moment|history"):
         train(parse_args(arguments(rejected, "--resume", str(incompatible))))
     assert len(rejected_receivers) == 1
@@ -328,7 +328,7 @@ def test_resume_started_optimizer_history_rejects_before_mutation_and_output(
 
 @pytest.mark.parametrize("preset", ("bispf", "bispf_optimized"))
 def test_initial_empty_optimizer_history_remains_valid_product_resume(tmp_path, monkeypatch, preset):
-    from particle_sliders import ConditionalPG09
+    from particle_sliders.engine import ConditionalParticleGAN
     from yue2_sliders.integration import configure_integration
     from yue2_sliders.train import parse_args, train
 
@@ -339,7 +339,7 @@ def test_initial_empty_optimizer_history_remains_valid_product_resume(tmp_path, 
         return ["--dummy", "--name", "initial-history", "--save_dir", str(destination),
                 "--steps", "3", "--save_every", "1", "--seed", "7", "--preset", preset, *extra]
 
-    original_step = ConditionalPG09.step
+    original_step = ConditionalParticleGAN.step
     initial_states = []
 
     def capture_initial_state(game):
@@ -347,7 +347,7 @@ def test_initial_empty_optimizer_history_remains_valid_product_resume(tmp_path, 
         return original_step(game)
 
     with monkeypatch.context() as capture:
-        capture.setattr(ConditionalPG09, "step", capture_initial_state)
+        capture.setattr(ConditionalParticleGAN, "step", capture_initial_state)
         train(parse_args(arguments(first, "--until", "1")))
     assert len(initial_states) == 1
     initial = initial_states[0]
@@ -358,7 +358,7 @@ def test_initial_empty_optimizer_history_remains_valid_product_resume(tmp_path, 
     initial_checkpoint = tmp_path / "initial.pt"
     torch.save(packet, initial_checkpoint)
     original_checkpoint = initial_checkpoint.read_bytes()
-    original_restore = ConditionalPG09.load_state_dict
+    original_restore = ConditionalParticleGAN.load_state_dict
     restored = []
 
     def observe_initial_restore(game, state):
@@ -367,7 +367,7 @@ def test_initial_empty_optimizer_history_remains_valid_product_resume(tmp_path, 
         restored.append(game)
 
     with monkeypatch.context() as observe:
-        observe.setattr(ConditionalPG09, "load_state_dict", observe_initial_restore)
+        observe.setattr(ConditionalParticleGAN, "load_state_dict", observe_initial_restore)
         train(parse_args(arguments(resumed, "--resume", str(initial_checkpoint))))
     assert len(restored) == 1
     train(parse_args(arguments(uninterrupted)))
@@ -381,7 +381,7 @@ def test_initial_empty_optimizer_history_remains_valid_product_resume(tmp_path, 
 
 @pytest.mark.parametrize("preset", ("bispf", "bispf_optimized"))
 def test_honest_unused_critic_history_remains_valid_product_resume(tmp_path, monkeypatch, preset):
-    from particle_sliders import ConditionalPG09
+    from particle_sliders.engine import ConditionalParticleGAN
     from particle_sliders import pg09_audio
     from yue2_sliders.integration import configure_integration
     from yue2_sliders.train import parse_args, train
@@ -401,7 +401,7 @@ def test_honest_unused_critic_history_remains_valid_product_resume(tmp_path, mon
         return ["--dummy", "--name", "unused-critic", "--save_dir", str(destination),
                 "--steps", "3", "--save_every", "1", "--seed", "7", "--preset", preset, *extra]
 
-    original_step = ConditionalPG09.step
+    original_step = ConditionalParticleGAN.step
     first_games = []
 
     def observe_first_game(game):
@@ -410,7 +410,7 @@ def test_honest_unused_critic_history_remains_valid_product_resume(tmp_path, mon
         return result
 
     with monkeypatch.context() as observe:
-        observe.setattr(ConditionalPG09, "step", observe_first_game)
+        observe.setattr(ConditionalParticleGAN, "step", observe_first_game)
         train(parse_args(arguments(first, "--until", "1")))
     assert len(first_games) == 1
     source = first_games[0]
@@ -449,7 +449,7 @@ def test_resume_sparse_adam_critic_clock_bounds_reject_atomically(tmp_path, monk
 
 
 def test_sparse_adam_critic_clock_one_at_two_completed_steps_resumes_exactly(tmp_path, monkeypatch):
-    from particle_sliders import ConditionalPG09
+    from particle_sliders.engine import ConditionalParticleGAN
     from yue2_sliders.integration import configure_integration
     from yue2_sliders.train import parse_args, train
 
@@ -461,7 +461,7 @@ def test_sparse_adam_critic_clock_one_at_two_completed_steps_resumes_exactly(tmp
         return ["--dummy", "--name", "sparse-clock", "--save_dir", str(destination),
                 "--steps", "3", "--save_every", "1", "--seed", "7", "--preset", "bispf", *extra]
 
-    original_step = ConditionalPG09.step
+    original_step = ConditionalParticleGAN.step
     observed = []
 
     def activate_after_first_update(game):
@@ -471,7 +471,7 @@ def test_sparse_adam_critic_clock_one_at_two_completed_steps_resumes_exactly(tmp
         observed.append(game)
         return metrics
 
-    monkeypatch.setattr(ConditionalPG09, "step", activate_after_first_update)
+    monkeypatch.setattr(ConditionalParticleGAN, "step", activate_after_first_update)
     train(parse_args(arguments(first, "--until", "2")))
     source = observed[-1]
     checkpoint = first / "sparse-clock_checkpoint.pt"

@@ -94,11 +94,11 @@ def test_matched_product_network_outputs_bank_gradients_and_zero_strength():
 @pytest.mark.parametrize('preset', ['bispf', 'bispf_optimized'])
 def test_shipped_prepare_split_resume_ema_inference_and_wrong_cohort_rejection(tmp_path, preset):
     from particle_sliders.fibo_hndl import HNDLParticleProjection
-    from particle_sliders import ConditionalPG09
+    from particle_sliders.engine import ConditionalParticleGAN
     cfg = SessionConfig('yue2-hndl', 'shipped-prepare-' + preset, **dict(config().options, preset=preset))
     rng = torch.get_rng_state().clone()
     with open_response(cfg) as run:
-        assert type(run.game) is ConditionalPG09  # Registry invokes the shipped prepare(), not the direct alias fixture.
+        assert type(run.game) is ConditionalParticleGAN  # Registry invokes the shipped prepare(), not the direct alias fixture.
         assert isinstance(run.game.critic, product.HNDLAudioCritic)
         assert all(isinstance(a, HNDLParticleProjection) for a in run.game.backend.slider.adapters.values())
         before = run.game.backend.slider.particles.detach().clone()
@@ -265,7 +265,7 @@ def test_builder_tamper_rejected_before_hooks_or_flags(monkeypatch):
 
 
 def test_hndl_audio_readout_matches_original_scores_and_penalty_derivatives():
-    from particle_sliders.pg09_audio import AudioResponseCritic
+    from particle_sliders.audio import AudioResponseCritic
     old, new = AudioResponseCritic(32, 32), product.HNDLAudioCritic(32, 32)
     affine(new.graph['hidden'], old.net[0])
     affine(new.graph['logits'], old.net[2])
@@ -284,7 +284,7 @@ def test_hndl_audio_readout_matches_original_scores_and_penalty_derivatives():
 
 @pytest.mark.parametrize('strength', [.5, 1.])
 def test_hndl_deferred_backward_checkpoint_scale_and_ownership(strength):
-    from particle_sliders.pg09_backends import checkpoint_with_adapter_scale
+    from particle_sliders.backends import checkpoint_with_adapter_scale
     from particle_sliders.fibo_hndl import HNDLParticleProjection
     def gradients(checkpointed):
         torch.manual_seed(7)
@@ -337,12 +337,12 @@ class Guard(importlib.abc.MetaPathFinder):
             raise AssertionError('training import: ' + fullname)
 sys.meta_path.insert(0, Guard())
 from particle_sliders.inference import open_inference
-from particle_sliders import ConditionalPG09
+from particle_sliders.engine import ConditionalParticleGAN
 from yue2_sliders.hndl_response import HNDLAudioCritic
 import torch
 def forbidden(*args, **kwargs):
     raise AssertionError('training construction')
-ConditionalPG09.__init__ = forbidden
+ConditionalParticleGAN.__init__ = forbidden
 HNDLAudioCritic.__init__ = forbidden
 torch.optim.Optimizer.__init__ = forbidden
 with open_inference(sys.argv[1], operation='response', options={'device': 'cpu'}) as run:
@@ -421,8 +421,8 @@ def test_genuine_native_yue2_grouped_query_response_and_bank_vjp_parity():
 
 @pytest.mark.parametrize('preset', ['bispf', 'bispf_optimized'])
 def test_genuine_native_yue2_shared_game_updates_and_exact_restore(preset):
-    from particle_sliders.pg094 import ConditionalPG094
-    from particle_sliders.pg09_audio import AudioRow, audio_conditions
+    from particle_sliders.engine4 import ConditionalParticleGAN4
+    from particle_sliders.audio import AudioRow, audio_conditions
     from particle_sliders.fibo_hndl import HNDLParticleProjection
     def build():
         runtime = native_fixture()
@@ -435,7 +435,7 @@ def test_genuine_native_yue2_shared_game_updates_and_exact_restore(preset):
             rows = [native.prepare(AudioRow((12,21,30), (13,22,30))),
                     native.prepare(AudioRow((14,23,31), (15,24,31)))]
             critic = product.HNDLAudioCritic(32, audio_conditions(rows).shape[1])
-            game = ConditionalPG094(native, rows, critic, particles=native.particles,
+            game = ConditionalParticleGAN4(native, rows, critic, particles=native.particles,
                 conditions=audio_conditions(rows), response_domain='continuous_vector',
                 preset=preset, batch_size=2, seed=7, total_steps=2, pg_source_profile=product.PROFILE)
             return game, owner
@@ -465,7 +465,7 @@ def test_genuine_native_yue2_shared_game_updates_and_exact_restore(preset):
 
 
 def test_modern_close_conflict_preserves_foreign_forward_and_retries():
-    from particle_sliders.pg09_backends import checkpoint_with_adapter_scale
+    from particle_sliders.backends import checkpoint_with_adapter_scale
     run = open_response(config())
     native = run.game.backend
     block = native.model.model.layers[0].self_attn.q_proj
@@ -484,7 +484,7 @@ def test_modern_close_conflict_preserves_foreign_forward_and_retries():
     assert run.closed
     run.close()
     assert all('forward' not in vars(module) for module in attention_targets(native.model).values())
-    assert not any(getattr(module, '_pg09_scale_checkpoint', False) for module in native.model.modules())
+    assert not any(getattr(module, '_adapter_scale_checkpoint', False) for module in native.model.modules())
 
 
 def test_modern_partial_setup_failure_restores_staged_host_and_rng(monkeypatch):

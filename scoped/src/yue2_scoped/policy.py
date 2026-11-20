@@ -6,9 +6,9 @@ from torch import nn
 from particlegan import init as pg_init
 from . import PROFILE
 from .util import canonical,source_record
-INIT_SHA='3534ff23efa413cdf8b4125b91e0d30671d873b3e2958547d4e744b750454b9b'
+INIT_SHA = '3534ff23efa413cdf8b4125b91e0d30671d873b3e2958547d4e744b750454b9b'
 SCHEMA='YuE2-native-a1-downQR-std1-R2bank-zeroUP-othersKEEP-initialization-v1'
-MARKER='_yue2_fresh95_initialization_receipt'
+MARKER='_yue2_scoped_initialization_receipt'
 
 @dataclass(frozen=True)
 class Construction:
@@ -29,7 +29,7 @@ def seed_for(seed,name):return int.from_bytes(hashlib.sha256(f'{PROFILE}:{seed}:
 
 def declarations(slider,critic):
     from yue2_sliders.slider import ParticleSlider,RoutedProjection
-    from particle_sliders.pg09_audio import AudioResponseCritic
+    from particle_sliders.audio import AudioResponseCritic
     if type(slider)is not ParticleSlider or type(critic)is not AudioResponseCritic or slider.rank!=8 or slider.alpha!=8.:raise ValueError('exact original ParticleSlider rank8/alpha8 and critic required')
     if tuple(slider.particles.shape)!=(128,4)or not slider.adapters:raise ValueError('same original128x4 bank and projections required')
     down={};up={}
@@ -61,7 +61,7 @@ def declarations(slider,critic):
 def initialize(slider,critic,construction,options,sources):
     if(not isinstance(construction,Construction)or construction.mode!='fresh'or not construction.cohort
             or construction.options_sha256!=hashlib.sha256(canonical(options).encode()).hexdigest()):raise ValueError('explicit fresh intent before optimizers required')
-    if metadata.version('particlegan')!='0.9.5'or source_record(pg_init.__file__)['sha256']!=INIT_SHA:raise ValueError('exact public PG095 initializer required')
+    if metadata.version('particlegan')!='0.11.0'or source_record(pg_init.__file__)['sha256']!=INIT_SHA:raise ValueError('exact public PG095 initializer required')
     rows=declarations(slider,critic);ids=[id(r['parameter'])for r in rows];before=[tensor_sha(r['parameter'])for r in rows]
     holder=DeclaredOwned(rows);seeds={'p'+str(i):seed_for(options['config']['seed'],r['name'])for i,r in enumerate(rows)}
     pg_init.deterministic_orthogonal_(holder,strict=True,parameter_seeds=seeds)
