@@ -1,22 +1,5 @@
-# ComfyUI
+# YuE2 in ComfyUI
 
-`comfy_yue2.py` is the YuE2 slider gate for ComfyUI. Drop this repo in `ComfyUI/custom_nodes` and restart Comfy. The node is **YuE2 Particle Slider (ntc-ai)** in category `NTC/YuE2`.
+The **YuE2 Particle Slider (ntc-ai)** node under `NTC/YuE2` loads the published standalone slider files through the archived runtime. [Install the original checkout](https://github.com/HyperGAN/yue2-particle-sliders/blob/cd774d53227d341cfb11b288d5de04e6a3142e0a/COMFYUI.md) into `ComfyUI/custom_nodes` and use its exact wheel environment. The original guide includes local weight validation and the matched song-render command.
 
-Comfy uses the exact installed candidate wheel from
-[REPRODUCE.md](REPRODUCE.md). The node verifies wheel identity, shared source
-bytes and imported package origins before resolving the architecture stamp.
-No shared source checkout or `YUE2_*_SOURCE` variables are needed.
-
-It does not vendor the particle game, and it does not download `m-a-p/YuE2-3B`. Point `weights_path` at a local `.safetensors` slider. Strength uses the stamped range `[0, 1]`. Strength 0 needs no file and means the frozen base model. Any other strength checks the checkpoint recipe against `winning_formulation()` (`anneal-routed-particle-error-yue2-v1` on this core pin) and refuses dummy exports and foreign tensors.
-
-The node returns a slider handle (`path`, `strength`, `recipe_name`). It does not synthesize audio inside the graph. Matched Off/On renders stay on the native YuE2 pipeline:
-
-```bash
-python scripts/infer_yue2.py \
-  --weights /path/to/adapter.safetensors \
-  --style 'English, piano-led pop, clear close lead vocal, steady bass and dry drums.' \
-  --lyrics_file lyrics.txt --scales 0,0.5,1 --seed 7 \
-  --output_dir eval/listen/yue2-example --allow_hub
-```
-
-Published listening cards are on [ntc-ai/yue2-concept-sliders](https://huggingface.co/ntc-ai/yue2-concept-sliders). The node requires matching recorded base/stamp provenance and a complete finite tensor payload; historical files missing that provenance are refused. It does not load an ordinary PEFT LoRA under a different format.
+For the current numerical-response package, see [the YuE2 lifecycle](LIFECYCLE.md).

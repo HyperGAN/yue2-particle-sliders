@@ -9,7 +9,8 @@ import sys
 
 from particle_sliders.response import ResponseCapabilities
 
-CORE_PIN = 'ec1161f5d74481be3540cb0dfa63d0e8f8b54e90'
+from .defaults import CORE_PIN
+
 PG_VERSION = '0.11.1'
 PROFILE = 'release-0.11.1'
 DOMAIN = 'auto'
@@ -120,7 +121,7 @@ def native_sources():
     names = ('__init__.py', 'response_runtime.py', 'response_native.py', 'backend.py', 'slider.py',
              'stamp.py', 'defaults.py', 'prompts.py', 'lifecycle-runtime.lock.json',
              'native_assets.py', 'native-assets.lock.json', 'lifecycle.py',
-             'response_provider.py', 'train.py', 'response_binding.py', 'native_binding.py')
+             'response_provider.py', 'response_binding.py', 'native_binding.py')
     return {name: hashlib.sha256((root / name).read_bytes()).hexdigest() for name in names}
 
 

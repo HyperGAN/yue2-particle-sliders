@@ -1,11 +1,5 @@
-include *.md requirements*.txt comfy_yue2.py __init__.py
+include *.md requirements.txt
 recursive-include docs *.md
-recursive-include release_tools *.py *.toml *.json
-recursive-include scripts *.py
+recursive-include release_tools *.py
 recursive-include configs *.json *.yaml
-recursive-include cohorts *.py *.json *.hndl
-
-include LEARNING-RATES.md
-recursive-include compatibility *.txt *.json
-recursive-include cohorts/pre-lr-hndl *.py *.json
 include docs/lr-migration.json

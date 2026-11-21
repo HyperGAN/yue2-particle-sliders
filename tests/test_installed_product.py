@@ -13,9 +13,8 @@ if (Path(yue2_sliders.__file__).resolve().parent != Path(_distribution.locate_fi
     pytest.skip('run outside the checkout against the installed product wheel', allow_module_level=True)
 
 
-def test_installed_data_and_entrypoints_keep_their_cohorts():
+def test_installed_data_and_entrypoints_use_the_current_cohort():
     from yue2_sliders.resources import CONFIGS
-    from yue2_sliders.integration import CORE_PIN as LEGACY_PIN, LOCK_PATH
     from yue2_sliders.response_runtime import CORE_PIN, LOCK, verify_runtime
     from yue2_sliders.samples import catalog_controls, featured_links, load_sample_cards
 
@@ -24,11 +23,8 @@ def test_installed_data_and_entrypoints_keep_their_cohorts():
     assert CONFIGS == package / '_assets'  # No repository data fallback in a wheel.
     assert len(catalog_controls()) == 16
     assert len(featured_links(load_sample_cards())) == 3
-    assert LOCK_PATH == CONFIGS / 'shared-runtime.lock.json'
-    assert json.loads(LOCK_PATH.read_text())['core']['commit'] == LEGACY_PIN
     lock = json.loads(LOCK.read_text())
     assert lock['core']['commit'] == CORE_PIN
-    assert CORE_PIN != LEGACY_PIN
     requirement = next(r for r in distribution.requires if r.startswith('particle-sliders-core'))
     assert '@' + CORE_PIN + '#subdirectory=packages/particle-sliders-core' in requirement
     assert verify_runtime()['core_commit'] == CORE_PIN
@@ -37,7 +33,8 @@ def test_installed_data_and_entrypoints_keep_their_cohorts():
         ('particle_sliders.response_backends', 'yue2'),
         ('particle_sliders.inference_backends', 'yue2')}
     import importlib.util
-    assert importlib.util.find_spec('yue2_sliders.hndl_response') is None
+    for archived_module in ('hndl_response', 'integration', 'train', 'infer'):
+        assert importlib.util.find_spec(f'yue2_sliders.{archived_module}') is None
     assert not (package / 'hndl-runtime.lock.json').exists()
     assert not (package / 'hndl_audio_critic.hndl').exists()
     for group, module in [('response_backends', 'lifecycle'), ('inference_backends', 'response_native')]:
@@ -46,7 +43,7 @@ def test_installed_data_and_entrypoints_keep_their_cohorts():
         assert ep.load().name == 'yue2'
 
 
-def test_default_fresh_process_discovers_only_its_installed_core013_backends(tmp_path):
+def test_default_fresh_process_discovers_only_its_installed_backends(tmp_path):
     import subprocess
     import sys
     code = '''

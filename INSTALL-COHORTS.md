@@ -9,6 +9,6 @@ python -m pip install '.[test]'
 
 Native AR responses use the explicit continuous penalty domain. Read [the current lifecycle guide](LIFECYCLE.md).
 
-Replay older FULL/RAW artifacts from the matching product revision and environment.
-The [archived installation guide](https://github.com/HyperGAN/yue2-particle-sliders/blob/108d127625c77bae952fc7c957bce3d6f5d48569/INSTALL-COHORTS.md)
+Replay earlier FULL/RAW artifacts from the matching product revision and environment. YuE2 0.4.1 has a new product source identity. Resume earlier packets in their original checkout.
+The [archived installation guide](REPRODUCE.md)
 retains their exact source and dependency pins.

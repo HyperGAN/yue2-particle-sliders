@@ -49,7 +49,7 @@ Source facts (read as text; no model execution):
 - [yue2_sliders/native-assets.lock.json](yue2_sliders/native-assets.lock.json)
 - [yue2_sliders/lifecycle.py](yue2_sliders/lifecycle.py)
 - [yue2_sliders/backend.py](yue2_sliders/backend.py)
-- [yue2_sliders/infer.py](yue2_sliders/infer.py)
+- [yue2_sliders/infer.py](https://github.com/HyperGAN/yue2-particle-sliders/blob/cd774d53227d341cfb11b288d5de04e6a3142e0a/yue2_sliders/infer.py)
 - [configs/yue2/model.lock.json](configs/yue2/model.lock.json)
 - [Pinned model metadata](https://huggingface.co/m-a-p/YuE2-3B/tree/14fc6c6f146441b1dd6363fcb2e01e82a6914cb7) (architecture/parameter metadata or exact file-size lock as described above).
 - ParticleGAN 0.11.1 release `d5dec2fe005305082acf382f0939a4bdb51c7131`, `recipes.py:bispf_optimized`, `optim/dualnorm.py`, `optim/direction_blend.py` and `optim/constraint_geometry.py`; shared core `routed_projection.py`, `reference.py:RoutedMLP`, `audio.py:AudioResponseCritic`. These optimizer formulas are shared dependencies, not a new optimizer implementation.

@@ -10,17 +10,8 @@ HUB_PROJECT = "ntc-ai/yue2-concept-sliders"
 HUB_SPACE = "spaces/ntc-ai/yue2-concept-sliders"
 WEIGHTS_TREE = "weights/particle-1200-v1"
 
-CORE_PIN = "cdfb80a76b882b4b73861b12f555263bd64ffeb7"
-CORE_REQUIREMENT = "exact candidate wheel: configs/yue2/shared-runtime.lock.json"
-
+CORE_PIN = "ec1161f5d74481be3540cb0dfa63d0e8f8b54e90"
 CORE_REPO = "https://github.com/HyperGAN/particle-sliders"
-# Parameter table for the provisional overlay. It stays in particle-sliders.
-EXAM_MODULE = "analysis/slider2d/yue2_gmix_v2_exam.py"
-
-# Checkpoint formats this product reads. New exports use PRODUCT_FORMAT.
-PRODUCT_FORMAT = "yue2-particle-sliders-routed-ar-v1"
-PUBLISHED_FORMAT = "conceptmod-yue2-routed-particle-ar-v1"
-FORMATS = (PRODUCT_FORMAT, PUBLISHED_FORMAT)
 
 PROJECTIONS = ("q_proj", "k_proj", "v_proj", "o_proj")
 PRODUCT_NAME = "yue2-particle-sliders"

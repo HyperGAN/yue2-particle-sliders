@@ -231,5 +231,5 @@ def test_native_identity_binds_factory_provider_and_history_source_bytes():
     from yue2_sliders import response_runtime
     sources = response_runtime.native_sources()
     root = Path(response_runtime.__file__).parent
-    for name in ('lifecycle.py', 'response_provider.py', 'train.py'):
+    for name in ('lifecycle.py', 'response_provider.py', 'response_binding.py'):
         assert sources[name] == hashlib.sha256((root / name).read_bytes()).hexdigest()

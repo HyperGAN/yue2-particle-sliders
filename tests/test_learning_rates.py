@@ -47,20 +47,3 @@ def test_actual_rates_and_exact_resume(tmp_path):
         with pytest.raises(CheckpointError):
             other.restore(packet)
     assert not torch.cuda.is_initialized()
-
-
-def test_legacy_hndl_archive(tmp_path):
-    import importlib.util
-    import json
-    import hashlib
-    from pathlib import Path
-    root=Path(__file__).resolve().parents[1]
-    spec=importlib.util.spec_from_file_location('yue2_lr_archive',root/'release_tools/build_hndl_preview.py')
-    module=importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    manifest=json.loads((root/'cohorts/pre-lr-hndl/manifest.json').read_text())
-    for relative in manifest['files']:
-        (tmp_path/relative).parent.mkdir(parents=True,exist_ok=True)
-    module.restore_pre_lr_runtime(root,tmp_path)
-    for relative,digest in manifest['files'].items():
-        assert hashlib.sha256((tmp_path/relative).read_bytes()).hexdigest()==digest
