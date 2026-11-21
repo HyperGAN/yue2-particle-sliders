@@ -127,8 +127,70 @@
           "constant_on_sha256": "83738b0d641e6cb7943b4e69562deece9f3bb5d66dff1a657374fe5aac49427f"
         }
       ]
+    },
+    "random": {
+      "mean_gate_ON_minus_OFF": -0.007226536478743106,
+      "mean_constant_ON_minus_OFF": -0.22575810362560259,
+      "mean_gate_minus_equal_dose_constant": 0.21853156714685948,
+      "cases_ahead": 3,
+      "independent_pairs_passed": 4,
+      "comparison_sha256": "87927ea5250ba6ac65c545fb9805450fd33d979a69186b73d1cf72d049ecca89",
+      "cases": [
+        {
+          "case": "dev0-seed42",
+          "gate_ON_minus_OFF": 0.0047943363391868,
+          "constant_ON_minus_OFF": -0.0446998841132219,
+          "gate_minus_equal_dose": 0.0494942204524087,
+          "off_sha256": "1a10b55bdd82603457693a787de46d1f1f5c3ae11b9247847e412db66b403e32",
+          "gate_on_sha256": "9d65dac3a573c8d8b0a543f8ddb62ad04d9f9a671ba6505fd6f4cc51f595aa50",
+          "constant_on_sha256": "c05403bf8198711c935b18d22e3ec7a48ac6bef80a007b39ac753c103d9f8c1e",
+          "fired": 98,
+          "eligible": 199,
+          "gate_total_strength": 49.0,
+          "constant_total_strength": 49.0
+        },
+        {
+          "case": "dev0-seed43",
+          "gate_ON_minus_OFF": 0.022984660059339745,
+          "constant_ON_minus_OFF": 0.017037315694327093,
+          "gate_minus_equal_dose": 0.005947344365012652,
+          "off_sha256": "1405a8928160e06d980ed19c607498bdebdb3874c4b828171809f9de566c3aea",
+          "gate_on_sha256": "5e07547467d1553f82c74d5ceb094c881a61dab9f7a94e88f46e4f0cc2cbb890",
+          "constant_on_sha256": "979cd726cbf2122c6b3a828bb1889c48f204ed121fa5b33a392794087f14885b",
+          "fired": 101,
+          "eligible": 199,
+          "gate_total_strength": 50.5,
+          "constant_total_strength": 50.5
+        },
+        {
+          "case": "dev1-seed42",
+          "gate_ON_minus_OFF": -0.050856689954434375,
+          "constant_ON_minus_OFF": -0.8780443171420615,
+          "gate_minus_equal_dose": 0.8271876271876272,
+          "off_sha256": "f683dd0d1b037a4985e08d355e7fae1b1d03f26022b842d8dcb775e72eb61f1a",
+          "gate_on_sha256": "e847256c544c146ac3e82004e9d6a35f600f9c38d4c111162a2435aedfb9aced",
+          "constant_on_sha256": "4db9363ba81b6c846b9e527cd664c8d5a157d9f813da12eb6fed14732e8a3e66",
+          "fired": 86,
+          "eligible": 199,
+          "gate_total_strength": 43.0,
+          "constant_total_strength": 43.0
+        },
+        {
+          "case": "dev1-seed43",
+          "gate_ON_minus_OFF": -0.005828452359064595,
+          "constant_ON_minus_OFF": 0.002674471058546013,
+          "gate_minus_equal_dose": -0.008502923417610608,
+          "off_sha256": "c4b24d35df38dd1cd868c4fadc56908667dc1e3bb6c8035ffdcf06c146182836",
+          "gate_on_sha256": "224ed13cf168a2ff46d4fa1432067a8bf5adb5c65068f82046c54596fe4fb281",
+          "constant_on_sha256": "135997a9829347e13ab189acc67a3c499d847a951492f266ebf9133a4287c8dd",
+          "fired": 87,
+          "eligible": 199,
+          "gate_total_strength": 43.5,
+          "constant_total_strength": 43.5
+        }
+      ]
     }
   },
-  "random_comparison": "pending",
+  "random_comparison": "Bernoulli firing at the paper's 0.5 target on the same four native cases. Each constant matches its own random gate's realized total strength.",
   "scope": "A four-case held-out pilot for the saved Crisp Piano adapter and original sampler. Adaptive steering is opt-in."
 }
