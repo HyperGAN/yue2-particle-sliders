@@ -1,6 +1,6 @@
-# Explicit cached YuE2 fresh095 owner
+# YuE2 scoped initialization
 
-This additional `yue2_scoped` namespace is an opt-in composition with the captured `yue2-particle-sliders==0.4.0` owner, exact core0.15.2 Git source and public ParticleGAN0.11.1. It neither changes the original response/inference registrations nor upgrades an existing runtime. Install genuine distributions with their generated RECORDs; a Source-directory overlay is rejected.
+This additional `yue2_scoped` namespace is an opt-in composition with the captured `yue2-particle-sliders==0.4.1` owner, exact core0.15.2 Git source and public ParticleGAN0.11.1. It neither changes the original response/inference registrations nor upgrades an existing runtime. Install genuine distributions with their generated RECORDs; a Source-directory overlay is rejected.
 
 The original registered route is a final native AR hidden-state response: width32 in the original CPU stand-in, width2048 for the exact native YuE2 BF16/strict-SDPA cohort. It does not decode music or claim a waveform/native audio qualification. The installed tiny software validation did not load pretrained models. The original native runtime/assets/whole-loaded-checkpoint/numerical guards remain mandatory on the native lane, unchanged. The isolated installed-owner CPU8 execution passed all four new software cases with one tiny original-game update and genuinely closed0/resource0. This validates the tiny software route, not public-wheel/pretrained/acoustic execution.
 
@@ -41,7 +41,7 @@ with open_inference(raw, component_factory=component_factory,
     hidden = inference.response(token_ids=complete_native_ids, strength=0.5, seed=17)
 ```
 
-Modes are resolved before component construction. An immutable initialization receipt is fsynced before the game/optimizers and bound into its signature. The same original Parameters receive public PG095 QR at their actual down law `kaiming_uniform_(a=1)` (gain1; target mean-square `1/fan_in`) and R2Normal(0,1) for the existing128×4 bank. Exact zero-UP, bridge/router and Linear critic constructor values stay KEEP. The new owner's explicitly scoped original ParticleSlider seed and critic seed+1 are disclosed as a new constructor stream; no bitwise equality to an older whole-loader/cohort is claimed. Caller CPU and only its explicitly requested CUDA stream are restored. RAW/current weights only, with `ema_decay=None`; the core095 manual game has no weight-EMA path.
+Modes are resolved before component construction. An immutable initialization receipt is fsynced before the game/optimizers and bound into its signature. The same original Parameters receive ParticleGAN QR at their actual down law `kaiming_uniform_(a=1)` (gain1; target mean-square `1/fan_in`) and R2Normal(0,1) for the existing128×4 bank. Exact zero-UP, bridge/router and Linear critic constructor values stay KEEP. The new owner's explicitly scoped original ParticleSlider seed and critic seed+1 are disclosed as a new constructor stream; no bitwise equality to an older whole-loader/cohort is claimed. Caller CPU and only its explicitly requested CUDA stream are restored. RAW/current weights only, with `ema_decay=None`; the shared manual game has no weight-EMA path.
 
 The completed historical YuE2 EMA0.9 calibration, RAW64 checkpoints, four-case piano proxy results, zero-frame outputs, native calls and judgments are immutable prior evidence. This profile does not reset or migrate them, and no new initialization quality or LR result is borrowed from that history. The existing best-tested primary rate `1e-5`, fixed D `.018` and bank `.030000000000000002` remain those original measured results; a software-fixture rate is not a new recommendation.
 
@@ -53,7 +53,7 @@ Four newly authored tiny software nodes cover same-Parameter policy/zero-UP/KEEP
 
 ## Separate optional installation
 
-This directory is a standalone `yue2-explicit-scoped==0.1.0` subproject. The repository root remains `yue2-particle-sliders==0.4.0` with its original metadata, registrations, defaults and LR history. Use an isolated environment whose genuine original owner/core0.15.2/PG0.11.1 distributions and Sources already match the guards. Installing matching version strings alone is insufficient. Once those dependencies and setuptools84.2.1+ are available, install only this addon from the verified checkout:
+This directory is a standalone `yue2-explicit-scoped==0.1.1` subproject. The repository root remains `yue2-particle-sliders==0.4.1` with the same shared registrations, defaults and LR history. Use an isolated environment whose genuine original owner/core0.15.2/PG0.11.1 distributions and Sources already match the guards. Installing matching version strings alone is insufficient. Once those dependencies and setuptools84.2.1+ are available, install only this addon from the verified checkout:
 
 ```bash
 python -m pip install --no-deps --no-build-isolation ./scoped

@@ -1,21 +1,40 @@
 """Owned eager native AR teacher/history bank; no GAN math or persistent cache."""
 from copy import deepcopy
 
+import torch
+
+
+def prepare_bank(backend, adapter, rows, *, sample_seeds, history_tokens, seed):
+    from particle_sliders.audio import AudioRow
+
+    limit = int(getattr(backend.model.config, "max_position_embeddings", 10**9))
+    total = len(rows) * int(sample_seeds)
+    generator = torch.Generator().manual_seed(int(seed) + 12345)
+    drawn = torch.randint(0, 2**31 - 1, (total,), generator=generator).tolist()
+    prepared = []
+    for row in rows:
+        neutral = backend.prefix(row["neutral"], row["lyrics"])
+        positive = backend.prefix(row["positive"], row["lyrics"])
+        for _ in range(int(sample_seeds)):
+            with adapter.network.scaled(0):
+                history = backend.continuation(neutral, int(history_tokens), int(drawn[len(prepared)]))
+            if max(len(neutral), len(positive)) + len(history) > limit:
+                raise ValueError("Prompt plus history exceeds the YuE2 context limit")
+            prepared.append(adapter.prepare(AudioRow(tuple(neutral + history), tuple(positive + history),
+                                                    history_tokens=len(history))))
+    return prepared
+
 
 class PreparedBank:
     def __init__(self, runtime, adapter, rows, *, sample_seeds, history_tokens, seed):
-        # Legacy preparation preserves exact tokenization/shared-history behavior.
-        # Imported only for training construction, never by native-only inference.
         limit = int(runtime.model.config.max_position_embeddings)
-        # The historical helper checks context after continuation; reject here
-        # before that helper can allocate an oversized history tensor.
+        # Reject before continuation can allocate an oversized history tensor.
         if history_tokens >= limit:
             raise ValueError('history must leave room for a native prompt prefix')
         for row in rows:
             if max(len(runtime.prefix(row['neutral'], row['lyrics'])),
                    len(runtime.prefix(row['positive'], row['lyrics']))) + history_tokens > limit:
                 raise ValueError('prompt plus history exceeds the native context limit')
-        from .train import prepare_bank
         from particle_sliders.audio import audio_conditions
         self._rows = tuple(prepare_bank(runtime, adapter, rows, sample_seeds=sample_seeds,
                                       history_tokens=history_tokens, seed=seed))

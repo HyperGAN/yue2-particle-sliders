@@ -3,11 +3,11 @@ requires = ["setuptools>=84.2.1"]
 build-backend = "setuptools.build_meta"
 [project]
 name = "yue2-explicit-scoped"
-version = "0.1.0"
-description = "Explicit cached YuE2 fresh095 owner; original native/source gates retained"
+version = "0.1.1"
+description = "Explicit cached YuE2 owner; original native/source gates retained"
 readme = "README.md"
 requires-python = ">=3.11"
-dependencies = ["yue2-particle-sliders==0.4.0", "particlegan==0.11.1", "torch>=2.6,<3"]
+dependencies = ["yue2-particle-sliders==0.4.1", "particlegan==0.11.1", "torch>=2.6,<3"]
 [tool.setuptools.packages.find]
 where = ["src"]
 include = ["yue2_scoped*"]

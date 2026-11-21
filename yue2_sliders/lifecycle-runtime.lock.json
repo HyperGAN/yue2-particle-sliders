@@ -19,7 +19,7 @@
     "version": "0.11.1"
   },
   "qualification": {
-    "packet_identity_policy": "Archived PG091/CDF/HNDL packets and source locks remain unchanged; no implicit rebinding",
+    "packet_identity_policy": "Earlier packets and their source locks are preserved in the archived checkout",
     "scope": "CPU numerical response conformance and explicit native source candidate; no pretrained GPU/audio quality claim"
   },
   "schema": "yue2-response-runtime-v4-engine",

@@ -1,6 +1,6 @@
-Current root package: **0.4.0 / core0.15.2 / published ParticleGAN0.11.1**, pinned to `ec1161f5d74481be3540cb0dfa63d0e8f8b54e90` (Python>=3.11). See [installation cohorts](INSTALL-COHORTS.md) and [response lifecycle](LIFECYCLE.md). Native2048-wide responses require explicit `release-0.11.1/continuous`; default auto keeps its width gate. CPU conformance does not qualify new native training or transfer historical LR results.
+Current root package: **0.4.1 / core 0.15.2 / ParticleGAN 0.11.1**, pinned to `ec1161f5d74481be3540cb0dfa63d0e8f8b54e90` (Python>=3.11). See [installation cohorts](INSTALL-COHORTS.md) and [response lifecycle](LIFECYCLE.md). Native2048-wide responses require explicit `release-0.11.1/continuous`; default auto keeps its width gate. CPU conformance does not qualify new native training or transfer historical LR results.
 
-The separate HNDL preview and historical controls below retain their original sources, environments and checkpoint identities.
+The original HNDL preview and published audio controls use the source revisions in the [reproduction guide](REPRODUCE.md).
 
 Current finished-audio decision: use existing **cell1 G0.00001 RAW64** at fixed
 D0.018 / bank0.030000000000000002, batch2/horizon128. Its equal-case frozen
@@ -20,10 +20,9 @@ explicitly set `ema_decay=None` without averaging or an EMA comparison.
 
 Routed-particle composition sliders for [m-a-p/YuE2-3B](https://huggingface.co/m-a-p/YuE2-3B),
 with the VAE at [m-a-p/YuE2-Vae](https://huggingface.co/m-a-p/YuE2-Vae).
-`yue2-particle-sliders` is the YuE2 product repo in the Anima / Krea2 layout. It owns Hub ids,
-the Comfy gate, YuE2 train and infer, prompt cards, and sample cards.
+`yue2-particle-sliders` owns YuE2 response conditioning, AR adapter wiring, Hub IDs, prompt cards, and sample cards.
 
-The [archived trainer and model controls](https://github.com/HyperGAN/yue2-particle-sliders/blob/108d127625c77bae952fc7c957bce3d6f5d48569/REPRODUCE.md)
+The [archived trainer and published model controls](REPRODUCE.md)
 require the original product revision and dependency environment.
 
 Published weights and the listening gallery:
@@ -49,18 +48,15 @@ links above are the original particles. Distillation notes stay on the
 
 ## Comfy
 
-`comfy_yue2.py` registers **YuE2 Particle Slider (ntc-ai)** under `NTC/YuE2`.
-It checks a local slider against the winning formulation and does not render
-audio inside the graph. See [COMFYUI.md](COMFYUI.md).
+For the **YuE2 Particle Slider (ntc-ai)** node, follow the [archived Comfy setup](COMFYUI.md).
 
 ## Layout
 
 | Path | Role |
 |---|---|
-| `yue2_sliders/` | AR backend, routed slider hooks, train, infer |
+| `yue2_sliders/` | AR backend, routed slider hooks, and shared response APIs |
 | `yue2_sliders.lifecycle` | Current training entry point for the shared CLI |
 | `configs/yue2/` | Run configs, prompts, `model.lock.json`, sample cards |
-| `comfy_yue2.py` | Comfy gate |
 | `particle-sliders-core` | Shared engine, routed bridge and audio adapters |
 
 Formulation exams stay in [HyperGAN/particle-sliders](https://github.com/HyperGAN/particle-sliders).

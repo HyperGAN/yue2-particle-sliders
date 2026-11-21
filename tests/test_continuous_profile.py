@@ -45,7 +45,7 @@ def test_descriptor_preserves_explicit_native_width_and_profile():
     assert runtime.capabilities({}).pg_source_profile == 'release-0.11.1'
     assert runtime.capabilities({}).penalty_input_domain == 'auto'
     for invalid in (dict(pg_source_profile='source-801ae1e-continuous-v1', penalty_input_domain='continuous'),
-                    dict(pg_source_profile='release-0.9.4'),
+                    dict(pg_source_profile='release-0.11.0'),
                     dict(pg_source_profile='alz-continuous-v1', penalty_input_domain='continuous')):
         with pytest.raises(ValueError, match='explicitly qualified'):
             runtime.validate_native_options(invalid)
