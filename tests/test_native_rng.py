@@ -159,7 +159,7 @@ def test_fresh_process_native_factory_scope_initializes_same_real_game_and_exact
     Before the outer scope fix the critic differs across these caller seeds.
     """
     import json, os, subprocess, sys
-    source_profile = 'release-0.11.0'
+    source_profile = 'release-0.11.1'
     from particle_sliders.engine import _released_sources
     try:
         _released_sources(source_profile)

@@ -28,7 +28,7 @@ def staged(tmp_path,monkeypatch):
     monkeypatch.setattr(YuE2ARResponseAdapter,'prepare',forbidden)
     runtime=bare(7);base=deepcopy(runtime.model.state_dict())
     config=dict(lane='cpu-fixture',model_identity={},steps=3,batch=2,seed=7,width=32,device='cpu',base_precision='float32',checkpointing=False,
-        max_sequence_length=256,pg_source_profile='release-0.11.0',penalty_input_domain='auto',preset='bispf_optimized',ema_decay=None,lr=.001,d_lr_mult=18.,prior_lr_mult=30.)
+        max_sequence_length=256,pg_source_profile='release-0.11.1',penalty_input_domain='auto',preset='bispf_optimized',ema_decay=None,lr=.001,d_lr_mult=18.,prior_lr_mult=30.)
     config['model_identity']=api.model_identity(runtime,config)
     prepared=[PreparedAudioResponse(AudioRow((11+i,17,19),(29+i,17,19),2,1.),torch.linspace(-.15,.3,32).reshape(1,32)+i*.01,torch.linspace(-.2,.1,32).reshape(1,32))for i in range(3)]
     data=tmp_path/'NEW-completed-synthetic-fields.pt';torch.save([cache.dump(x)for x in prepared],data)

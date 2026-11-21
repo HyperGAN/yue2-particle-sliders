@@ -9,11 +9,11 @@ import sys
 
 from particle_sliders.response import ResponseCapabilities
 
-CORE_PIN = 'c13890f8e2a1ecf1dc8eb9f2a37f9187cb9fea78'
-PG_VERSION = '0.11.0'
-PROFILE = 'release-0.11.0'
+CORE_PIN = 'ec1161f5d74481be3540cb0dfa63d0e8f8b54e90'
+PG_VERSION = '0.11.1'
+PROFILE = 'release-0.11.1'
 DOMAIN = 'auto'
-NATIVE_PROFILE = 'release-0.11.0'
+NATIVE_PROFILE = 'release-0.11.1'
 LOCK = Path(__file__).with_name('lifecycle-runtime.lock.json')
 PROTOCOL = 'yue2-native-final-ar-hidden-response-v2-engine'
 
@@ -72,7 +72,7 @@ def verify_runtime(options=None):
     lock = json.loads(LOCK.read_text())
     core, pg = lock['core'], lock['particlegan']
     if (lock['schema'], core['commit'], core['version'], pg['version']) != (
-            'yue2-response-runtime-v4-engine', CORE_PIN, '0.15.1', PG_VERSION):
+            'yue2-response-runtime-v4-engine', CORE_PIN, '0.15.2', PG_VERSION):
         raise ValueError('response code and canonical source lock disagree')
     distribution = metadata.distribution(core['distribution'])
     direct = json.loads(distribution.read_text('direct_url.json') or '{}')
@@ -87,7 +87,7 @@ def verify_runtime(options=None):
             'git', CORE_PIN, 'https://github.com/HyperGAN/particle-sliders', 'packages/particle-sliders-core'):
         raise ValueError('core requires exact wheel archive or Git commit provenance')
     if 'particlegan==' + PG_VERSION not in {requirement.replace(' ', '') for requirement in distribution.requires or ()}:
-        raise ValueError('core metadata must retain the exact PG0.11.0 dependency')
+        raise ValueError('core metadata must retain the exact PG0.11.1 dependency')
     pg_distribution = metadata.distribution('particlegan')
     pg_direct = json.loads(pg_distribution.read_text('direct_url.json') or '{}')
     if pg_distribution.version != PG_VERSION or ('archive_info' in pg_direct and

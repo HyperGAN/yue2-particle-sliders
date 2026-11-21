@@ -1,4 +1,4 @@
-Current root package: **0.4.0 / core0.15.1 / published ParticleGAN0.11.0**, pinned to `c13890f8e2a1ecf1dc8eb9f2a37f9187cb9fea78` (Python>=3.11). See [migration](docs/pg095-migration.md), [installation cohorts](INSTALL-COHORTS.md), and [response lifecycle](LIFECYCLE.md). Native2048-wide responses require explicit `release-0.11.0/continuous`; default auto keeps its width gate. CPU conformance does not qualify new native training or transfer historical LR results.
+Current root package: **0.4.0 / core0.15.2 / published ParticleGAN0.11.1**, pinned to `ec1161f5d74481be3540cb0dfa63d0e8f8b54e90` (Python>=3.11). See [installation cohorts](INSTALL-COHORTS.md) and [response lifecycle](LIFECYCLE.md). Native2048-wide responses require explicit `release-0.11.1/continuous`; default auto keeps its width gate. CPU conformance does not qualify new native training or transfer historical LR results.
 
 The separate HNDL preview and historical controls below retain their original sources, environments and checkpoint identities.
 
@@ -23,19 +23,8 @@ with the VAE at [m-a-p/YuE2-Vae](https://huggingface.co/m-a-p/YuE2-Vae).
 `yue2-particle-sliders` is the YuE2 product repo in the Anima / Krea2 layout. It owns Hub ids,
 the Comfy gate, YuE2 train and infer, prompt cards, and sample cards.
 
-The historical CDF trainer calls `particle_sliders.ConditionalPG09` for the public ParticleGAN
-**0.9.1** GAN-only recipe. `winning_formulation()` supplies the existing routed
-adapter geometry, including `stamp.bridge()`; it does not select the training
-objective. This repo does not vendor `RoutedMLP`, `GradRegularizer`, or ParticleGAN.
-The legacy architecture recipe is `anneal-routed-particle-error-yue2-v1`.
-See [FORMULATION.md](FORMULATION.md).
-
-That historical CDF trainer uses the installed **0.6.0 candidate wheel** from commit
-`cdfb80a76b882b4b73861b12f555263bd64ffeb7`. The wheel SHA256, all installed
-shared Python/JSON hashes, and exact PG 0.9.1 wheel identity are locked in
-`configs/yue2/shared-runtime.lock.json`. No shared checkout is needed at runtime.
-This local candidate is not claimed as a public release. See
-[REPRODUCE.md](REPRODUCE.md) and [the CDF follow-up](docs/pg091-cdf-adoption.md).
+The [archived trainer and model controls](https://github.com/HyperGAN/yue2-particle-sliders/blob/108d127625c77bae952fc7c957bce3d6f5d48569/REPRODUCE.md)
+require the original product revision and dependency environment.
 
 Published weights and the listening gallery:
 [ntc-ai/yue2-concept-sliders](https://huggingface.co/ntc-ai/yue2-concept-sliders)
@@ -58,32 +47,6 @@ Original particle weights and ordinary distilled LoRAs are different files. The
 links above are the original particles. Distillation notes stay on the
 [Hub distillation guide](https://huggingface.co/ntc-ai/yue2-concept-sliders/blob/main/DISTILLATION.md).
 
-## Historical CLI train and render
-
-These source-bound CLI commands use the historical core0.6 lock and need their
-original source checkout and isolated environment. For current packaged response
-work use [LIFECYCLE.md](LIFECYCLE.md); for the new HNDL lane use the separate guide.
-Historical CPU checks need the exact locked PG 0.9.1 and core wheels:
-
-```bash
-python scripts/train_yue2.py --dummy --steps 3 --until 1 --save_dir /tmp/yue2-first
-python scripts/train_yue2.py --dummy --steps 3 \
-  --resume /tmp/yue2-first/metal-yue2-particles_checkpoint.pt --save_dir /tmp/yue2-resumed
-python scripts/infer_yue2.py --dummy \
-  --weights /tmp/yue2-resumed/metal-yue2-particles_last.safetensors \
-  --output_dir /tmp/yue2-cmp
-```
-
-AR q/k/v/o adapters and the actual routed bank train. NAR and VAE stay frozen.
-Only +1 teachers are trained; qualified probe strengths are 0 through 1.
-Negative inference remains unqualified. Native 2048-wide hidden states require
-the separately reviewed explicit continuous-domain source profile; the released
-PG default rejects them before pretrained model loading. Native GPU execution
-and audio qualification remain with the coordinator and its admitted runner.
-
-The eager runtime pin is `ef1936f2ee39fe8de486a0f47a481c95f8d4da87`.
-Details: [docs/yue2-slider.md](docs/yue2-slider.md) and [REPRODUCE.md](REPRODUCE.md).
-
 ## Comfy
 
 `comfy_yue2.py` registers **YuE2 Particle Slider (ntc-ai)** under `NTC/YuE2`.
@@ -95,10 +58,10 @@ audio inside the graph. See [COMFYUI.md](COMFYUI.md).
 | Path | Role |
 |---|---|
 | `yue2_sliders/` | AR backend, routed slider hooks, train, infer |
-| `scripts/train_yue2.py`, `scripts/infer_yue2.py` | CLI entrypoints. Training calls `ConditionalPG09`; `winning_formulation()` supplies adapter geometry. |
+| `yue2_sliders.lifecycle` | Current training entry point for the shared CLI |
 | `configs/yue2/` | Run configs, prompts, `model.lock.json`, sample cards |
 | `comfy_yue2.py` | Comfy gate |
-| `particle-sliders-core` 0.6.0 candidate | Installed shared PG09 engine, routed bridge and audio adapters. |
+| `particle-sliders-core` | Shared engine, routed bridge and audio adapters |
 
 Formulation exams stay in [HyperGAN/particle-sliders](https://github.com/HyperGAN/particle-sliders).
 `V2_SPEC` is `analysis/slider2d/yue2_gmix_v2_exam.py` there.

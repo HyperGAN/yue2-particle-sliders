@@ -24,8 +24,8 @@ def config(preset='bispf_optimized'):
 @pytest.mark.parametrize('preset', ['bispf', 'bispf_optimized'])
 def test_canonical_lifecycle_trains_with_official_pg095_and_keeps_base_frozen(preset):
     with open_response(config(preset)) as run:
-        assert run.capabilities.pg_version == '0.11.0'
-        assert run.capabilities.pg_source_profile == 'release-0.11.0'
+        assert run.capabilities.pg_version == '0.11.1'
+        assert run.capabilities.pg_source_profile == 'release-0.11.1'
         before = run.game.backend.slider.particles.detach().clone()
         base = deepcopy(run.game.backend.model.state_dict())
         critic = deepcopy(run.game.critic.state_dict())
@@ -35,8 +35,8 @@ def test_canonical_lifecycle_trains_with_official_pg095_and_keeps_base_frozen(pr
         assert all(torch.equal(v, base[k]) for k, v in run.game.backend.model.state_dict().items())
         assert all(not p.requires_grad and p.grad is None for p in run.game.backend.model.parameters())
         state = run.game.state_dict()
-        assert state['config']['pg_version'] == '0.11.0'
-        assert state['config']['pg_source_profile'] == 'release-0.11.0'
+        assert state['config']['pg_version'] == '0.11.1'
+        assert state['config']['pg_source_profile'] == 'release-0.11.1'
         state['config']['pg_version'] = '0.9.1'
         with pytest.raises(ValueError, match='version|cohort|signature|mismatch|profile'):
             run.game.load_state_dict(state)
@@ -103,9 +103,9 @@ def test_archived_pg091_lifecycle_lock_is_distinct_from_current():
     current = json.loads(runtime.LOCK.read_text())
     assert archived['core']['commit'] == 'f6807a91546e43e198645a3f8925d2dc7c9e03b4'
     assert archived['particlegan']['version'] == '0.9.1'
-    assert current['core']['commit'] == 'c13890f8e2a1ecf1dc8eb9f2a37f9187cb9fea78'
-    assert current['particlegan']['version'] == '0.11.0'
-    assert current['particlegan']['release_commit'] == 'b86f0379b4d887f4cde88d686aedc04661a2b61b'
+    assert current['core']['commit'] == 'ec1161f5d74481be3540cb0dfa63d0e8f8b54e90'
+    assert current['particlegan']['version'] == '0.11.1'
+    assert current['particlegan']['release_commit'] == 'd5dec2fe005305082acf382f0939a4bdb51c7131'
 
 
 def test_unified_execution_uses_the_installed_response_backend_in_its_runtime(tmp_path):

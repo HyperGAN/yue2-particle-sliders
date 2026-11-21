@@ -1,13 +1,13 @@
-# YuE2 PG0.11.0 numerical-response lifecycle
+# YuE2 PG0.11.1 numerical-response lifecycle
 
-Root package0.4.0 pins core0.15.1 at `c13890f8e2a1ecf1dc8eb9f2a37f9187cb9fea78`, with published ParticleGAN0.11.0/tagb86f037 and release profile `release-0.11.0`. Public entrypoints remain `yue2_sliders.lifecycle:BACKEND` and `yue2_sliders.response_native:INFERENCE`; the shared core owns all game/update/optimizer/regularizer mathematics. The runtime delegates to `particle_sliders.pg095` and checks its complete source lock.
+Root package0.4.0 pins core0.15.2 at `ec1161f5d74481be3540cb0dfa63d0e8f8b54e90`, with published ParticleGAN0.11.1/tag v0.11.1 and release profile `release-0.11.1`. Public entrypoints remain `yue2_sliders.lifecycle:BACKEND` and `yue2_sliders.response_native:INFERENCE`; the shared core owns all game/update/optimizer/regularizer mathematics. The runtime delegates to `particle_sliders.engine` and checks its complete source lock.
 
 Default CPU fixtures use width32/auto. Genuine native2048-wide states require explicit continuous input domain, exact local assets and the strict native policy in [the native guide](docs/native-continuous-candidate.md). No projection, token generation or waveform rendering is introduced.
 
 ```python
 from particle_sliders.lifecycle import SessionConfig
 from particle_sliders.response import open_response
-c = SessionConfig('yue2', 'fresh-yue2-pg095', dummy=True,
+c = SessionConfig('yue2', 'fresh-yue2-response', dummy=True,
     rows=[dict(neutral='soft piano', positive='bright piano', lyrics='A new day'),
           dict(neutral='quiet flute', positive='strong flute', lyrics='A river runs')],
     steps=4, seed=7, batch=2, sample_seeds=1, history_tokens=4, ema_decay=None)
@@ -24,7 +24,7 @@ and configuration; they cannot resume into this fresh no-EMA configuration.
 
 Use the same exact SessionConfig for continuation. The shared `particle-slider train --interface response` and `infer --mode response` APIs retain their interfaces. Native-only artifacts accept token IDs and exact device/revision/cache_dir runtime options; they return final AR hidden responses. They cannot train/resume, generate tokens or synthesize music.
 
-The128×4 bank, rank8/alpha8 q/k/v/o geometry, frozen model and paired positive/neutral histories are unchanged. PGversion/profile/protocol/source identity is new. PG094 and source801 profiles refuse; old checkpoints/portable artifacts require their old source environment. [Historical lifecycle](docs/lifecycle-pg094.md) and [installation cohorts](INSTALL-COHORTS.md) retain those routes.
+The128×4 bank, rank8/alpha8 q/k/v/o geometry, frozen model and paired positive/neutral histories are unchanged. PGversion/profile/protocol/source identity is new. Earlier checkpoints and portable artifacts require their exact source environment. [Historical lifecycle](https://github.com/HyperGAN/yue2-particle-sliders/blob/108d127625c77bae952fc7c957bce3d6f5d48569/docs/lifecycle-pg094.md) and [installation cohorts](INSTALL-COHORTS.md) retain those routes.
 
 Omitted rates keep inherited optimized defaults. The current
 [finished-audio decision](LEARNING-RATES.md) selects saved G0.00001 RAW64/h128,
