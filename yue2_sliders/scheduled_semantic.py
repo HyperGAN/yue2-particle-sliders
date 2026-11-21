@@ -8,14 +8,7 @@ from sys import float_info
 def generate(pipeline, plan, *, scale_adapter, step_gains, strength=1.0,
              sampling=None, cancelled=None, on_token=None):
     """Generate native semantic codes and return the strengths used through EOS."""
-    from yue2.protocol import negative_prefix, resolve_sampling
-
-    if (pipeline.backend != "torch-eager" or pipeline.quantization != "none"
-            or pipeline.offload_ar or pipeline._model is None):
-        raise ValueError("YuE2 requires its resident eager RAW adapter and AR model")
-    if plan.request.cot != "off":
-        raise ValueError("YuE2 scheduling requires the CoT-off semantic path")
-    budget = resolve_sampling(sampling, pipeline.generation_config.semantic).max_tokens
+    budget = _semantic_budget(pipeline, plan, sampling)
     if not isinstance(step_gains, (list, tuple)) or len(step_gains) != budget:
         raise ValueError("YuE2 requires one gain per possible semantic output token")
     if type(strength) not in (int, float) or not 0 <= strength <= 1:
@@ -25,6 +18,64 @@ def generate(pipeline, plan, *, scale_adapter, step_gains, strength=1.0,
     strengths = [float(strength * gain) for gain in step_gains]
     if any(not isfinite(value) or value > 1 for value in strengths):
         raise ValueError("effective YuE2 strengths must be finite in [0,1]")
+
+    def resolve(position, _ids):
+        return strengths[position]
+
+    return _run_semantic(pipeline, plan, scale_adapter, budget, resolve, sampling, cancelled, on_token)
+
+
+def generate_gated(pipeline, plan, *, scale_adapter, gate_plan, strength,
+                   sampling=None, cancelled=None, on_token=None):
+    """Return native semantic codes and the trace of applied gate strengths."""
+    from .activation_gate import SemanticGatePlan
+
+    budget = _semantic_budget(pipeline, plan, sampling)
+    if type(strength) not in (int, float) or not 0 < strength <= 1:
+        raise ValueError("gated YuE2 requires an explicit nominal strength in (0,1]")
+    if not isinstance(gate_plan, SemanticGatePlan):
+        raise TypeError("gated YuE2 requires a calibrated SemanticGatePlan")
+
+    project = gate_plan._projector(pipeline._model, strength)
+    gate = gate_plan._new_gate()
+    decisions = []
+
+    def resolve(position, ids):
+        if position == 0:
+            # The initial prediction comes from a full prompt evaluation.
+            # Leave that evaluation OFF and start with native token feedback.
+            return 0.0
+        projection = project(ids)
+        decision = gate.step(projection)
+        effective = float(strength) if decision.fired else 0.0
+        decisions.append(dict(prediction_index=position, feedback_token=int(ids[0, 0]),
+                              projection=projection, probability=decision.probability,
+                              fired=decision.fired, effective_strength=effective))
+        return effective
+
+    semantic, applied = _run_semantic(pipeline, plan, scale_adapter, budget, resolve, sampling, cancelled, on_token)
+    usage = gate.usage
+    receipt = dict(activation_gate=gate_plan._receipt(), decisions=decisions,
+                   applied_strengths=applied, nominal_strength=float(strength),
+                   fired=usage.fired, eligible=usage.eligible,
+                   gate_rate=usage.rate if usage.eligible else None,
+                   total_strength=sum(applied))
+    return semantic, receipt
+
+
+def _semantic_budget(pipeline, plan, sampling):
+    from yue2.protocol import resolve_sampling
+
+    if (pipeline.backend != "torch-eager" or pipeline.quantization != "none"
+            or pipeline.offload_ar or pipeline._model is None):
+        raise ValueError("YuE2 requires its resident eager RAW adapter and AR model")
+    if plan.request.cot != "off":
+        raise ValueError("YuE2 scheduling requires the CoT-off semantic path")
+    return resolve_sampling(sampling, pipeline.generation_config.semantic).max_tokens
+
+
+def _run_semantic(pipeline, plan, scale_adapter, budget, resolve, sampling, cancelled, on_token):
+    from yue2.protocol import negative_prefix
 
     model = pipeline._model
     prefix_lengths = [len(plan.prefix)]
@@ -53,10 +104,11 @@ def generate(pipeline, plan, *, scale_adapter, step_gains, strength=1.0,
             caches.append(cache)
         elif cache is not caches[branch]:
             raise RuntimeError("YuE2 cache differs from the expected guidance branch")
-        value = strengths[position]
-        scope.enter_context(scale_adapter(value))
         if branch == 0:
-            applied.append(value)
+            applied.append(resolve(position, ids))
+        # Conditional and negative predictions share the decision for this
+        # position while retaining their own native StaticKVCache instances.
+        scope.enter_context(scale_adapter(applied[position]))
         calls += 1
 
     def after(_module, _args, _output):

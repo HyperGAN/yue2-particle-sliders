@@ -87,3 +87,59 @@ at native guidance 1.01. It improved three of four cases over constant
 and scored above OFF on all four. All twelve clips passed separate
 native stereo integrity checks.
 [Per-case evidence](docs/crisp-piano-raw256-scheduled-strength.json)
+
+### Opt-in activation gate
+
+Pass an explicit `SemanticGatePlan` to `generate_gated` using an exclusively
+owned resident eager pipeline and the same attached RAW AR adapter. Build or
+supply the shared core wheel from the exact revision below. The gate loads
+the byte-verified steering module from that wheel and the installed YuE2
+response owner continues to use its original core pin.
+[Shared core #269](https://github.com/HyperGAN/particle-sliders/pull/269)
+
+```python
+from yue2_sliders.activation_gate import SemanticGatePlan
+from yue2_sliders.scheduled_semantic import generate_gated
+
+gate = SemanticGatePlan(
+    core_wheel=core_269_wheel,
+    method="cfp",
+    parameter=calibrated_threshold,
+    direction=fitted_unit_direction,
+    calibration_sha256=calibration_sha256,
+)
+semantic, trace = generate_gated(
+    pipe, plan, scale_adapter=network.scaled, gate_plan=gate,
+    strength=selected_nominal_strength,
+)
+```
+
+The prompt prefill runs at strength zero, so its first prediction consumes no
+gate decision. For each subsequent prediction, CFP and CLABS read the frozen
+input embedding of the previously sampled semantic token before its attention
+projections. Both CFG branches use the conditional branch's single decision at
+that position and retain distinct native caches. Native EOS closes the trace.
+The gate controls the saved RAW attention residual. The native acoustic stage
+reads the semantic result after the adapter scope closes.
+
+Fit the unit direction in this exact pre-attention embedding space on separate
+target and neutral semantic trajectories. Bind the base revision, RAW SHA,
+captions, lyrics, seeds and sampler to the calibration record. On a disjoint
+split, run candidates with steering active and aggregate `fired` and `eligible`
+from their traces. Calibrate CFP's threshold or CLABS's bias at the declared
+budget using the shared core protocol. For CLABS, supply `method="clabs"`,
+the calibrated bias, measured projection statistics and configured controller
+settings as `clabs`, plus an explicit `seed`. The matched random control uses
+`method="random"`, the declared firing rate and a seed. Save the trace with
+the replay. It includes feedback tokens, projections, decisions, applied
+strengths and realized strength sum.
+[Core calibration and control protocol](https://github.com/HyperGAN/particle-sliders/blob/b1f780decc516808cfd3019d5e5b674457161f86/docs/strength-schedules.md#activation-dependent-steering)
+
+Keep the four Crisp Piano RAW256 cases as matched fixed controls. The archive
+records acoustic codec latents, finished clips and fixed strength traces.
+Fitting still needs separate target and neutral semantic token trajectories,
+and budget calibration needs disjoint active rollouts. Compare the adaptive
+arm against matched OFF, constant RAW and matched random controls on finished
+stereo clips using recorded-piano intensity and a separate integrity check.
+Keep prefill OFF in each new allocation-control arm so the comparison covers
+the same eligible predictions. Adaptive Crisp Piano gains remain unmeasured.
