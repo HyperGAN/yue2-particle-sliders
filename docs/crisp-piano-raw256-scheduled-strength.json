@@ -1,0 +1,146 @@
+{
+  "profile": "Crisp Piano RAW256 original CoT-off eager native renderer",
+  "raw_sha256": "2f0f3e360be30cc1d57e164b6b49bd1b982bf34eb5cfa0acd197d663f10802a9",
+  "guidance": 1.01,
+  "semantic_tokens_per_arm": 200,
+  "sample_rate": 48000,
+  "channels": 2,
+  "acoustic_pipeline": "Original frozen NAR with 32 midpoint steps and native VAE",
+  "nominal_strength": 0.5,
+  "matched_cases": 4,
+  "measure": "Mean recorded-piano intensity ON minus matched exact OFF",
+  "winning_arm": "late",
+  "arms": {
+    "constant": {
+      "mean_effect_gain": -0.09634754002625412,
+      "independent_stereo_integrity_passes": 4,
+      "strength_by_semantic_position": {
+        "first_100": 0.5,
+        "next_100": 0.5
+      },
+      "cases_better_than_constant": 0,
+      "cases": [
+        {
+          "case": "dev0-seed42",
+          "seed": 42,
+          "effect_gain": -0.16869579187656203,
+          "change_vs_constant": 0.0,
+          "on_sha256": "5725ab5e0e4fd132826de7d1f2caeccd20cdd720b35973b4e375efa6cc0a7750",
+          "off_sha256": "1a10b55bdd82603457693a787de46d1f1f5c3ae11b9247847e412db66b403e32"
+        },
+        {
+          "case": "dev0-seed43",
+          "seed": 43,
+          "effect_gain": 0.05648802765613048,
+          "change_vs_constant": 0.0,
+          "on_sha256": "f0766124f813ba248682f4a0ab3a116c54a1a21650822e2b549e3a81d148e6cc",
+          "off_sha256": "1405a8928160e06d980ed19c607498bdebdb3874c4b828171809f9de566c3aea"
+        },
+        {
+          "case": "dev1-seed42",
+          "seed": 42,
+          "effect_gain": -0.30240453519075783,
+          "change_vs_constant": 0.0,
+          "on_sha256": "6ca527a4cb54cf828386cbda043f27fdd03f84af96ce4475edaa7dfab3a8368a",
+          "off_sha256": "f683dd0d1b037a4985e08d355e7fae1b1d03f26022b842d8dcb775e72eb61f1a"
+        },
+        {
+          "case": "dev1-seed43",
+          "seed": 43,
+          "effect_gain": 0.0292221393061729,
+          "change_vs_constant": 0.0,
+          "on_sha256": "7a2ba77ab380c1b15c4b248a1f773b2c59e2139ef56c7c749252780a14b446d7",
+          "off_sha256": "c4b24d35df38dd1cd868c4fadc56908667dc1e3bb6c8035ffdcf06c146182836"
+        }
+      ]
+    },
+    "early": {
+      "mean_effect_gain": -0.5720115504550535,
+      "independent_stereo_integrity_passes": 4,
+      "strength_by_semantic_position": {
+        "first_100": 0.75,
+        "next_100": 0.25
+      },
+      "cases_better_than_constant": 1,
+      "cases": [
+        {
+          "case": "dev0-seed42",
+          "seed": 42,
+          "effect_gain": -0.013250179712848253,
+          "change_vs_constant": 0.15544561216371378,
+          "on_sha256": "cdd04cbc6e22ecaedb95dbcedb56ce75a0980375e2ba065b23f5d27face0b0a2",
+          "off_sha256": "1a10b55bdd82603457693a787de46d1f1f5c3ae11b9247847e412db66b403e32"
+        },
+        {
+          "case": "dev0-seed43",
+          "seed": 43,
+          "effect_gain": -0.8315924219150025,
+          "change_vs_constant": -0.888080449571133,
+          "on_sha256": "d4fd2f59e22767584525fce319903af40d809d0f02f61d8d3dcacc733cfb1780",
+          "off_sha256": "1405a8928160e06d980ed19c607498bdebdb3874c4b828171809f9de566c3aea"
+        },
+        {
+          "case": "dev1-seed42",
+          "seed": 42,
+          "effect_gain": -0.8780443171420615,
+          "change_vs_constant": -0.5756397819513037,
+          "on_sha256": "c4e290b6119ecee2dca05d9e94621665bd53ca8bd161ed150793a7d23c532aae",
+          "off_sha256": "f683dd0d1b037a4985e08d355e7fae1b1d03f26022b842d8dcb775e72eb61f1a"
+        },
+        {
+          "case": "dev1-seed43",
+          "seed": 43,
+          "effect_gain": -0.5651592830503015,
+          "change_vs_constant": -0.5943814223564744,
+          "on_sha256": "73cb32ecc81ed193834c2185161a7c983fd52e3f57ed6a542e87e6b05c2bcfda",
+          "off_sha256": "c4b24d35df38dd1cd868c4fadc56908667dc1e3bb6c8035ffdcf06c146182836"
+        }
+      ]
+    },
+    "late": {
+      "mean_effect_gain": 0.01584958529528252,
+      "independent_stereo_integrity_passes": 4,
+      "strength_by_semantic_position": {
+        "first_100": 0.25,
+        "next_100": 0.75
+      },
+      "cases_better_than_constant": 3,
+      "cases": [
+        {
+          "case": "dev0-seed42",
+          "seed": 42,
+          "effect_gain": 0.021437067505727492,
+          "change_vs_constant": 0.19013285938228952,
+          "on_sha256": "3a4c153572b2f9737088244b0d916249320704f0ced31543ed75d0d061c9476a",
+          "off_sha256": "1a10b55bdd82603457693a787de46d1f1f5c3ae11b9247847e412db66b403e32"
+        },
+        {
+          "case": "dev0-seed43",
+          "seed": 43,
+          "effect_gain": 0.0031581449784215954,
+          "change_vs_constant": -0.053329882677708884,
+          "on_sha256": "10fe8df3cc7ee4f8f79e2a3082e284fdc04a2c3ff61bdd42cacbcfda58186d0a",
+          "off_sha256": "1405a8928160e06d980ed19c607498bdebdb3874c4b828171809f9de566c3aea"
+        },
+        {
+          "case": "dev1-seed42",
+          "seed": 42,
+          "effect_gain": 0.007600197073881154,
+          "change_vs_constant": 0.310004732264639,
+          "on_sha256": "1b66609ffd71565aefc2bf4336e6305de06bee5a80a44df3db937b025e1f0497",
+          "off_sha256": "f683dd0d1b037a4985e08d355e7fae1b1d03f26022b842d8dcb775e72eb61f1a"
+        },
+        {
+          "case": "dev1-seed43",
+          "seed": 43,
+          "effect_gain": 0.03120293162309984,
+          "change_vs_constant": 0.001980792316926938,
+          "on_sha256": "2dbd835a17489cc90a47be7a0b43b8dde5dd9a00914296f82ed100d059f51a62",
+          "off_sha256": "c4b24d35df38dd1cd868c4fadc56908667dc1e3bb6c8035ffdcf06c146182836"
+        }
+      ]
+    }
+  },
+  "optimizer_updates": 0,
+  "ema_decay": null
+}

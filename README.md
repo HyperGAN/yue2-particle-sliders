@@ -77,4 +77,13 @@ Guided requests apply the same gain to both native branches at each token.
 Provide one gain per possible semantic token, including prefill.
 Effective strengths must lie in `[0,1]`. The returned strengths
 stop at native EOS or the token budget. Use the same native NAR and decoder
-for finished-audio comparisons. Pretrained scheduled audio effects are pending.
+for finished-audio comparisons.
+
+The archived Crisp Piano RAW256 profile gained +0.01585 mean intended
+effect across four matched clips using late-heavy strength. Constant
+scored −0.09635 and early-heavy scored −0.57201 at the same nominal
+strength 0.5. The winning profile used `[0.5] * 100 + [1.5] * 100` gains
+at native guidance 1.01. It improved three of four cases over constant
+and scored above OFF on all four. All twelve clips passed separate
+native stereo integrity checks.
+[Per-case evidence](docs/crisp-piano-raw256-scheduled-strength.json)
