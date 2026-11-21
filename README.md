@@ -67,3 +67,13 @@ Learning-rate controls and preserved defaults: [LEARNING-RATES.md](LEARNING-RATE
 ## Opt-in cached fresh initialization
 
 The separate [scoped owner API](scoped/README.md) adds explicit fresh, whole-FULL resume and RAW hidden-response inference in its own installed distribution. Four tiny installed-owner software cases passed with one update; this does not qualify new pretrained/acoustic execution. Original registrations, saved cohorts, historical EMA and learning-rate decisions remain unchanged. Authentic completed cache and owner admission are required.
+
+## Scheduled native semantic strength
+
+With a resident eager pipeline and its attached RAW AR adapter, call
+`yue2_sliders.scheduled_semantic.generate(pipe, plan,
+scale_adapter=network.scaled, step_gains=gains)`. Use a CoT-off plan
+with guidance 1. Provide one gain per possible semantic token, including
+prefill. Effective strengths must lie in `[0,1]`. The returned strengths
+stop at native EOS or the token budget. Use the same native NAR and decoder
+for finished-audio comparisons. Pretrained scheduled audio effects are pending.
