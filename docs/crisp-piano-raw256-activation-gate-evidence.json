@@ -1,0 +1,134 @@
+{
+  "study": "YuE2 Crisp Piano RAW256 native semantic activation gates",
+  "raw_sha256": "2f0f3e360be30cc1d57e164b6b49bd1b982bf34eb5cfa0acd197d663f10802a9",
+  "paper": "https://arxiv.org/html/2611.18274v1#A2",
+  "core_solver_commit": "7b26e5b06f5db91e8d3f51a1602d4e459f0f6a22",
+  "metric": "Equal-case mean of finished 48 kHz stereo recorded-piano intensity ON minus archived OFF",
+  "native_gate_coordinate": "One feedback decision on each of 199 cached semantic prediction positions, after the initial unedited prediction",
+  "held_out": {
+    "frozen_cases": 4,
+    "nominal_strength": 0.5,
+    "weights": "raw",
+    "ema_decay": null
+  },
+  "calibration": {
+    "target_firing_rate": 0.5,
+    "accepted_firing_counts": [
+      198,
+      200
+    ],
+    "eligible": 398,
+    "cfp_threshold": -0.007994066778337576,
+    "cfp_fired": 199,
+    "clabs_bias": -0.4347761868362813,
+    "clabs_fired": 198,
+    "clabs_feedback": {
+      "mean": -0.0015110421227291226,
+      "std": 0.08384902775287628,
+      "epsilon": 1e-06,
+      "setpoint": 0.75,
+      "proportional_gain": 1.0,
+      "integral_gain": 0.2,
+      "beta": 0.2
+    },
+    "native_probe_fit_sha256": "d96d6a34edc403cd03ab0e717d69b169a4ae358467ce808128d73cf87afe959a",
+    "native_calibration_sha256": "067f0971822d7b4ae28a3fb5b475add9c29674192980a22b355370924a8d0129"
+  },
+  "constant_control": "Per-case realized total gate strength divided by eligible native positions",
+  "methods": {
+    "cfp": {
+      "mean_gate_ON_minus_OFF": -0.17727423478972776,
+      "mean_constant_ON_minus_OFF": -0.010753995942727773,
+      "mean_gate_minus_equal_dose_constant": -0.16652023884699999,
+      "cases_ahead": 1,
+      "independent_pairs_passed": 4,
+      "comparison_sha256": "218ee35f75642d3a833a169d45553f8ad87a81b9e8b7e9ab63be3f3c26f585c7",
+      "cases": [
+        {
+          "case": "dev0-seed42",
+          "gate_ON_minus_OFF": -0.04733718293518974,
+          "constant_ON_minus_OFF": -0.0019499511193865615,
+          "gate_minus_equal_dose": -0.045387231815803175,
+          "off_sha256": "1a10b55bdd82603457693a787de46d1f1f5c3ae11b9247847e412db66b403e32",
+          "gate_on_sha256": "3d46e7dbf4ebaccfa656907d6cc09354cdc8c69d9db943e190998a98768ea389",
+          "constant_on_sha256": "e8e30d82d514f068fb250b6d2da439c46a97f942fb0d3f7942a7d0fe0babb049"
+        },
+        {
+          "case": "dev0-seed43",
+          "gate_ON_minus_OFF": 0.01614798880327528,
+          "constant_ON_minus_OFF": 0.023094976854028948,
+          "gate_minus_equal_dose": -0.006946988050753666,
+          "off_sha256": "1405a8928160e06d980ed19c607498bdebdb3874c4b828171809f9de566c3aea",
+          "gate_on_sha256": "eb9e22cbf6ca57014b754e3a38a1783fc4ff54e2d6505acb1207e3952ddce84e",
+          "constant_on_sha256": "8b619bd4a478add38193818f22508f5e325da08154baf58146370b3092369e4f"
+        },
+        {
+          "case": "dev1-seed42",
+          "gate_ON_minus_OFF": -0.6695681929899655,
+          "constant_ON_minus_OFF": -0.05560373597132151,
+          "gate_minus_equal_dose": -0.613964457018644,
+          "off_sha256": "f683dd0d1b037a4985e08d355e7fae1b1d03f26022b842d8dcb775e72eb61f1a",
+          "gate_on_sha256": "7a7303b9956b76334cf11bbd0e71b2369c54e7dad2e18090bfbe9ee4764a0bf1",
+          "constant_on_sha256": "2c1f4fc6b4daa75cc8c898aa906abdefab1ed6d99e1e988024725b58f9e23ff0"
+        },
+        {
+          "case": "dev1-seed43",
+          "gate_ON_minus_OFF": -0.008339552037031073,
+          "constant_ON_minus_OFF": -0.008557273534231968,
+          "gate_minus_equal_dose": 0.00021772149720089562,
+          "off_sha256": "c4b24d35df38dd1cd868c4fadc56908667dc1e3bb6c8035ffdcf06c146182836",
+          "gate_on_sha256": "e47f8f67531b421eb44e42d5a085ce2f05fd7999de70049ee0404589a674b0c5",
+          "constant_on_sha256": "f514d2600d3dddb420621cbf3838be6a951361e929975bb5ed0ba8cc62133d17"
+        }
+      ]
+    },
+    "clabs": {
+      "mean_gate_ON_minus_OFF": 0.007466712583510199,
+      "mean_constant_ON_minus_OFF": -0.01700377358998914,
+      "mean_gate_minus_equal_dose_constant": 0.02447048617349934,
+      "cases_ahead": 3,
+      "independent_pairs_passed": 4,
+      "comparison_sha256": "787b8c4ef5d4f37a569271de4ba30bd36761d8ddd1ca077758b8cc2894d1e573",
+      "cases": [
+        {
+          "case": "dev0-seed42",
+          "gate_ON_minus_OFF": -0.022280000641982545,
+          "constant_ON_minus_OFF": -0.0216990229092745,
+          "gate_minus_equal_dose": -0.0005809777327080434,
+          "off_sha256": "1a10b55bdd82603457693a787de46d1f1f5c3ae11b9247847e412db66b403e32",
+          "gate_on_sha256": "f19b8ea66024be7a93d0221465531ee4050a85c9c22ecf78f4c39105babcdb0d",
+          "constant_on_sha256": "7f832664f74fb02814d2f77328db4b1439bd41e30b9aa76106ce5c1a028cdada"
+        },
+        {
+          "case": "dev0-seed43",
+          "gate_ON_minus_OFF": 0.030762660963219224,
+          "constant_ON_minus_OFF": 0.02547484943798317,
+          "gate_minus_equal_dose": 0.0052878115252360525,
+          "off_sha256": "1405a8928160e06d980ed19c607498bdebdb3874c4b828171809f9de566c3aea",
+          "gate_on_sha256": "db4878090057dda67900d72b435c769d4a77b490bfb98e1144948f5d313d9795",
+          "constant_on_sha256": "0fdbf3c81ea274d191dfdc1618628d2d27de1a13156ea7acee2ab42ef4977acd"
+        },
+        {
+          "case": "dev1-seed42",
+          "gate_ON_minus_OFF": -0.011510216322246358,
+          "constant_ON_minus_OFF": -0.05805187572104875,
+          "gate_minus_equal_dose": 0.04654165939880239,
+          "off_sha256": "f683dd0d1b037a4985e08d355e7fae1b1d03f26022b842d8dcb775e72eb61f1a",
+          "gate_on_sha256": "8a0905145993bb128ed6750a6c3300f01fe6e41f77e44e464367db678bce816f",
+          "constant_on_sha256": "a2c41cf1897170ab5993de937aeee7fed5fa3cfbf7789f59d0d0eef62b53dd34"
+        },
+        {
+          "case": "dev1-seed43",
+          "gate_ON_minus_OFF": 0.032894406335050475,
+          "constant_ON_minus_OFF": -0.013739045167616482,
+          "gate_minus_equal_dose": 0.046633451502666956,
+          "off_sha256": "c4b24d35df38dd1cd868c4fadc56908667dc1e3bb6c8035ffdcf06c146182836",
+          "gate_on_sha256": "d451b9c6e80a19004ec0f90cd6ef941800fa8df87058391b4294673eadad459c",
+          "constant_on_sha256": "83738b0d641e6cb7943b4e69562deece9f3bb5d66dff1a657374fe5aac49427f"
+        }
+      ]
+    }
+  },
+  "random_comparison": "pending",
+  "scope": "A four-case held-out pilot for the saved Crisp Piano adapter and original sampler. Adaptive steering is opt-in."
+}
