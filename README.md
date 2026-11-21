@@ -72,8 +72,9 @@ The separate [scoped owner API](scoped/README.md) adds explicit fresh, whole-FUL
 
 With a resident eager pipeline and its attached RAW AR adapter, call
 `yue2_sliders.scheduled_semantic.generate(pipe, plan,
-scale_adapter=network.scaled, step_gains=gains)`. Use a CoT-off plan
-with guidance 1. Provide one gain per possible semantic token, including
-prefill. Effective strengths must lie in `[0,1]`. The returned strengths
+scale_adapter=network.scaled, step_gains=gains)`. Use a CoT-off plan.
+Guided requests apply the same gain to both native branches at each token.
+Provide one gain per possible semantic token, including prefill.
+Effective strengths must lie in `[0,1]`. The returned strengths
 stop at native EOS or the token budget. Use the same native NAR and decoder
 for finished-audio comparisons. Pretrained scheduled audio effects are pending.
