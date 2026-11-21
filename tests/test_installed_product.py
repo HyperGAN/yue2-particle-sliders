@@ -52,7 +52,7 @@ def test_default_fresh_process_discovers_only_its_installed_core013_backends(tmp
     code = '''
 import importlib.abc, sys
 from importlib import metadata
-assert metadata.version('particle-sliders-core') == '0.15.1'
+assert metadata.version('particle-sliders-core') == '0.15.2'
 class Guard(importlib.abc.MetaPathFinder):
     def find_spec(self, fullname, path=None, target=None):
         if fullname in {'yue2_sliders.hndl_response', 'particle_sliders.fibo_hndl', 'hypergan', 'hndl'}:

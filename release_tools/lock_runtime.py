@@ -5,20 +5,20 @@ import hashlib
 import json
 
 ROOT = Path(__file__).resolve().parents[1]
-CORE_COMMIT = 'c13890f8e2a1ecf1dc8eb9f2a37f9187cb9fea78'
+CORE_COMMIT = 'ec1161f5d74481be3540cb0dfa63d0e8f8b54e90'
 
 
 def lock_runtime(destination):
     installed = distribution('particle-sliders-core')
     origin = json.loads(installed.read_text('direct_url.json') or '{}')
-    if (installed.version != '0.15.1'
+    if (installed.version != '0.15.2'
             or origin.get('vcs_info', {}).get('commit_id') != CORE_COMMIT
             or origin.get('url') != 'https://github.com/HyperGAN/particle-sliders.git'
             or origin.get('subdirectory') != 'packages/particle-sliders-core'):
         raise ValueError('install the exact reviewed Particle Sliders core source')
     release = json.loads(installed.locate_file('particle_sliders/engine_release.json').read_text())
-    if release['version'] != '0.11.0':
-        raise ValueError('core must use the published ParticleGAN 0.11.0 release')
+    if release['version'] != '0.11.1':
+        raise ValueError('core must use the published ParticleGAN 0.11.1 release')
     files = (str(path) for path in installed.files or ())
     sources = {name: hashlib.sha256(installed.locate_file(name).read_bytes()).hexdigest()
                for name in files

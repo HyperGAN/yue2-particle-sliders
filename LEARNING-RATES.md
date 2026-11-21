@@ -64,29 +64,11 @@ checkpoint. New sessions explicitly disable model-weight EMA and use RAW weights
 throughout; no checkpoint averaging or EMA comparison is proposed.
 
 The historical `yue2_sliders.train` and source helper scripts use their old
-CDF/core0.6/PG0.9.1 interface. Their knobs are not the current response-session
+archived standalone interface. Their knobs are not the current response-session
 rate API. Numerical hidden responses are not waveform generation; the saved
 finished-audio comparison uses its own original native consumer.
 
-<a id="measured-pg095-native-recipe"></a>
+## Earlier response-error screen
 
-## Historical teacher-response SSE screen (G0.0001 RAW128)
-
-The older G0.0001 nominee below was selected by teacher-relative SSE, not by
-the current finished-audio score. Its original source, scores, presets and
-EMA identity remain diagnostic history. It does not override the existing
-G0.00001 RAW64 effect-selected checkpoint or require another confirmation.
-
-
-For the source-qualified native2048 BF16 cohort, use **G = 0.0001**, **D = 0.018**, and **particle bank = 0.030000000000000002** with a common **128-update** schedule. Set `lr=0.0001`, `d_lr_mult=179.99999999999997`, and `prior_lr_mult=300.0`; those exact binary64 products matter. The [options preset](configs/yue2/lr/pg095-native-h128.json) is a subset of common `SessionConfig` options, not a complete session or a new default.
-
-Three G values completed matched32 and matched64 with identical actual D/P, native initialization, teachers and horizon. G0.0001 won the matched64 comparison, between G0.00001 and G0.0003. Its development RAW relative SSE was **0.7767620677498525 at64** and **1.3220490203092785 at128**. The same128 checkpoint then scored **0.5525904019655886** on two previously sealed held-out examples, with no optimizer updates, two valid examples and no exclusions. The above-OFF development128 result is retained; no candidate or endpoint was dropped for that score. [Sanitized evidence](evidence/lr-pg095-native-h128-20261105.json) records all matched scores, exact rates, native mechanical checks and the independent saved-field FP64 audit.
-
-This measurement binds product `2991dfe262b878ae3e5ba1ccd9786c51792c36f2`, core `3dd672a7f9b8c169daef90fd63e4bb42b9ddc423`, official PG0.9.5, `release-0.9.5/continuous`, and `yue2-bf16-sdpa-math-strict-pg095-v1`. It uses YuE2-3B revision `14fc6c6f146441b1dd6363fcb2e01e82a6914cb7`, Torch2.10.0+cu128, Transformers4.57.6 and yue2-infer0.1.6; rank8/alpha8 q/k/v/o adapters, the complete128×4 bank, batch2, seed7, one sample seed, four history tokens. That measurement maintained an EMA0.9 shadow, but every
-selection and confirmation value used RAW; its evidence and packets are unchanged. This small fixed cohort supports a source-qualified starting recipe; it does not establish a universal optimum or audio/semantic quality.
-
-The original EMA0.9 shadow remains part of that historical training identity,
-while its selected/current exported values are RAW. Preserve the old packet and
-configuration exactly; do not retroactively label that training no-EMA or resume
-it with new `ema_decay=None`. New sessions and inference use RAW/no new weight
-EMA. Historical PG094/PG801 packets keep their original environments.
+The [archived guide](https://github.com/HyperGAN/yue2-particle-sliders/blob/108d127625c77bae952fc7c957bce3d6f5d48569/LEARNING-RATES.md) retains the original
+native preset, all three screened rates and the response-SSE evidence.

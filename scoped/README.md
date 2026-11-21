@@ -1,6 +1,6 @@
 # Explicit cached YuE2 fresh095 owner
 
-This additional `yue2_scoped` namespace is an opt-in composition with the captured `yue2-particle-sliders==0.4.0` owner, exact core0.13/3dd and public ParticleGAN0.11.0. It neither changes the original response/inference registrations nor upgrades an existing runtime. Install genuine distributions with their generated RECORDs; a Source-directory overlay is rejected.
+This additional `yue2_scoped` namespace is an opt-in composition with the captured `yue2-particle-sliders==0.4.0` owner, exact core0.15.2 Git source and public ParticleGAN0.11.1. It neither changes the original response/inference registrations nor upgrades an existing runtime. Install genuine distributions with their generated RECORDs; a Source-directory overlay is rejected.
 
 The original registered route is a final native AR hidden-state response: width32 in the original CPU stand-in, width2048 for the exact native YuE2 BF16/strict-SDPA cohort. It does not decode music or claim a waveform/native audio qualification. The installed tiny software validation did not load pretrained models. The original native runtime/assets/whole-loaded-checkpoint/numerical guards remain mandatory on the native lane, unchanged. The isolated installed-owner CPU8 execution passed all four new software cases with one tiny original-game update and genuinely closed0/resource0. This validates the tiny software route, not public-wheel/pretrained/acoustic execution.
 
@@ -53,7 +53,7 @@ Four newly authored tiny software nodes cover same-Parameter policy/zero-UP/KEEP
 
 ## Separate optional installation
 
-This directory is a standalone `yue2-explicit-scoped==0.1.0` subproject. The repository root remains `yue2-particle-sliders==0.4.0` with its original metadata, registrations, defaults and LR history. Use an isolated environment whose genuine original owner/core3dd/PG0.11.0 distributions and Sources already match the guards. Installing matching version strings alone is insufficient. Once those dependencies and setuptools84.2.1+ are available, install only this addon from the verified checkout:
+This directory is a standalone `yue2-explicit-scoped==0.1.0` subproject. The repository root remains `yue2-particle-sliders==0.4.0` with its original metadata, registrations, defaults and LR history. Use an isolated environment whose genuine original owner/core0.15.2/PG0.11.1 distributions and Sources already match the guards. Installing matching version strings alone is insufficient. Once those dependencies and setuptools84.2.1+ are available, install only this addon from the verified checkout:
 
 ```bash
 python -m pip install --no-deps --no-build-isolation ./scoped
