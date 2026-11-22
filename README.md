@@ -135,11 +135,9 @@ the replay. It includes feedback tokens, projections, decisions, applied
 strengths and realized strength sum.
 [Core calibration and control protocol](https://github.com/HyperGAN/particle-sliders/blob/b1f780decc516808cfd3019d5e5b674457161f86/docs/strength-schedules.md#activation-dependent-steering)
 
-Keep the four Crisp Piano RAW256 cases as matched fixed controls. The archive
-records acoustic codec latents, finished clips and fixed strength traces.
-Fitting still needs separate target and neutral semantic token trajectories,
-and budget calibration needs disjoint active rollouts. Compare the adaptive
-arm against matched OFF, constant RAW and matched random controls on finished
-stereo clips using recorded-piano intensity and a separate integrity check.
-Keep prefill OFF in each new allocation-control arm so the comparison covers
-the same eligible predictions. Adaptive Crisp Piano gains remain unmeasured.
+The measured Crisp Piano RAW256 CLABS profile beat its equal-dose constant
+by +0.02447 averaged over four held-out cases. It passed independent audio
+integrity on all four. Use the original checkpoint, sampler and recorded
+gate settings for this opt-in profile.
+[Calibrated replay](docs/crisp-piano-raw256-clabs-replay.md) ·
+[Per-case evidence](docs/crisp-piano-raw256-activation-gate-evidence.json)
