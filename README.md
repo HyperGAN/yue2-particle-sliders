@@ -135,7 +135,7 @@ the replay. It includes feedback tokens, projections, decisions, applied
 strengths and realized strength sum.
 [Core calibration and control protocol](https://github.com/HyperGAN/particle-sliders/blob/b1f780decc516808cfd3019d5e5b674457161f86/docs/strength-schedules.md#activation-dependent-steering)
 
-The measured Crisp Piano RAW256 CLABS profile beat its equal-dose constant
+The measured Crisp Piano RAW256 CLABS profile beat its nearest-FP32 constant
 by +0.02447 averaged over four held-out cases. It passed independent audio
 integrity on all four. Use the original checkpoint, sampler and recorded
 gate settings for this opt-in profile.

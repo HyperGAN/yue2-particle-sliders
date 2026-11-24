@@ -1,10 +1,17 @@
 # Replay the calibrated Crisp Piano CLABS gate
 
 On four held-out Crisp Piano RAW256 cases, CLABS averaged +0.00747 over
-OFF and +0.02447 over its equal-dose constant, which it beat on three
+OFF and +0.02447 over its archived constant, which it beat on three
 cases. All four pairs passed independent audio integrity checks. CFP
 scored below its own constant on the same panel.
 [Held-out evidence](crisp-piano-raw256-activation-gate-evidence.json)
+
+All four archived CLABS controls used the nearest FP32 strength on the
+native semantic clock. The largest absolute difference in summed strength
+was 1.30 × 10⁻⁶ across 199 eligible predictions. The operation uses an FP32
+scalar to multiply the BF16 residual. The per-prediction decision is shared
+by both CFG branches. The audio scores refer to the original rendered
+controls. [Pinned CUDA scalar kernel](https://github.com/pytorch/pytorch/blob/449b1768410104d3ed79d3bcfe4ba1d65c7f22c0/aten/src/ATen/native/cuda/BinaryMulKernel.cu#L33-L42).
 
 Use the [replay settings](crisp-piano-raw256-clabs-replay.json) with the
 recorded RAW256 checkpoint and its resident YuE2-3B AR owner. The preset
